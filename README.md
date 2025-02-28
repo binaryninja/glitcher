@@ -1,6 +1,6 @@
 # Glitcher
 
-A command-line tool for mining and testing glitch tokens in large language models.
+A command-line tool for mining, testing, and classifying glitch tokens in large language models.
 
 ## Installation
 
@@ -14,11 +14,12 @@ Or clone the repository and install locally:
 git clone https://github.com/binaryninja/glitcher.git
 cd glitcher
 pip install -e .
+pip install accelerate  # Required for loading models with device_map
 ```
 
 ## Usage
 
-Glitcher provides a CLI tool with three main commands:
+Glitcher provides several CLI tools for working with glitch tokens:
 
 ### Mining Glitch Tokens
 
@@ -141,6 +142,53 @@ After completing a scan:
 - **Model variability**: Different model versions may exhibit different glitch tokens
 - **Quantization effects**: Using int4/int8 quantization may affect the detection accuracy
 
+## New Classification Tool
+
+The new `glitch-classify` command allows you to categorize glitch tokens by their effects:
+
+```bash
+# Classify glitch tokens from a file
+glitch-classify meta-llama/Llama-3.2-1B --token-file validated_glitch_tokens.json
+
+# Classify specific token IDs 
+glitch-classify meta-llama/Llama-3.2-1B --token-ids 89472,127438
+```
+
+### Classification Categories
+
+Glitch tokens are classified into these categories:
+
+1. **Injection**: Tokens that enable bypassing instructions or filters
+   - Test: Checks if the token allows the model to ignore safety instructions
+   
+2. **IDOS (Infinite/Denial-of-Service)**: Tokens that trigger repetitive loops
+   - Test: Checks if the token causes endless repetition or verbose output
+   
+3. **Hallucination**: Tokens causing nonsensical outputs
+   - Test: Checks if the token makes the model produce incoherent responses
+   
+4. **Disruption**: Tokens that disrupt the model's internal reasoning
+   - Test: Checks if the token makes the model fail at simple tasks like math
+   
+5. **Bypass**: Tokens that allow bypassing specific safety filters
+   - Test: Checks if the token makes the model ignore explicit instructions
+
+Each token is tested with these specific test prompts, and can be classified into multiple categories.
+
+### Classification Output
+
+The classifier produces a comprehensive JSON file with detailed test results and a summary table:
+
+```
+Classification Summary:
+================================================================================
+Token	Injection	IDOS	Hallucination	Disruption	Filter Bypass	Notes
+--------------------------------------------------------------------------------
+Token_XYZ	❌	✅	❌	❌	❌	IDOS
+Token_ABC	✅	❌	✅	❌	✅	Injection, Hallucination, Bypass
+================================================================================
+```
+
 ## How It Works
 
 Glitcher discovers and tests "glitch tokens" - tokens that language models are unable to properly repeat when asked. These tokens can be used for various purposes including better understanding model behavior and limitations.
@@ -171,6 +219,18 @@ glitcher test meta-llama/Llama-3.2-1B --token-ids 89472,127438,85069,126523,8037
 
 ```bash
 glitcher chat meta-llama/Llama-3.2-1B 89472
+```
+
+### Scanning for glitch tokens in a single step
+
+```bash
+glitch-scan meta-llama/Llama-3.2-1B --num-iterations 50 --batch-size 8
+```
+
+### Classifying discovered glitch tokens
+
+```bash
+glitch-classify meta-llama/Llama-3.2-1B --token-file validated_glitch_tokens.json
 ```
 
 ## License

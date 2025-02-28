@@ -14,6 +14,7 @@ setup(
         'console_scripts': [
             'glitcher=glitcher.cli:main',
             'glitch-scan=glitcher.scan_and_validate:main',
+            'glitch-classify=glitcher.classify_glitches:main',
         ],
     },
     author="Binary Ninja",
