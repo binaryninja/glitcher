@@ -472,36 +472,102 @@ class GlitchClassifier:
         """Analyze the prompting test results"""
         # Calculate repetition rates for normal vs. glitch tokens
         normal_repetition_rates = []
+        normal_response_lengths = []
         for token, token_results in results["normal_tokens"].items():
             for prompt, prompt_result in token_results.items():
                 normal_repetition_rates.append(prompt_result["has_repetition"])
+                normal_response_lengths.append(prompt_result["response_length"])
         
         glitch_repetition_rates = []
+        glitch_response_lengths = []
         for token, token_results in results.get("glitch_tokens", {}).items():
             for prompt, prompt_result in token_results.items():
                 glitch_repetition_rates.append(prompt_result["has_repetition"])
+                glitch_response_lengths.append(prompt_result["response_length"])
         
         # Calculate how often each type repeats
         normal_repeat_rate = sum(normal_repetition_rates) / len(normal_repetition_rates) if normal_repetition_rates else 0
         glitch_repeat_rate = sum(glitch_repetition_rates) / len(glitch_repetition_rates) if glitch_repetition_rates else 0
+        
+        # Calculate average response lengths
+        normal_avg_length = sum(normal_response_lengths) / len(normal_response_lengths) if normal_response_lengths else 0
+        glitch_avg_length = sum(glitch_response_lengths) / len(glitch_response_lengths) if glitch_response_lengths else 0
+        
+        # Look at occurrence of "edReader" and "ReferentialAction" in responses
+        edreader_normal = 0
+        ref_action_normal = 0
+        for token, token_results in results["normal_tokens"].items():
+            for prompt, prompt_result in token_results.items():
+                if "edreader" in prompt_result["response"].lower():
+                    edreader_normal += 1
+                if "referentialaction" in prompt_result["response"].lower():
+                    ref_action_normal += 1
+        
+        edreader_glitch = 0
+        ref_action_glitch = 0
+        for token, token_results in results.get("glitch_tokens", {}).items():
+            for prompt, prompt_result in token_results.items():
+                if "edreader" in prompt_result["response"].lower():
+                    edreader_glitch += 1
+                if "referentialaction" in prompt_result["response"].lower():
+                    ref_action_glitch += 1
+        
+        # Calculate percentages
+        normal_prompt_count = len(normal_repetition_rates) if normal_repetition_rates else 1
+        glitch_prompt_count = len(glitch_repetition_rates) if glitch_repetition_rates else 1
+        
+        edreader_normal_pct = edreader_normal / normal_prompt_count
+        ref_action_normal_pct = ref_action_normal / normal_prompt_count
+        edreader_glitch_pct = edreader_glitch / glitch_prompt_count
+        ref_action_glitch_pct = ref_action_glitch / glitch_prompt_count
         
         # Log the analysis
         logger.info("\nPrompting Analysis Results:")
         logger.info("=" * 80)
         logger.info(f"Normal tokens repetition rate: {normal_repeat_rate:.0%}")
         logger.info(f"Glitch tokens repetition rate: {glitch_repeat_rate:.0%}")
+        logger.info(f"Normal tokens avg response length: {normal_avg_length:.1f} chars")
+        logger.info(f"Glitch tokens avg response length: {glitch_avg_length:.1f} chars")
+        
+        # Log the special token occurrences
+        logger.info(f"'edReader' appears in {edreader_normal_pct:.0%} of normal token responses")
+        logger.info(f"'edReader' appears in {edreader_glitch_pct:.0%} of glitch token responses")
+        logger.info(f"'ReferentialAction' appears in {ref_action_normal_pct:.0%} of normal token responses")
+        logger.info(f"'ReferentialAction' appears in {ref_action_glitch_pct:.0%} of glitch token responses")
         
         # Determine if repetition is a good indicator
         if normal_repeat_rate > 0.5:
             logger.warning("WARNING: Normal tokens show high repetition rate - this indicator may not be reliable")
-        if glitch_repeat_rate < 0.7:
-            logger.warning("WARNING: Glitch tokens show low repetition rate - this indicator may need adjustment")
+        
+        # Look for better indicators
+        length_differential = glitch_avg_length - normal_avg_length
+        if abs(length_differential) > 50:
+            logger.info(f"POSSIBLE INDICATOR: Response length differs by {length_differential:.1f} chars between normal and glitch tokens")
+        
+        # Check for special tokens as indicators
+        if edreader_glitch_pct > edreader_normal_pct + 0.2:
+            logger.info(f"GOOD INDICATOR: 'edReader' appears {edreader_glitch_pct - edreader_normal_pct:.0%} more often in glitch token responses")
+        if ref_action_glitch_pct > ref_action_normal_pct + 0.2:
+            logger.info(f"GOOD INDICATOR: 'ReferentialAction' appears {ref_action_glitch_pct - ref_action_normal_pct:.0%} more often in glitch token responses")
         
         differential = glitch_repeat_rate - normal_repeat_rate
         if differential > 0.5:
             logger.info(f"GOOD: There's a significant difference ({differential:.0%}) between normal and glitch token repetition rates")
         else:
             logger.warning(f"WARNING: Repetition rates are similar ({differential:.0%} difference) - may need more precise indicators")
+        
+        # Recommendations based on analysis
+        logger.info("\nRecommended Classification Approach:")
+        if edreader_glitch_pct > 0.5 and edreader_glitch_pct > edreader_normal_pct + 0.2:
+            logger.info("- Use presence of 'edReader' in response as a primary indicator")
+        if ref_action_glitch_pct > 0.5 and ref_action_glitch_pct > ref_action_normal_pct + 0.2:
+            logger.info("- Use presence of 'ReferentialAction' in response as a primary indicator")
+        if abs(length_differential) > 50:
+            logger.info(f"- Response length can be a secondary indicator (glitch responses are {'longer' if length_differential > 0 else 'shorter'})")
+        if differential > 0.2:
+            logger.info("- Repetition patterns can be a tertiary indicator but should not be used alone")
+        else:
+            logger.info("- Avoid using repetition patterns as they occur in both normal and glitch tokens")
         
         logger.info("=" * 80)
     
