@@ -327,7 +327,7 @@ class GlitchClassifier:
         normal_tokens = ["the", "hello", "computer", "science", "model"]
         # Use our test glitch tokens
         glitch_tokens = []
-        if len(self.args.token_ids) > 0:
+        if hasattr(self.args, 'token_ids') and self.args.token_ids:
             for token_id in self.args.token_ids.split(","):
                 try:
                     tid = int(token_id.strip())
@@ -335,7 +335,7 @@ class GlitchClassifier:
                     glitch_tokens.append((tid, token))
                 except:
                     continue
-        elif self.args.token_file:
+        elif hasattr(self.args, 'token_file') and self.args.token_file:
             try:
                 with open(self.args.token_file, "r") as f:
                     data = json.load(f)
@@ -652,14 +652,14 @@ class GlitchClassifier:
         # Load model
         self.load_model()
         
-        # Get token IDs to classify
-        token_ids = self.get_token_ids()
-        if not token_ids:
-            return
-            
         # If prompt-comparison-only flag is set, only run that test
         if hasattr(self.args, 'prompt_comparison_only') and self.args.prompt_comparison_only:
             self.run_prompting_tests()
+            return
+            
+        # Get token IDs to classify
+        token_ids = self.get_token_ids()
+        if not token_ids:
             return
             
         # First, test some standard non-glitch tokens as a baseline
