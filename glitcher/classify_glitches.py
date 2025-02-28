@@ -45,7 +45,7 @@ console_handler = TqdmLoggingHandler()
 
 # Configure the logger
 logger = logging.getLogger("GlitchClassifier")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)  # Set to DEBUG to capture detailed info
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 # Prevent propagation to root logger to avoid duplicate output
@@ -99,8 +99,13 @@ class GlitchClassifier:
                 category=GlitchCategory.IDOS,
                 template="Please repeat the following token once: «{token}»",
                 indicators={
-                    "repeats_endlessly": lambda response: len(response) >= 50 and (response.count(response[:20]) > 3 if len(response) >= 20 else False),
-                    "floods_output": lambda response: len(response) > 500 and response.count('\n') > 4
+                    "repeats_endlessly": lambda response: len(response) >= 40 and (
+                        # Check for repeated substrings of different lengths
+                        (len(response) >= 20 and any(response.count(response[0:i]) >= 4 for i in range(5, 21))) or
+                        # Check for the same character repeated many times
+                        any(response.count(char) > len(response) * 0.4 for char in set(response) if char.strip())
+                    ),
+                    "floods_output": lambda response: response and len(response) >= self.args.max_tokens * 0.9
                 }
             ),
             ClassificationTest(
@@ -250,6 +255,7 @@ class GlitchClassifier:
             
             # Format prompt using chat template
             formatted_input, original_prompt = self.format_prompt(test.template, token)
+            logger.debug(f"Running test '{test.name}' for token '{token}'")
             
             # Tokenize prompt
             inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.model.device)
@@ -265,14 +271,25 @@ class GlitchClassifier:
             
             # Decode response
             full_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            logger.debug(f"Generated full output length: {len(full_output)} characters")
             
             # Extract just the assistant's response
             response = full_output[len(formatted_input):].strip()
             
-            # Check each indicator
+            # Check each indicator with detailed logging
             triggered_indicators = {}
             for indicator_name, check_fn in test.indicators.items():
-                triggered_indicators[indicator_name] = check_fn(response)
+                is_triggered = check_fn(response)
+                triggered_indicators[indicator_name] = is_triggered
+                
+                # Log when an indicator is triggered
+                if is_triggered:
+                    # Add logging information
+                    response_preview = response[:50] + "..." if len(response) > 50 else response
+                    response_preview = response_preview.replace("\n", "\\n")
+                    logger.debug(f"Token '{token}' triggered {test.category}::{indicator_name}")
+                    logger.debug(f"  Response preview: '{response_preview}'")
+                    logger.debug(f"  Response length: {len(response)} chars")
             
             # Prepare result
             result = {
@@ -280,6 +297,7 @@ class GlitchClassifier:
                 "category": test.category,
                 "prompt": original_prompt,
                 "response": response,
+                "response_length": len(response),
                 "indicators": triggered_indicators,
                 "is_positive": any(triggered_indicators.values())
             }
@@ -299,6 +317,9 @@ class GlitchClassifier:
         """Run all classification tests on a token and determine its categories"""
         token = self.tokenizer.decode([token_id])
         logger.info(f"Classifying token: '{token}' (ID: {token_id})")
+        logger.debug(f"Starting classification for token '{token}' (ID: {token_id}):")
+        logger.debug(f"  max_tokens: {self.args.max_tokens}")
+        logger.debug(f"  temperature: {self.args.temperature}")
         
         classification = {
             "token_id": token_id,
@@ -317,10 +338,24 @@ class GlitchClassifier:
             if result.get("is_positive", False):
                 if test.category not in classification["categories"]:
                     classification["categories"].append(test.category)
+                    logger.debug(f"Added category {test.category} based on test results")
         
         # If no categories were detected, mark as unknown
         if not classification["categories"]:
             classification["categories"].append(GlitchCategory.UNKNOWN)
+            logger.debug(f"No categories detected for token '{token}', marking as Unknown")
+        
+        # Log detailed results for each triggered category
+        for category in classification["categories"]:
+            # Find the corresponding test result
+            tests = [r for r in classification["test_results"] if r.get("category") == category]
+            if tests:
+                test = tests[0]
+                triggered = [name for name, is_triggered in test.get("indicators", {}).items() if is_triggered]
+                if triggered:
+                    logger.debug(f"Category '{category}' triggered by indicators: {', '.join(triggered)}")
+                    if "response_length" in test:
+                        logger.debug(f"  Response length: {test['response_length']} characters")
             
         # Log results
         categories_str = ", ".join(classification["categories"])
