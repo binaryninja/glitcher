@@ -13,6 +13,7 @@ setup(
     entry_points={
         'console_scripts': [
             'glitcher=glitcher.cli:main',
+            'glitch-scan=glitcher.scan_and_validate:main',
         ],
     },
     author="Binary Ninja",
