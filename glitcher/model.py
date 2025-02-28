@@ -201,9 +201,9 @@ def glitch_verify_message1(chat_template, token):
     """Format a verification message that asks to repeat a token"""
     system_format = chat_template.system_format
     user_format = chat_template.user_format
-    assistant_prefill = ' Sure, the string is: "«'
-    system_message = ''
-    user_prompt = f'Please repeat the string: "«{token}»"'
+    assistant_prefill = ' '
+    system_message = 'You must respond with ONLY the exact characters requested, nothing more.'
+    user_prompt = f'Please respond with ONLY the exact characters inside quotes: "{token}"'
     
     formatted_system = system_format.format(content=system_message) if system_format else ""
     formatted_user = user_format.format(content=user_prompt)
@@ -271,21 +271,30 @@ def strictly_glitch_verify(model, tokenizer, token_id, chat_template=None):
     
     # Check if the token is a glitch token
     is_glitch = True
-    for input_ids in inputs:
+    for i, input_ids in enumerate(inputs):
         with torch.no_grad():
             outputs = model(input_ids=input_ids)
             # Get logits for the next token
             next_token_logits = outputs.logits[:, -1, :]
             next_token_probs = F.softmax(next_token_logits, dim=-1)
+            
+            # Check probability of the target token
+            target_prob = next_token_probs[0, token_id].item()
+            
             # Get most probable token
             predicted_token_id = next_token_probs.argmax(dim=-1).item()
             
-            # Check if predicted token matches input token
-            is_glitch = predicted_token_id != token_id
-        
-        # If any test passes, token is not a glitch
-        if not is_glitch:
-            break
+            # Log for debugging
+            # print(f"Prompt {i+1}: Target prob: {target_prob:.6f}, Predicted token: {tokenizer.decode([predicted_token_id])}")
+            
+            # Two criteria for a token not being a glitch:
+            # 1. It has a high probability of being predicted (>0.2)
+            # 2. OR it's actually the top predicted token
+            is_test_glitch = (target_prob < 0.2) and (predicted_token_id != token_id)
+            
+            if not is_test_glitch:
+                is_glitch = False
+                break
     
     return is_glitch
 

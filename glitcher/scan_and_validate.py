@@ -149,8 +149,9 @@ class GlitchScanner:
             system_message = ''
             
             with torch.no_grad():
-                user_prompt = f'''Please repeat the string: "«{token}»"'''
-                assistant_prefill = ' Sure, the string is: "«'
+                # Use a clearer prompt without special characters surrounding the token
+                user_prompt = f'''Please respond with ONLY the exact characters inside quotes: "{token}"'''
+                assistant_prefill = ' '
                 
                 # Construct input
                 if system_format is not None:
