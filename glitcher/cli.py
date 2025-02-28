@@ -22,6 +22,9 @@ from glitcher.model import (
     initialize_model_and_tokenizer
 )
 
+# Import validation tests
+from glitcher.tests.validation.run_all_tests import run_all_validation_tests
+
 
 class GlitcherCLI:
     """CLI for Glitcher to find and test glitch tokens with save/resume functionality."""
@@ -138,6 +141,23 @@ class GlitcherCLI:
             help="Quantization type (default: bfloat16)"
         )
         
+        # Validate command
+        validate_parser = subparsers.add_parser("validate", help="Run validation tests on a model")
+        validate_parser.add_argument("model_path", help="Path or name of the model to test")
+        validate_parser.add_argument(
+            "--device", type=str, default="cuda", 
+            help="Device to use (default: cuda)"
+        )
+        validate_parser.add_argument(
+            "--quant-type", type=str, default="bfloat16",
+            choices=["bfloat16", "float16"],
+            help="Quantization type (default: bfloat16)"
+        )
+        validate_parser.add_argument(
+            "--output-dir", type=str, default="validation_results",
+            help="Directory to store test results (default: validation_results)"
+        )
+        
         return parser
 
     def load_model(self):
@@ -250,6 +270,9 @@ class GlitcherCLI:
         
         try:
             # Run glitch token mining with the specified number of iterations
+            log_file = f"glitch_mining_log_{int(time.time())}.jsonl"
+            print(f"Detailed mining logs will be saved to: {log_file}")
+            
             glitch_tokens, glitch_token_ids = mine_glitch_tokens(
                 model=self.model,
                 tokenizer=self.tokenizer,
@@ -258,7 +281,8 @@ class GlitcherCLI:
                 k=k,
                 verbose=True,
                 language="ENG",
-                checkpoint_callback=checkpoint_callback
+                checkpoint_callback=checkpoint_callback,
+                log_file=log_file
             )
             
             # Update progress
@@ -321,6 +345,23 @@ class GlitcherCLI:
         # Get chat template
         chat_template = get_template_for_model(self.model.config._name_or_path)
         
+        # Create log file for detailed verification results
+        log_file = f"verification_log_{int(time.time())}.jsonl"
+        print(f"Detailed verification logs will be saved to: {log_file}")
+        
+        # Add header to log file
+        with open(log_file, 'w') as f:
+            f.write("# Token Verification Log - Detailed analysis\n")
+            model_info = {
+                "event": "start_verification",
+                "model_path": self.args.model_path,
+                "num_tokens": len(token_ids),
+                "device": self.args.device,
+                "quant_type": self.args.quant_type,
+                "is_llama32": "llama3.2" in self.model.config._name_or_path.lower() or "llama32" in self.model.config._name_or_path.lower()
+            }
+            f.write(json.dumps(model_info) + "\n")
+        
         # Test each token
         results = []
         for i, token_id in enumerate(token_ids):
@@ -329,7 +370,18 @@ class GlitcherCLI:
                 
             try:
                 token = self.tokenizer.decode([token_id])
-                is_glitch = strictly_glitch_verify(self.model, self.tokenizer, token_id, chat_template)
+                
+                # Log token being tested
+                with open(log_file, 'a') as f:
+                    f.write(json.dumps({
+                        "event": "start_token_test",
+                        "token": token,
+                        "token_id": token_id,
+                        "index": i+1,
+                        "total": len(token_ids)
+                    }) + "\n")
+                
+                is_glitch = strictly_glitch_verify(self.model, self.tokenizer, token_id, chat_template, log_file)
                 
                 result = {
                     "token_id": token_id,
@@ -340,15 +392,43 @@ class GlitcherCLI:
                 results.append(result)
                 print(f"[{i+1}/{len(token_ids)}] Token: '{token}', ID: {token_id}, Is glitch: {is_glitch}")
                 
+                # Log token test completion
+                with open(log_file, 'a') as f:
+                    f.write(json.dumps({
+                        "event": "end_token_test",
+                        "token": token,
+                        "token_id": token_id,
+                        "is_glitch": is_glitch
+                    }) + "\n")
+                
             except Exception as e:
                 print(f"Error testing token {token_id}: {e}")
+                # Log error
+                with open(log_file, 'a') as f:
+                    f.write(json.dumps({
+                        "event": "token_test_error",
+                        "token_id": token_id,
+                        "error": str(e)
+                    }) + "\n")
         
         # Save results
         test_results = {
             "model_path": self.args.model_path,
             "test_results": results,
-            "timestamp": time.time()
+            "timestamp": time.time(),
+            "log_file": log_file
         }
+        
+        # Add summary to log file
+        with open(log_file, 'a') as f:
+            glitch_count = sum(1 for r in results if r.get("is_glitch", False))
+            summary = {
+                "event": "verification_summary",
+                "total_tokens": len(results),
+                "glitch_tokens": glitch_count,
+                "glitch_rate": glitch_count / len(results) if results else 0
+            }
+            f.write(json.dumps(summary) + "\n")
         
         self.save_results(self.args.output, test_results)
 
@@ -397,6 +477,17 @@ class GlitcherCLI:
         except Exception as e:
             print(f"Error testing token in chat: {e}")
 
+    def run_validation(self):
+        """Run model validation tests"""
+        print(f"Running validation tests for model: {self.args.model_path}")
+        
+        run_all_validation_tests(
+            self.args.model_path,
+            self.args.device,
+            self.args.quant_type,
+            self.args.output_dir
+        )
+    
     def run(self):
         """Run the CLI tool."""
         parser = self.setup_parser()
@@ -406,7 +497,12 @@ class GlitcherCLI:
             parser.print_help()
             return
         
-        # Load model for all commands
+        # Validation command doesn't need model loading
+        if self.args.command == "validate":
+            self.run_validation()
+            return
+        
+        # Load model for other commands
         self.load_model()
         
         if self.args.command == "mine":

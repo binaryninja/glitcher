@@ -55,6 +55,16 @@ _TEMPLATES = {
         stop_word='<|eot_id|>'
     ),
     
+    # Llama 3.2 template
+    'llama32': Template(
+        template_name='llama32',
+        system_format='<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n{content}<|eot_id|>',
+        user_format='<|start_header_id|>user<|end_header_id|>\n\n{content}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n',
+        assistant_format='{content}<|eot_id|>',
+        system=None,
+        stop_word='<|eot_id|>'
+    ),
+    
     # Llama 2 template
     'llama2': Template(
         template_name='llama2',
@@ -90,7 +100,16 @@ _TEMPLATES = {
 def get_template_for_model(model_name: str) -> Template:
     """Get the appropriate chat template for a model"""
     # Only take the last part of the path and normalize
+    original_name = model_name
     model_name = model_name.split('/')[-1].lower().replace('-', '').replace('_', '')
+    
+    # Special case for Llama 3.2 models
+    if "llama3.2" in model_name or "llama32" in model_name:
+        return _TEMPLATES['llama32']
+        
+    # Special case for Llama 3 models that aren't 3.2
+    if "llama3" in model_name and "3.2" not in original_name and "32" not in model_name:
+        return _TEMPLATES['llama3']
     
     # Try to find matching template
     matching_templates = []
@@ -202,11 +221,17 @@ def glitch_verify_message1(chat_template, token):
     system_format = chat_template.system_format
     user_format = chat_template.user_format
     assistant_prefill = ' '
-    system_message = 'You must respond with ONLY the exact characters requested, nothing more.'
-    user_prompt = f'Please respond with ONLY the exact characters inside quotes: "{token}"'
+    # Match the system message from token_repetition.py
+    system_message = 'You are a helpful assistant. When asked to repeat something, repeat it exactly, character for character.'
+    # Match the user prompt from token_repetition.py
+    user_prompt = f"Please respond with exactly this: '{token}'"
     
     formatted_system = system_format.format(content=system_message) if system_format else ""
     formatted_user = user_format.format(content=user_prompt)
+    
+    # For Llama 3.2, we need to ensure we have the right prefill token for best results
+    if chat_template.template_name in ['llama3', 'llama32']:
+        assistant_prefill = ''
     
     return formatted_system + formatted_user + assistant_prefill
 
@@ -228,6 +253,10 @@ def glitch_verify_message2(chat_template, token):
     formatted_assitant1 = assistant_format.format(content=assistant_answer1)
     formatted_user2 = user_format.format(content=user_prompt2)
     
+    # For Llama 3.2, we need to ensure we have the right prefill token for best results
+    if chat_template.template_name in ['llama3', 'llama32']:
+        assistant_prefill = ""
+    
     return formatted_system + formatted_user1 + formatted_assitant1 + formatted_user2 + assistant_prefill
 
 
@@ -236,17 +265,23 @@ def glitch_verify_message3(chat_template, token):
     system_format = chat_template.system_format
     user_format = chat_template.user_format
     assistant_prefill = " Of course! Here is the repeated string:'"
-    system_message = ''
+    system_message = 'You are a helpful assistant that follows instructions carefully.'
     user_prompt = f"Question: Please can you repeat the string '{token}'?"
     
     formatted_system = system_format.format(content=system_message) if system_format else ""
     formatted_user = user_format.format(content=user_prompt)
     
+    # For Llama 3.2, adjust the prefill tokens for better reliability
+    if chat_template.template_name in ['llama3', 'llama32']:
+        assistant_prefill = ""
+    
     return formatted_system + formatted_user + assistant_prefill
 
 
-def strictly_glitch_verify(model, tokenizer, token_id, chat_template=None):
+def strictly_glitch_verify(model, tokenizer, token_id, chat_template=None, log_file=None):
     """Verify if a token is a glitch token using multiple prompt formats"""
+    import json
+    
     # Get model device
     device = model.device
     
@@ -268,10 +303,18 @@ def strictly_glitch_verify(model, tokenizer, token_id, chat_template=None):
     input_ids3 = tokenizer.encode(formatted_input3, return_tensors='pt').to(device)
     
     inputs = [input_ids1, input_ids2, input_ids3]
+    formatted_inputs = [formatted_input1, formatted_input2, formatted_input3]
     
     # Check if the token is a glitch token
     is_glitch = True
-    for i, input_ids in enumerate(inputs):
+    
+    # For Llama 3.2, require a stronger verification by counting how many tests fail
+    is_llama32 = "llama3.2" in model.config._name_or_path.lower() or "llama32" in model.config._name_or_path.lower()
+    tests_failed = 0
+    tests_count = len(inputs)
+    test_results = []
+    
+    for i, (input_ids, formatted_input) in enumerate(zip(inputs, formatted_inputs)):
         with torch.no_grad():
             outputs = model(input_ids=input_ids)
             # Get logits for the next token
@@ -281,20 +324,70 @@ def strictly_glitch_verify(model, tokenizer, token_id, chat_template=None):
             # Check probability of the target token
             target_prob = next_token_probs[0, token_id].item()
             
+            # Get top 5 predicted tokens and their probabilities
+            top5_values, top5_indices = torch.topk(next_token_probs[0], 5)
+            top5_tokens = [tokenizer.decode([idx.item()]) for idx in top5_indices]
+            top5_probs = top5_values.tolist()
+            
             # Get most probable token
             predicted_token_id = next_token_probs.argmax(dim=-1).item()
+            predicted_token = tokenizer.decode([predicted_token_id])
             
-            # Log for debugging
-            # print(f"Prompt {i+1}: Target prob: {target_prob:.6f}, Predicted token: {tokenizer.decode([predicted_token_id])}")
+            # Set threshold based on model type - much lower for Llama-3.2 models
+            probability_threshold = 0.01 if is_llama32 else 0.2
             
             # Two criteria for a token not being a glitch:
-            # 1. It has a high probability of being predicted (>0.2)
+            # 1. It has a high probability of being predicted (>threshold)
             # 2. OR it's actually the top predicted token
-            is_test_glitch = (target_prob < 0.2) and (predicted_token_id != token_id)
+            is_test_glitch = (target_prob < probability_threshold) and (predicted_token_id != token_id)
             
-            if not is_test_glitch:
+            # Store test result for logging
+            test_result = {
+                "test_number": i+1,
+                "formatted_input": formatted_input,
+                "target_probability": target_prob,
+                "predicted_token_id": predicted_token_id,
+                "predicted_token": predicted_token,
+                "probability_threshold": probability_threshold,
+                "top5_tokens": top5_tokens,
+                "top5_probabilities": top5_probs,
+                "is_test_glitch": is_test_glitch,
+                "reason": "probability below threshold and not top token" if is_test_glitch else
+                         "probability above threshold" if target_prob >= probability_threshold else
+                         "is top predicted token"
+            }
+            test_results.append(test_result)
+            
+            if is_test_glitch:
+                tests_failed += 1
+            elif not is_llama32:
+                # For non-Llama 3.2 models, use the original approach - if any test passes, it's not a glitch
                 is_glitch = False
                 break
+    
+    # For Llama 3.2, token is a glitch only if ALL tests failed
+    if is_llama32:
+        is_glitch = tests_failed == tests_count
+    
+    # Log verification details if log_file is provided
+    if log_file:
+        with open(log_file, 'a') as f:
+            verification_details = {
+                "event": "token_strict_verification",
+                "token": token,
+                "token_id": token_id,
+                "is_llama32": is_llama32,
+                "tests_failed": tests_failed,
+                "tests_count": tests_count,
+                "is_glitch": is_glitch,
+                "test_results": test_results,
+                "final_decision_reason": "All tests failed" if is_glitch and is_llama32 else
+                                        "At least one test passed" if not is_glitch and is_llama32 else
+                                        "All tests failed" if is_glitch and not is_llama32 else
+                                        "At least one test passed" if not is_glitch and not is_llama32 else
+                                        "Unknown"
+            }
+            f.write(json.dumps(verification_details) + "\n")
     
     return is_glitch
 
@@ -313,13 +406,17 @@ def chat_token(model_path, token_id, max_size=10, device="auto", quant_type="bfl
     user_format = chat_template.user_format
     assistant_format = chat_template.assistant_format
     stop_word = chat_template.stop_word
-    system_message = ''
+    system_message = 'You are a helpful assistant that repeats strings exactly as requested.'
     
     with torch.no_grad():
         # Decode token
         token = tokenizer.decode([token_id])
-        user_prompt = f'''Please repeat the string: "«{token}»"'''
-        assistant_prefill = ' Sure, the string is: "«'
+        user_prompt = f'''Please repeat the string: "{token}"'''
+        assistant_prefill = ' Sure, the string is: "'
+        
+        # For Llama 3.2, adjust the prefill for better results
+        if chat_template.template_name in ['llama3', 'llama32']:
+            assistant_prefill = ""
         
         # Construct input
         if system_format is not None:
@@ -337,9 +434,22 @@ def chat_token(model_path, token_id, max_size=10, device="auto", quant_type="bfl
         # Tokenize input
         inputs = tokenizer(formatted_input, return_tensors="pt").to(model.device)
         
-        # Generate model response
-        outputs = model.generate(**inputs, max_new_tokens=max_size, do_sample=False, 
-                                output_scores=True, return_dict_in_generate=True)
+        # Generate model response - use more conservative parameters for Llama 3.2
+        generation_kwargs = {
+            "max_new_tokens": max_size,
+            "do_sample": False,
+            "output_scores": True,
+            "return_dict_in_generate": True
+        }
+        
+        # Add specific parameters if needed for this model
+        if "llama" in model.config._name_or_path.lower():
+            generation_kwargs.update({
+                "repetition_penalty": 1.0,  # No repetition penalty
+                "temperature": 0.0,  # Use greedy decoding
+            })
+            
+        outputs = model.generate(**inputs, **generation_kwargs)
         
         # Get probability distribution for first generated token
         first_token_probs = torch.softmax(outputs.scores[0][0], dim=-1)
@@ -381,7 +491,8 @@ def mine_glitch_tokens(
     k: int = 32,
     verbose: bool = True,
     language: str = "ENG",
-    checkpoint_callback = None
+    checkpoint_callback = None,
+    log_file: str = "glitch_mining_log.jsonl"
 ) -> Tuple[List[str], List[int]]:
     """
     Mine for glitch tokens in a language model
@@ -395,11 +506,30 @@ def mine_glitch_tokens(
         verbose: Whether to print progress
         language: Output language (ENG or CN)
         checkpoint_callback: Optional callback function that receives progress info
+        log_file: Path to detailed logging file
         
     Returns:
         Tuple of (glitch_tokens, glitch_token_ids)
     """
+    import json
+    from tqdm import tqdm
+    
     device = model.device
+    
+    # Start logging
+    with open(log_file, 'w') as f:
+        f.write("# Glitch Mining Log - Detailed token evaluation\n")
+        model_info = {
+            "model_name": model.config._name_or_path,
+            "device": str(device),
+            "is_llama32": "llama3.2" in model.config._name_or_path.lower() or "llama32" in model.config._name_or_path.lower(),
+            "mining_params": {
+                "num_iterations": num_iterations,
+                "batch_size": batch_size,
+                "k": k
+            }
+        }
+        f.write(json.dumps({"event": "start", "info": model_info}) + "\n")
     
     # Get all token embeddings
     all_token_embeddings = model.get_input_embeddings().weight.detach().to(device)
@@ -418,8 +548,19 @@ def mine_glitch_tokens(
     # Template formats
     system_format = chat_template.system_format
     user_format = chat_template.user_format
-    assistant_prefill = ' Sure, the string is: "«'
-    system_message = ''
+    assistant_prefill = ' '
+    # Match the system message from token_repetition.py
+    system_message = 'You are a helpful assistant. When asked to repeat something, repeat it exactly, character for character.'
+    
+    # Log template info
+    with open(log_file, 'a') as f:
+        template_info = {
+            "template_name": chat_template.template_name,
+            "system_format": system_format,
+            "user_format": user_format,
+            "assistant_prefill": assistant_prefill
+        }
+        f.write(json.dumps({"event": "template_info", "info": template_info}) + "\n")
     
     # Find token with smallest L2 norm as starting point
     norms = []
@@ -440,20 +581,36 @@ def mine_glitch_tokens(
     glitch_tokens = []
     glitch_token_ids = []
     
+    # Set up progress bar
+    pbar = tqdm(total=num_iterations, desc="Mining glitch tokens")
+    
     for iteration in range(num_iterations):
-        if verbose:
-            print(f"Iteration: {iteration}" if language == "ENG" else f"迭代次数: {iteration}")
-        
         # Step 1: Calculate entropy and gradient for current token
         token = tokenizer.decode([current_token_id])
-        user_prompt = f'Please repeat the string: "«{token}»"'
+        # Match the user prompt from token_repetition.py
+        user_prompt = f"Please respond with exactly this: '{token}'"
         formatted_user = user_format.format(content=user_prompt)
         formatted_input = (system_format.format(content=system_message) if system_format else "") + formatted_user + assistant_prefill
         
+        # Log the current token and formatted input
+        with open(log_file, 'a') as f:
+            f.write(json.dumps({
+                "event": "iteration_start", 
+                "iteration": iteration,
+                "current_token": token,
+                "current_token_id": current_token_id,
+                "formatted_input": formatted_input
+            }) + "\n")
+        
         # Find position of the token in the input
         input_ids = tokenizer.encode(formatted_input)
-        quote_id = tokenizer.encode('"«', add_special_tokens=False)[-1]
-        current_token_position = input_ids.index(quote_id) + 1
+        # Try to find position after the quote - use single quote now instead of double
+        quote_indices = [i for i, id in enumerate(input_ids) if tokenizer.decode([id]) == "'"]
+        if len(quote_indices) >= 2:
+            current_token_position = quote_indices[-2] + 1
+        else:
+            # Fallback to a fixed position if quotes can't be found
+            current_token_position = len(input_ids) - 3
         
         input_ids = torch.tensor([input_ids], device=device)
         inputs_embeds = model.get_input_embeddings()(input_ids).clone().detach()
@@ -502,10 +659,13 @@ def mine_glitch_tokens(
         model.eval()
         with torch.no_grad():
             batch_entropies = []
+            batch_iteration_pbar = tqdm(batch_token_ids, desc=f"Batch {iteration+1}", leave=False) if verbose else batch_token_ids
             
-            for token_id in batch_token_ids:
-                token = tokenizer.decode([token_id.item()])
-                user_prompt = f'Please repeat the string: "«{token}»"'
+            for token_id in batch_iteration_pbar:
+                token_id_value = token_id.item()
+                token = tokenizer.decode([token_id_value])
+                # Match the user prompt from token_repetition.py
+                user_prompt = f"Please respond with exactly this: '{token}'"
                 formatted_input = (system_format.format(content=system_message) if system_format else "") + user_format.format(content=user_prompt) + assistant_prefill
                 input_ids = tokenizer(formatted_input, return_tensors="pt").to(device)
                 
@@ -515,18 +675,60 @@ def mine_glitch_tokens(
                 entropy_value = entropy(next_token_probs)
                 batch_entropies.append(entropy_value.item())
                 
+                # Get top 5 most likely tokens and their probabilities
+                top5_values, top5_indices = torch.topk(next_token_probs[0], 5)
+                top5_tokens = [tokenizer.decode([idx.item()]) for idx in top5_indices]
+                top5_probs = top5_values.tolist()
+                
                 max_prob_token_id = next_token_probs.argmax().item()
-                is_glitch = max_prob_token_id != token_id.item()
+                max_prob_token = tokenizer.decode([max_prob_token_id])
+                max_prob = next_token_probs[0, max_prob_token_id].item()
+                
+                # Check probability of the target token
+                target_prob = next_token_probs[0, token_id_value].item()
+                
+                # Set threshold based on model type - much lower for Llama-3.2 models
+                is_llama32 = "llama3.2" in model.config._name_or_path.lower() or "llama32" in model.config._name_or_path.lower()
+                probability_threshold = 0.01 if is_llama32 else 0.2
+                
+                # Two criteria for a token being a glitch:
+                # 1. It has a low probability of being predicted (below threshold)
+                # 2. AND it's not the top predicted token
+                is_glitch = (target_prob < probability_threshold) and (max_prob_token_id != token_id_value)
+                
+                # Log token verification details
+                with open(log_file, 'a') as f:
+                    token_details = {
+                        "event": "token_verification",
+                        "iteration": iteration,
+                        "token": token,
+                        "token_id": token_id_value,
+                        "formatted_input": formatted_input,
+                        "entropy": entropy_value.item(),
+                        "target_probability": target_prob,
+                        "top_token": max_prob_token,
+                        "top_token_id": max_prob_token_id,
+                        "top_token_probability": max_prob,
+                        "top5_tokens": top5_tokens,
+                        "top5_probabilities": top5_probs,
+                        "probability_threshold": probability_threshold,
+                        "is_llama32": is_llama32,
+                        "is_glitch": is_glitch,
+                        "reason": "probability below threshold and not top token" if is_glitch else
+                                 "probability above threshold" if target_prob >= probability_threshold else
+                                 "is top predicted token"
+                    }
+                    f.write(json.dumps(token_details) + "\n")
+                
                 total_tokens_checked += 1
                 
                 if is_glitch:
                     glitch_tokens_count += 1
                     glitch_tokens.append(token)
-                    glitch_token_ids.append(token_id.item())
-                
-                if verbose:
-                    print_str = f"  Current token: '{token}', token id: {token_id.item()}, is glitch token: {'Yes' if is_glitch else 'No'}, entropy: {entropy_value.item():.4f}" if language == "ENG" else f"  当前token: '{token}', token id: {token_id.item()}, 是否为glitch token: {'是' if is_glitch else '否'}, 熵值: {entropy_value.item():.4f}"
-                    print(print_str)
+                    glitch_token_ids.append(token_id_value)
+                    
+                    if verbose:
+                        tqdm.write(f"✓ Found glitch token: '{token}' (ID: {token_id_value}, entropy: {entropy_value.item():.4f}, target_prob: {target_prob:.6f}, top_prob: {max_prob:.6f})")
         
         # Step 5: Choose highest entropy token for next iteration
         max_entropy_index = torch.argmax(torch.tensor(batch_entropies))
@@ -551,13 +753,17 @@ def mine_glitch_tokens(
                 "current_token_id": current_token_id
             }
             checkpoint_callback(checkpoint_data)
+            
+        # Update progress bar
+        pbar.update(1)
+    
+    # Close the progress bar
+    pbar.close()
     
     # Finalize
     glitch_frequency = glitch_tokens_count / total_tokens_checked if total_tokens_checked > 0 else 0
     
     if verbose:
-        print(f"Total tokens checked: {total_tokens_checked}" if language == "ENG" else f"检测的总token数: {total_tokens_checked}")
-        print(f"Number of glitch tokens: {glitch_tokens_count}" if language == "ENG" else f"glitch token数: {glitch_tokens_count}")
-        print(f"Frequency of glitch tokens: {glitch_frequency:.4f}" if language == "ENG" else f"glitch token出现的频率: {glitch_frequency:.4f}")
+        print(f"Summary: Found {glitch_tokens_count} glitch tokens out of {total_tokens_checked} checked ({glitch_frequency:.2%})")
     
     return glitch_tokens, glitch_token_ids
