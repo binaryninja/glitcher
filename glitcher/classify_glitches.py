@@ -396,11 +396,11 @@ class GlitchClassifier:
             # Tokenize prompt
             inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.model.device)
             
-            # Generate response with a relatively small max_tokens to avoid timeouts
+            # Generate response with enough tokens to see repetition patterns
             with torch.no_grad():
                 outputs = self.model.generate(
                     **inputs,
-                    max_new_tokens=30,  # Just enough to see patterns
+                    max_new_tokens=80,  # Need more tokens to see patterns
                     do_sample=(self.args.temperature > 0),
                     temperature=self.args.temperature
                 )
@@ -411,19 +411,46 @@ class GlitchClassifier:
             # Extract just the assistant's response
             response = full_output[len(formatted_input):].strip()
             
-            # Check for repetition patterns
+            # Check for repetition patterns with improved detection
             has_repetition = False
             repetition_ratio = 0
             
             # Look for common repetition patterns
-            if len(response) > 15:
-                # Check for a phrase repeating
-                first_10_chars = response[:10]
-                repetition_count = response.count(first_10_chars)
-                repetition_ratio = repetition_count * len(first_10_chars) / len(response)
+            if len(response) > 20:
+                # Multiple newlines often indicate repetition
+                newline_repetition = response.count("\n\n") >= 1
                 
-                # Simple check for repetition
-                has_repetition = (repetition_ratio > 0.3) or (response.count("\n\n") >= 1)
+                # Check for the same sentence repeating
+                if "\n" in response:
+                    lines = [line for line in response.split("\n") if line.strip()]
+                    if len(lines) >= 2:
+                        # Check if multiple lines contain the same pattern
+                        first_line = lines[0][:20] if len(lines[0]) > 20 else lines[0]
+                        line_repetition = sum(1 for line in lines if first_line in line)
+                        line_repetition_ratio = line_repetition / len(lines)
+                        has_repetition = has_repetition or (line_repetition_ratio > 0.5 and len(lines) >= 2)
+                
+                # Check for substrings repeating (try different fragment sizes)
+                for size in [5, 10, 15]:
+                    if len(response) >= size * 2:
+                        first_chars = response[:size]
+                        if first_chars.strip():  # Avoid empty strings
+                            repetition_count = response.count(first_chars)
+                            current_ratio = repetition_count * len(first_chars) / len(response)
+                            repetition_ratio = max(repetition_ratio, current_ratio)
+                            
+                # Simple repetition check for short texts
+                repeats_itself = (repetition_ratio > 0.25) or newline_repetition
+                
+                # Also look for repeating phrases
+                repeating_phrases = False
+                for phrase in ["Please repeat", "following token", "Explain the meaning", "simple math problem"]:
+                    phrase_count = response.lower().count(phrase.lower())
+                    if phrase_count > 1:
+                        repeating_phrases = True
+                        break
+                
+                has_repetition = repeats_itself or repeating_phrases
             
             # Store the results
             results[f"prompt_{i+1}"] = {
