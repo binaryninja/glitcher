@@ -334,13 +334,28 @@ def strictly_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
             predicted_token = tokenizer.decode([predicted_token_id])
             
             # Set threshold based on model type - use extremely low threshold
-            # Use 0.0005 (0.05%) as an extremely low threshold to only catch true glitches
-            probability_threshold = 0.0001 if is_llama32 else 0.0005
+            # Use a much more strict threshold - true glitches have probabilities near zero
+            probability_threshold = 0.00001 if is_llama32 else 0.00005
             
-            # Two criteria for a token not being a glitch:
+            # Add content-based filtering to avoid certain patterns we know generate false positives
+            token_text = token
+            # Skip tokens with brackets, common programming symbols, or specific prefixes that tend to be false positives
+            should_skip = (
+                ('[' in token_text or ']' in token_text) or
+                ('(' in token_text or ')' in token_text) or
+                ('_' in token_text) or
+                ('arg' in token_text.lower()) or
+                ('prop' in token_text.lower()) or
+                ('char' in token_text.lower()) or
+                (token_text.startswith('.')) or
+                (token_text.startswith('$'))$'))
+            )
+            
+            # Three criteria for a token not being a glitch:
             # 1. It has a high probability of being predicted (>threshold)
             # 2. OR it's actually the top predicted token
-            is_test_glitch = (target_prob < probability_threshold) and (predicted_token_id != token_id)
+            # 3. OR it matches our skip patterns for false positives
+            is_test_glitch = (target_prob < probability_threshold) and (predicted_token_id != token_id) and not should_skip
             
             # Store test result for logging
             test_result = {
@@ -352,8 +367,10 @@ def strictly_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                 "probability_threshold": probability_threshold,
                 "top5_tokens": top5_tokens,
                 "top5_probabilities": top5_probs,
+                "should_skip": should_skip,
                 "is_test_glitch": is_test_glitch,
-                "reason": "probability below threshold and not top token" if is_test_glitch else
+                "reason": "pattern filtered" if should_skip else
+                         "probability below threshold and not top token" if is_test_glitch else
                          "probability above threshold" if target_prob >= probability_threshold else
                          "is top predicted token"
             }
@@ -690,13 +707,28 @@ def mine_glitch_tokens(
                 
                 # Set threshold based on model type - use extremely low threshold
                 is_llama32 = "llama3.2" in model.config._name_or_path.lower() or "llama32" in model.config._name_or_path.lower()
-                # Use 0.0005 (0.05%) as an extremely low threshold to only catch true glitches
-                probability_threshold = 0.0001 if is_llama32 else 0.0005
+                # Use a much more strict threshold - true glitches have probabilities near zero
+                probability_threshold = 0.00001 if is_llama32 else 0.00005
+                
+                # Add content-based filtering to avoid certain patterns we know generate false positives
+                token_text = token
+                # Skip tokens with brackets, common programming symbols, or specific prefixes that tend to be false positives
+                should_skip = (
+                    ('[' in token_text or ']' in token_text) or
+                    ('(' in token_text or ')' in token_text) or
+                    ('_' in token_text) or
+                    ('arg' in token_text.lower()) or
+                    ('prop' in token_text.lower()) or
+                    ('char' in token_text.lower()) or
+                    (token_text.startswith('.')) or
+                    (token_text.startswith('$'))
+                )
                 
                 # Two criteria for a token being a glitch:
                 # 1. It has a low probability of being predicted (below threshold)
                 # 2. AND it's not the top predicted token
-                is_glitch = (target_prob < probability_threshold) and (max_prob_token_id != token_id_value)
+                # 3. AND it doesn't match our skip patterns
+                is_glitch = (target_prob < probability_threshold) and (max_prob_token_id != token_id_value) and not should_skip
                 
                 # Log token verification details
                 with open(log_file, 'a') as f:
@@ -715,8 +747,10 @@ def mine_glitch_tokens(
                         "top5_probabilities": top5_probs,
                         "probability_threshold": probability_threshold,
                         "is_llama32": is_llama32,
+                        "should_skip": should_skip,
                         "is_glitch": is_glitch,
-                        "reason": "probability below threshold and not top token" if is_glitch else
+                        "reason": "pattern filtered" if should_skip else
+                                 "probability below threshold and not top token" if is_glitch else
                                  "probability above threshold" if target_prob >= probability_threshold else
                                  "is top predicted token"
                     }
