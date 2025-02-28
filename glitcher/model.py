@@ -333,8 +333,9 @@ def strictly_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
             predicted_token_id = next_token_probs.argmax(dim=-1).item()
             predicted_token = tokenizer.decode([predicted_token_id])
             
-            # Set threshold based on model type - much lower for Llama-3.2 models
-            probability_threshold = 0.01 if is_llama32 else 0.2
+            # Set threshold based on model type - use extremely low threshold
+            # Use 0.0005 (0.05%) as an extremely low threshold to only catch true glitches
+            probability_threshold = 0.0001 if is_llama32 else 0.0005
             
             # Two criteria for a token not being a glitch:
             # 1. It has a high probability of being predicted (>threshold)
@@ -687,9 +688,10 @@ def mine_glitch_tokens(
                 # Check probability of the target token
                 target_prob = next_token_probs[0, token_id_value].item()
                 
-                # Set threshold based on model type - much lower for Llama-3.2 models
+                # Set threshold based on model type - use extremely low threshold
                 is_llama32 = "llama3.2" in model.config._name_or_path.lower() or "llama32" in model.config._name_or_path.lower()
-                probability_threshold = 0.01 if is_llama32 else 0.2
+                # Use 0.0005 (0.05%) as an extremely low threshold to only catch true glitches
+                probability_threshold = 0.0001 if is_llama32 else 0.0005
                 
                 # Two criteria for a token being a glitch:
                 # 1. It has a low probability of being predicted (below threshold)
