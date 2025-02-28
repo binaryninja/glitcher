@@ -369,25 +369,25 @@ class GlitcherCLI:
             
             # Print results
             print("\nChat Test Results:")
-            print(f"Token ID: {result['检测token id']}")
-            print(f"Token: '{result['检测token']}'")
-            print(f"Probability of correct repetition: {result['模型输出的第一个token为检测token的概率']:.6f}")
-            print(f"Most likely token: '{result['概率最大的token']}' (ID: {result['概率最大的token下标']})")
-            print(f"Most likely token probability: {result['概率最大的token概率']:.6f}")
+            print(f"Token ID: {result['token_id']}")
+            print(f"Token: '{result['token']}'")
+            print(f"Probability of correct repetition: {result['target_token_prob']:.6f}")
+            print(f"Most likely token: '{result['top_token']}' (ID: {result['top_token_id']})")
+            print(f"Most likely token probability: {result['top_token_prob']:.6f}")
             print("\nModel output:")
-            print(result['大模型对话的结果'])
+            print(result['generated_text'])
             
             # Save result
             chat_result = {
                 "model_path": self.args.model_path,
                 "token_id": token_id,
-                "token": result['检测token'],
-                "correct_prob": result['模型输出的第一个token为检测token的概率'],
-                "top_tokens": [int(i) for i in result['模型输出的第一个token位置上概率最大的5个下标']],
-                "top_token": result['概率最大的token'],
-                "top_token_id": result['概率最大的token下标'],
-                "top_token_prob": result['概率最大的token概率'],
-                "model_output": result['大模型对话的结果'],
+                "token": result['token'],
+                "correct_prob": result['target_token_prob'],
+                "top_tokens": result['top_5_indices'],
+                "top_token": result['top_token'],
+                "top_token_id": result['top_token_id'],
+                "top_token_prob": result['top_token_prob'],
+                "model_output": result['generated_text'],
                 "timestamp": time.time()
             }
             
