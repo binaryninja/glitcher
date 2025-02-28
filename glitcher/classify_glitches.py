@@ -174,6 +174,10 @@ class GlitchClassifier:
             "--max-tokens", type=int, default=100,
             help="Maximum tokens to generate per test (default: 100)"
         )
+        parser.add_argument(
+            "--skip-baseline", action="store_true",
+            help="Skip baseline tests on standard tokens"
+        )
         
         return parser
         
@@ -247,6 +251,49 @@ class GlitchClassifier:
         
         return formatted_system + formatted_user, user_prompt
         
+    def run_baseline_tests(self):
+        """Run baseline tests on standard tokens to ensure they don't trigger false positives"""
+        if self.args.skip_baseline:
+            logger.info("Skipping baseline tests as requested")
+            return
+            
+        logger.info("Running baseline tests on standard tokens...")
+        
+        # Define standard tokens to test
+        # These should be common words that are definitely not glitch tokens
+        standard_tokens = ["the", "hello", "computer", "science", "model"]
+        baseline_results = {}
+        
+        for word in tqdm(standard_tokens, desc="Testing standard tokens"):
+            # Get token ID for this word
+            token_id = self.tokenizer.encode(word, add_special_tokens=False)[0]
+            logger.info(f"Testing standard token: '{word}' (ID: {token_id})")
+            
+            # Run classification
+            classification = self.classify_token(token_id)
+            
+            # Store results
+            baseline_results[word] = {
+                "token_id": token_id,
+                "categories": classification["categories"],
+                "is_glitch": len(classification["categories"]) > 0 and classification["categories"][0] != "Unknown"
+            }
+            
+            # Log if the standard token was classified as a glitch
+            if baseline_results[word]["is_glitch"]:
+                logger.warning(f"WARNING: Standard token '{word}' was classified as: {', '.join(classification['categories'])}")
+                logger.warning(f"This suggests the classification thresholds may need adjustment")
+            else:
+                logger.info(f"Standard token '{word}' correctly classified as non-glitch")
+                
+        # Print baseline summary
+        logger.info("\nBaseline Test Summary:")
+        logger.info("=" * 80)
+        for word, result in baseline_results.items():
+            categories = "None" if not result["is_glitch"] else ", ".join(result["categories"])
+            logger.info(f"'{word}': {'❌ Failed' if result['is_glitch'] else '✅ Passed'} - Categories: {categories}")
+        logger.info("=" * 80)
+    
     def run_test(self, token_id: int, test: ClassificationTest) -> Dict[str, Any]:
         """Run a single classification test on a token"""
         try:
@@ -379,6 +426,9 @@ class GlitchClassifier:
         token_ids = self.get_token_ids()
         if not token_ids:
             return
+            
+        # First, test some standard non-glitch tokens as a baseline
+        self.run_baseline_tests()
             
         logger.info(f"Classifying {len(token_ids)} tokens...")
         
