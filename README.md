@@ -152,6 +152,9 @@ glitch-classify meta-llama/Llama-3.2-1B --token-file validated_glitch_tokens.jso
 
 # Classify specific token IDs 
 glitch-classify meta-llama/Llama-3.2-1B --token-ids 89472,127438
+
+# Use a higher max-tokens value for better detection
+glitch-classify meta-llama/Llama-3.2-1B --token-file tokens.json --max-tokens 100
 ```
 
 ### Classification Categories
