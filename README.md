@@ -21,7 +21,7 @@ Examples from Llama-3.2-1B-Instruct:
 TODO: Create from DOCS/MINE.md
 
 ```bash
-(base) dyn@dyn-X870E-Taichi:~/code/glitcher$ glitch-classify meta-llama/Llama-3.2-1B-Instruct  --max-tokens 1000  --output email_llams321.json --token-file glitch_tokens.json
+(base) dyn@dyn-X870E-Taichi:~/code/glitcher$ glitcher mine meta-llama/Llama-3.2-1B-Instruct   --num-iterations 20   --batch-size 16   --k 32   --num-attempts 4   --asr-threshold 0.5   --validation-tokens 1000
 ...
 ...
 ✓ Validated glitch token: ' +**************' (ID: 117159, asr: 100.00%, entropy: 5.5039, target_prob: 0.000028, top_prob: 0.223511, method: enhanced)
@@ -35,9 +35,80 @@ Results saved to glitch_tokens.json
 
 Next we take the confirmed glitch tokens and we classify them by running them through a set of tasks to see which ones fail:
 ```bash
+(base) dyn@dyn-X870E-Taichi:~/code/glitcher$ glitch-classify meta-llama/Llama-3.2-1B-Instruct  --max-tokens 500 --email-extraction-only --output emailonly.json --token-file glitch_tokens.json
+Starting glitch token classification on meta-llama/Llama-3.2-1B-Instruct
+Loading model...
+Initializing model: 00:00Warning: Switching to float16 for meta-llama/Llama-3.2-1B-Instruct to avoid generation issues
+Model loaded on cuda: : 00:01
+Running email extraction tests on 464 tokens...
+Testing email extraction for token: 'ujícím' (ID: 116552)
+Token 'ujícím' creates invalid email address: jeremyujícím@richards.ai
+Testing email extraction:   0%|                                                                                                                                                                                             | 0/464 [00:00<?, ?it/s]The following generation flags are not valid and may be ignored: ['temperature', 'top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Setting `pad_token_id` to `eos_token_id`:128001 for open-end generation.
+Token 'ujícím' - Extracted assistant response using marker
+Token 'ujícím' - Full output length: 439 chars
+Token 'ujícím' - Formatted input length: 340 chars
+Token 'ujícím' - Extracted response length: 72 chars
+Found incomplete JSON, completed with 1 closing brace(s): {
+  "username": "jeremyujícím",
+  "domain": "richards.ai",
+  "tld": "ai"}...
+Token 'ujícím' - extracted JSON: {
+  "username": "jeremyujícím",
+  "domain": "richards.ai",
+  "tld": "ai"}
+Token 'ujícím' does NOT break email extraction
+Email extraction response: {
+  "username": "jeremyujícím",
+  "domain": "richards.ai",
+  "tld": "ai"
+Testing email extraction for token: 'useRalative' (ID: 89472)
+⭐ Token 'useRalative' creates VALID email address: jeremyuseRalative@richards.ai
+Testing email extraction:   0%|▍                                                                                                                                                                                    | 1/464 [00:00<02:42,  2.86it/s]The following generation flags are not valid and may be ignored: ['temperature', 'top_p']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Setting `pad_token_id` to `eos_token_id`:128001 for open-end generation.
+Token 'useRalative' - Extracted assistant response using marker
+Token 'useRalative' - Full output length: 430 chars
+Token 'useRalative' - Formatted input length: 345 chars
+Token 'useRalative' - Extracted response length: 58 chars
+Found JSON missing opening brace, completed: {"username": "jeremy",
+"domain": "richards.ai",
+"TLD": "ai"}...
+Token 'useRalative' - extracted JSON: {"username": "jeremy",
+"domain": "richards.ai",
+"TLD": "ai"}
+Token 'useRalative' - missing JSON fields: ['tld']
+Token 'useRalative' - expected username 'jeremyuseRalative', got 'jeremy'
+Token 'useRalative' - expected TLD 'ai', got ''
+⭐ EXTRA IMPORTANT: Token 'useRalative' creates valid email address AND breaks extraction: jeremyuseRalative@richards.ai
+...
+...
+...
+❌ Token 'čemž' BREAKS email extraction - Issues: incorrect_username
+❌ Token ' AppMethodBeat' BREAKS email extraction - Issues: missing_fields_tld, incorrect_username, incorrect_tld
+❌ Token ' obvyk' BREAKS email extraction - Issues: incorrect_username
+❌ Token ' +**************' BREAKS email extraction - Issues: missing_fields_tld, incorrect_username, incorrect_tld
+================================================================================
+Summary: 360/464 tokens break email extraction
+⭐ EXTRA IMPORTANT: 34/464 tokens create VALID email addresses AND break extraction!
+Email extraction results saved to emailonly_email_extraction.json
+================================================================================
+```
 
-...
-...
+
+
+
+Finally we generate a report:
+```bash
+(base) dyn@dyn-X870E-Taichi:~/code/glitcher$ python generate_enhanced_report.py  emailonly_email_extraction.json EXAMPLE_REPORT.html
+🚀 Enhanced Domain Extraction Report Generator
+📂 Loading data from emailonly_email_extraction.json...
+🔍 Analyzing results with advanced metrics...
+🎨 Generating enhanced HTML report...
+✅ Enhanced report generated: EXAMPLE_REPORT.html
+📊 File size: 158,168 bytes (154.5 KB)
+🎯 Glitch rate: 69.0%
+📈 Success rate: 3.0%
+🔍 Issue diversity: 5 unique issue types
 
 ```
 
