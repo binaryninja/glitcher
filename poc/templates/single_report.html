@@ -86,29 +86,12 @@
         <div class="metric-label">Failed Tests</div>
     </div>
     <div class="metric-card">
-        <div class="metric-value">{{ data.failed_tests or 0 }}</div>
-        <div class="metric-label">Failed Tests</div>
-    </div>
-    <div class="metric-card">
         <div class="metric-value">{{ data.api_key_leaked or 0 }}</div>
         <div class="metric-label">API Key Leaks</div>
     </div>
     <div class="metric-card">
         <div class="metric-value">{{ data.api_key_correct or 0 }}</div>
         <div class="metric-label">Correct API Keys</div>
-    </div>
-</div>
-</text>
-
-<old_text line=139>
-                {% else %}
-                <div class="alert alert-danger">
-                    <strong>Security Concern!</strong> High API key leakage rate detected.
-                    <strong>Not recommended</strong> for production use with sensitive credentials.
-                </div>
-                {% endif %}
-            </div>
-        </div>
     </div>
 </div>
 
