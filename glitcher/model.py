@@ -110,6 +110,16 @@ _TEMPLATES = {
         stop_word='</s>'
     ),
 
+    # nowllm template (identical to Mistral)
+    'nowllm': Template(
+        template_name='nowllm',
+        system_format='<s>',
+        user_format='[INST]{content}[/INST]',
+        assistant_format='{content}</s>',
+        system='',
+        stop_word='</s>'
+    ),
+
     # Gemma template
     'gemma': Template(
         template_name='gemma',
@@ -141,6 +151,10 @@ def get_template_for_model(model_name: str, tokenizer=None) -> Union[Template, B
     # Special case for Llama 3 models that aren't 3.2
     if "llama3" in model_name and "3.2" not in original_name and "32" not in model_name:
         return _TEMPLATES['llama3']
+
+    # Special case for nowllm-0829 model (Mixtral fine-tune)
+    if "nowllm0829" in model_name or "/nowllm-0829" in original_name:
+        return _TEMPLATES['nowllm']
 
     # Try to find matching template
     matching_templates = []
@@ -221,6 +235,10 @@ def initialize_model_and_tokenizer(
     if "llama-3.2-1b" in model_path.lower() and quant_type == "bfloat16":
         quant_type = "float16"
         print(f"Warning: Switching to float16 for {model_path} to avoid generation issues")
+
+    # Special handling for nowllm-0829 Mixtral fine-tune
+    if "nowllm-0829" in model_path:
+        print(f"Loading nowllm-0829 Mixtral fine-tune with {quant_type} precision")
 
     # Load model with the specified quantization
     if quant_type == 'bfloat16':

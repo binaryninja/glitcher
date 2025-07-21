@@ -1,0 +1,7 @@
+{
+  "model_path": "/home/dyn/models/o/nowllm-0829",
+  "glitch_tokens": [],
+  "glitch_token_ids": [],
+  "total_iterations": 5,
+  "runtime_seconds": 42.36539602279663
+}

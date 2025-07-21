@@ -1,0 +1,38 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "test_results": [
+    {
+      "token_id": 89472,
+      "token": "useRalative",
+      "is_glitch": false
+    },
+    {
+      "token_id": 127438,
+      "token": "\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d",
+      "is_glitch": false
+    },
+    {
+      "token_id": 85069,
+      "token": "PostalCodesNL",
+      "is_glitch": false
+    },
+    {
+      "token_id": 89471,
+      "token": "useRal",
+      "is_glitch": false
+    },
+    {
+      "token_id": 89473,
+      "token": "useRalativeImagePath",
+      "is_glitch": false
+    },
+    {
+      "token_id": 89475,
+      "token": "elementGuidId",
+      "is_glitch": false
+    }
+  ],
+  "timestamp": 1752267690.6613488,
+  "log_file": "verification_log_1752267682.jsonl",
+  "validation_method": "enhanced"
+}

@@ -1,0 +1,4 @@
+# Glitch Mining Log - Detailed token evaluation
+{"event": "start", "info": {"model_name": "meta-llama/Llama-3.2-1B-Instruct", "device": "cuda:0", "is_llama32": false, "mining_params": {"num_iterations": 2, "batch_size": 4, "k": 8}}}
+{"event": "template_info", "info": {"template_name": "builtin_llama-3.2-1b-instruct", "system_format": null, "user_format": null, "assistant_prefill": null, "uses_builtin_template": true}}
+{"event": "iteration_start", "iteration": 0, "current_token": " -->\r\n\r\n", "current_token_id": 72710, "formatted_input": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nCutting Knowledge Date: December 2023\nToday Date: 11 Jul 2025\n\nYou are a helpful assistant. When asked to repeat something, repeat it exactly, character for character.<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nPlease respond with exactly this: ' -->\r\n\r\n'<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"}

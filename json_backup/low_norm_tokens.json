@@ -1,0 +1,3015 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "timestamp": 1752263040.0627346,
+  "vocab_size": 128256,
+  "embedding_dim": 2048,
+  "top_k": 500,
+  "lowest_norm_tokens": [
+    {
+      "rank": 1,
+      "token_id": 116452,
+      "l2_norm": 0.5442078709602356,
+      "token_text": " s\u00f6yley"
+    },
+    {
+      "rank": 2,
+      "token_id": 112063,
+      "l2_norm": 0.5442988872528076,
+      "token_text": "\u043a\u0430\u0434\u0435\u043c"
+    },
+    {
+      "rank": 3,
+      "token_id": 120959,
+      "l2_norm": 0.5443065762519836,
+      "token_text": "j\u00edc\u00edch"
+    },
+    {
+      "rank": 4,
+      "token_id": 124593,
+      "l2_norm": 0.5443475842475891,
+      "token_text": "\u043d\u0430\u0437\u043d\u0430\u0447"
+    },
+    {
+      "rank": 5,
+      "token_id": 126173,
+      "l2_norm": 0.5443521738052368,
+      "token_text": "vaj\u00edc\u00ed"
+    },
+    {
+      "rank": 6,
+      "token_id": 117691,
+      "l2_norm": 0.544380247592926,
+      "token_text": "l\u0131klar"
+    },
+    {
+      "rank": 7,
+      "token_id": 110410,
+      "l2_norm": 0.5443986654281616,
+      "token_text": " seviy"
+    },
+    {
+      "rank": 8,
+      "token_id": 113234,
+      "l2_norm": 0.5445062518119812,
+      "token_text": "u\u015ftur"
+    },
+    {
+      "rank": 9,
+      "token_id": 106951,
+      "l2_norm": 0.5445192456245422,
+      "token_text": "\uae00\uc0c1\uc704"
+    },
+    {
+      "rank": 10,
+      "token_id": 101673,
+      "l2_norm": 0.5445497632026672,
+      "token_text": "ektedir"
+    },
+    {
+      "rank": 11,
+      "token_id": 125700,
+      "l2_norm": 0.5445986390113831,
+      "token_text": "r\u00e1ln\u00ed"
+    },
+    {
+      "rank": 12,
+      "token_id": 114860,
+      "l2_norm": 0.5446027517318726,
+      "token_text": "\u0131lm\u0131\u015ft\u0131r"
+    },
+    {
+      "rank": 13,
+      "token_id": 98668,
+      "l2_norm": 0.5446126461029053,
+      "token_text": ");\r\r\r\n"
+    },
+    {
+      "rank": 14,
+      "token_id": 72710,
+      "l2_norm": 0.5446243286132812,
+      "token_text": " -->\r\n\r\n"
+    },
+    {
+      "rank": 15,
+      "token_id": 117011,
+      "l2_norm": 0.5446253418922424,
+      "token_text": "\u0131mda"
+    },
+    {
+      "rank": 16,
+      "token_id": 71785,
+      "l2_norm": 0.5446268916130066,
+      "token_text": ".*;\r\n\r\n"
+    },
+    {
+      "rank": 17,
+      "token_id": 116552,
+      "l2_norm": 0.5446276068687439,
+      "token_text": "uj\u00edc\u00edm"
+    },
+    {
+      "rank": 18,
+      "token_id": 64448,
+      "l2_norm": 0.5446286797523499,
+      "token_text": "?>\r\n\r\n"
+    },
+    {
+      "rank": 19,
+      "token_id": 124393,
+      "l2_norm": 0.5446359515190125,
+      "token_text": "sahuje"
+    },
+    {
+      "rank": 20,
+      "token_id": 107572,
+      "l2_norm": 0.5446404218673706,
+      "token_text": "ecektir"
+    },
+    {
+      "rank": 21,
+      "token_id": 127577,
+      "l2_norm": 0.5446496605873108,
+      "token_text": "lamaktad\u0131r"
+    },
+    {
+      "rank": 22,
+      "token_id": 105435,
+      "l2_norm": 0.5446949005126953,
+      "token_text": "\u0430\u043b\u0430\u0441\u044c"
+    },
+    {
+      "rank": 23,
+      "token_id": 126545,
+      "l2_norm": 0.5447224378585815,
+      "token_text": "\u0131lmaktad\u0131r"
+    },
+    {
+      "rank": 24,
+      "token_id": 114692,
+      "l2_norm": 0.5447632670402527,
+      "token_text": "\u0438\u043b\u0430\u0441\u044c"
+    },
+    {
+      "rank": 25,
+      "token_id": 117857,
+      "l2_norm": 0.5447686910629272,
+      "token_text": "\u0131lmaz"
+    },
+    {
+      "rank": 26,
+      "token_id": 55716,
+      "l2_norm": 0.5447720885276794,
+      "token_text": "?>\r\n\r\n"
+    },
+    {
+      "rank": 27,
+      "token_id": 115105,
+      "l2_norm": 0.5447843670845032,
+      "token_text": " \u795e\u9a6c\u6536\u5f55"
+    },
+    {
+      "rank": 28,
+      "token_id": 111067,
+      "l2_norm": 0.5447916984558105,
+      "token_text": "\u0131ld\u0131\u011f\u0131"
+    },
+    {
+      "rank": 29,
+      "token_id": 125265,
+      "l2_norm": 0.5447945594787598,
+      "token_text": "\u0443\u043a\u0440\u0430\u0457\u043d"
+    },
+    {
+      "rank": 30,
+      "token_id": 120702,
+      "l2_norm": 0.5448348522186279,
+      "token_text": " \u0445\u0430\u0440\u0430\u043a\u0442\u0435\u0440\u0438\u0437"
+    },
+    {
+      "rank": 31,
+      "token_id": 127531,
+      "l2_norm": 0.5448470711708069,
+      "token_text": " vyr\u00e1"
+    },
+    {
+      "rank": 32,
+      "token_id": 47073,
+      "l2_norm": 0.5448634028434753,
+      "token_text": "webElementXpaths"
+    },
+    {
+      "rank": 33,
+      "token_id": 114533,
+      "l2_norm": 0.5448656678199768,
+      "token_text": "\u30fc\u30ab\u30fc"
+    },
+    {
+      "rank": 34,
+      "token_id": 52188,
+      "l2_norm": 0.5448737740516663,
+      "token_text": "\ufffd\u59cb\u5316"
+    },
+    {
+      "rank": 35,
+      "token_id": 115614,
+      "l2_norm": 0.5448810458183289,
+      "token_text": "uj\u00edc\u00edch"
+    },
+    {
+      "rank": 36,
+      "token_id": 118805,
+      "l2_norm": 0.54491126537323,
+      "token_text": "\u0434\u0438\u0432\u0438\u0434\u0443"
+    },
+    {
+      "rank": 37,
+      "token_id": 127667,
+      "l2_norm": 0.5449153780937195,
+      "token_text": " \u0440\u0430\u0441\u043f\u043e\u043b\u0430\u0433"
+    },
+    {
+      "rank": 38,
+      "token_id": 112692,
+      "l2_norm": 0.5449182391166687,
+      "token_text": "\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d"
+    },
+    {
+      "rank": 39,
+      "token_id": 113004,
+      "l2_norm": 0.5449203252792358,
+      "token_text": " \u0432\u0438\u0440\u0456\u0448"
+    },
+    {
+      "rank": 40,
+      "token_id": 107197,
+      "l2_norm": 0.5449250340461731,
+      "token_text": " \u0432\u0438\u043a\u043e\u0440\u0438\u0441\u0442\u043e\u0432"
+    },
+    {
+      "rank": 41,
+      "token_id": 107658,
+      "l2_norm": 0.544926106929779,
+      "token_text": "\u0438\u0442\u0438\u0441\u044f"
+    },
+    {
+      "rank": 42,
+      "token_id": 122549,
+      "l2_norm": 0.5449329018592834,
+      "token_text": "\u0130TES\u0130"
+    },
+    {
+      "rank": 43,
+      "token_id": 128106,
+      "l2_norm": 0.5449347496032715,
+      "token_text": "<|reserved_special_token_98|>"
+    },
+    {
+      "rank": 44,
+      "token_id": 128151,
+      "l2_norm": 0.5449350476264954,
+      "token_text": "<|reserved_special_token_143|>"
+    },
+    {
+      "rank": 45,
+      "token_id": 128070,
+      "l2_norm": 0.5449353456497192,
+      "token_text": "<|reserved_special_token_62|>"
+    },
+    {
+      "rank": 46,
+      "token_id": 124,
+      "l2_norm": 0.5449358820915222,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 47,
+      "token_id": 126523,
+      "l2_norm": 0.5449360013008118,
+      "token_text": "\u040e\u044b\u045fN"
+    },
+    {
+      "rank": 48,
+      "token_id": 182,
+      "l2_norm": 0.5449361801147461,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 49,
+      "token_id": 128235,
+      "l2_norm": 0.5449367165565491,
+      "token_text": "<|reserved_special_token_227|>"
+    },
+    {
+      "rank": 50,
+      "token_id": 180,
+      "l2_norm": 0.5449367761611938,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 51,
+      "token_id": 183,
+      "l2_norm": 0.5449368953704834,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 52,
+      "token_id": 124292,
+      "l2_norm": 0.5449370741844177,
+      "token_text": "\u0438\u043b\u0430\u0441\u044f"
+    },
+    {
+      "rank": 53,
+      "token_id": 128092,
+      "l2_norm": 0.5449374914169312,
+      "token_text": "<|reserved_special_token_84|>"
+    },
+    {
+      "rank": 54,
+      "token_id": 127117,
+      "l2_norm": 0.5449376702308655,
+      "token_text": "\u040e\u044b\u045fN\u040e\u044b\u045fN"
+    },
+    {
+      "rank": 55,
+      "token_id": 128170,
+      "l2_norm": 0.5449380278587341,
+      "token_text": "<|reserved_special_token_162|>"
+    },
+    {
+      "rank": 56,
+      "token_id": 85069,
+      "l2_norm": 0.5449380874633789,
+      "token_text": "PostalCodesNL"
+    },
+    {
+      "rank": 57,
+      "token_id": 125952,
+      "l2_norm": 0.544938325881958,
+      "token_text": "\u044b\u045fN"
+    },
+    {
+      "rank": 58,
+      "token_id": 68896,
+      "l2_norm": 0.5449385046958923,
+      "token_text": ";\r\r\r\n"
+    },
+    {
+      "rank": 59,
+      "token_id": 128162,
+      "l2_norm": 0.5449392199516296,
+      "token_text": "<|reserved_special_token_154|>"
+    },
+    {
+      "rank": 60,
+      "token_id": 100617,
+      "l2_norm": 0.5449396967887878,
+      "token_text": "\u06f1\ufffd"
+    },
+    {
+      "rank": 61,
+      "token_id": 128192,
+      "l2_norm": 0.5449398159980774,
+      "token_text": "<|reserved_special_token_184|>"
+    },
+    {
+      "rank": 62,
+      "token_id": 128005,
+      "l2_norm": 0.5449401140213013,
+      "token_text": "<|reserved_special_token_2|>"
+    },
+    {
+      "rank": 63,
+      "token_id": 128089,
+      "l2_norm": 0.5449402928352356,
+      "token_text": "<|reserved_special_token_81|>"
+    },
+    {
+      "rank": 64,
+      "token_id": 128041,
+      "l2_norm": 0.5449403524398804,
+      "token_text": "<|reserved_special_token_33|>"
+    },
+    {
+      "rank": 65,
+      "token_id": 128102,
+      "l2_norm": 0.544941782951355,
+      "token_text": "<|reserved_special_token_94|>"
+    },
+    {
+      "rank": 66,
+      "token_id": 128246,
+      "l2_norm": 0.544941782951355,
+      "token_text": "<|reserved_special_token_238|>"
+    },
+    {
+      "rank": 67,
+      "token_id": 128074,
+      "l2_norm": 0.5449419021606445,
+      "token_text": "<|reserved_special_token_66|>"
+    },
+    {
+      "rank": 68,
+      "token_id": 128204,
+      "l2_norm": 0.5449421405792236,
+      "token_text": "<|reserved_special_token_196|>"
+    },
+    {
+      "rank": 69,
+      "token_id": 106710,
+      "l2_norm": 0.5449426770210266,
+      "token_text": "\u0430\u0442\u0438\u0441\u044f"
+    },
+    {
+      "rank": 70,
+      "token_id": 179,
+      "l2_norm": 0.5449427366256714,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 71,
+      "token_id": 128003,
+      "l2_norm": 0.5449427366256714,
+      "token_text": "<|reserved_special_token_1|>"
+    },
+    {
+      "rank": 72,
+      "token_id": 128145,
+      "l2_norm": 0.5449429750442505,
+      "token_text": "<|reserved_special_token_137|>"
+    },
+    {
+      "rank": 73,
+      "token_id": 128034,
+      "l2_norm": 0.5449432730674744,
+      "token_text": "<|reserved_special_token_26|>"
+    },
+    {
+      "rank": 74,
+      "token_id": 128059,
+      "l2_norm": 0.5449432730674744,
+      "token_text": "<|reserved_special_token_51|>"
+    },
+    {
+      "rank": 75,
+      "token_id": 80370,
+      "l2_norm": 0.5449433922767639,
+      "token_text": " ForCanBeConvertedToF"
+    },
+    {
+      "rank": 76,
+      "token_id": 128004,
+      "l2_norm": 0.5449435710906982,
+      "token_text": "<|finetune_right_pad_id|>"
+    },
+    {
+      "rank": 77,
+      "token_id": 64424,
+      "l2_norm": 0.5449437499046326,
+      "token_text": "\">\r\r\n"
+    },
+    {
+      "rank": 78,
+      "token_id": 128232,
+      "l2_norm": 0.5449437499046326,
+      "token_text": "<|reserved_special_token_224|>"
+    },
+    {
+      "rank": 79,
+      "token_id": 128171,
+      "l2_norm": 0.5449438691139221,
+      "token_text": "<|reserved_special_token_163|>"
+    },
+    {
+      "rank": 80,
+      "token_id": 128227,
+      "l2_norm": 0.5449438691139221,
+      "token_text": "<|reserved_special_token_219|>"
+    },
+    {
+      "rank": 81,
+      "token_id": 128221,
+      "l2_norm": 0.5449439883232117,
+      "token_text": "<|reserved_special_token_213|>"
+    },
+    {
+      "rank": 82,
+      "token_id": 187,
+      "l2_norm": 0.5449444651603699,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 83,
+      "token_id": 125,
+      "l2_norm": 0.5449445843696594,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 84,
+      "token_id": 128142,
+      "l2_norm": 0.5449445843696594,
+      "token_text": "<|reserved_special_token_134|>"
+    },
+    {
+      "rank": 85,
+      "token_id": 128114,
+      "l2_norm": 0.544944703578949,
+      "token_text": "<|reserved_special_token_106|>"
+    },
+    {
+      "rank": 86,
+      "token_id": 128141,
+      "l2_norm": 0.544944703578949,
+      "token_text": "<|reserved_special_token_133|>"
+    },
+    {
+      "rank": 87,
+      "token_id": 128176,
+      "l2_norm": 0.5449447631835938,
+      "token_text": "<|reserved_special_token_168|>"
+    },
+    {
+      "rank": 88,
+      "token_id": 128065,
+      "l2_norm": 0.5449448823928833,
+      "token_text": "<|reserved_special_token_57|>"
+    },
+    {
+      "rank": 89,
+      "token_id": 128173,
+      "l2_norm": 0.5449449419975281,
+      "token_text": "<|reserved_special_token_165|>"
+    },
+    {
+      "rank": 90,
+      "token_id": 128064,
+      "l2_norm": 0.5449450016021729,
+      "token_text": "<|reserved_special_token_56|>"
+    },
+    {
+      "rank": 91,
+      "token_id": 128107,
+      "l2_norm": 0.5449450016021729,
+      "token_text": "<|reserved_special_token_99|>"
+    },
+    {
+      "rank": 92,
+      "token_id": 128207,
+      "l2_norm": 0.5449452996253967,
+      "token_text": "<|reserved_special_token_199|>"
+    },
+    {
+      "rank": 93,
+      "token_id": 128021,
+      "l2_norm": 0.5449453592300415,
+      "token_text": "<|reserved_special_token_13|>"
+    },
+    {
+      "rank": 94,
+      "token_id": 128051,
+      "l2_norm": 0.5449456572532654,
+      "token_text": "<|reserved_special_token_43|>"
+    },
+    {
+      "rank": 95,
+      "token_id": 128147,
+      "l2_norm": 0.5449457168579102,
+      "token_text": "<|reserved_special_token_139|>"
+    },
+    {
+      "rank": 96,
+      "token_id": 128110,
+      "l2_norm": 0.5449458956718445,
+      "token_text": "<|reserved_special_token_102|>"
+    },
+    {
+      "rank": 97,
+      "token_id": 128168,
+      "l2_norm": 0.5449458956718445,
+      "token_text": "<|reserved_special_token_160|>"
+    },
+    {
+      "rank": 98,
+      "token_id": 128014,
+      "l2_norm": 0.5449459552764893,
+      "token_text": "<|reserved_special_token_6|>"
+    },
+    {
+      "rank": 99,
+      "token_id": 128220,
+      "l2_norm": 0.5449459552764893,
+      "token_text": "<|reserved_special_token_212|>"
+    },
+    {
+      "rank": 100,
+      "token_id": 128157,
+      "l2_norm": 0.5449460744857788,
+      "token_text": "<|reserved_special_token_149|>"
+    },
+    {
+      "rank": 101,
+      "token_id": 128011,
+      "l2_norm": 0.5449462532997131,
+      "token_text": "<|reserved_special_token_3|>"
+    },
+    {
+      "rank": 102,
+      "token_id": 127896,
+      "l2_norm": 0.5449463725090027,
+      "token_text": "\u0131ld\u0131\u011f\u0131nda"
+    },
+    {
+      "rank": 103,
+      "token_id": 177,
+      "l2_norm": 0.5449464321136475,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 104,
+      "token_id": 128132,
+      "l2_norm": 0.5449464917182922,
+      "token_text": "<|reserved_special_token_124|>"
+    },
+    {
+      "rank": 105,
+      "token_id": 128229,
+      "l2_norm": 0.5449466109275818,
+      "token_text": "<|reserved_special_token_221|>"
+    },
+    {
+      "rank": 106,
+      "token_id": 85071,
+      "l2_norm": 0.5449466705322266,
+      "token_text": "$PostalCodesNL"
+    },
+    {
+      "rank": 107,
+      "token_id": 80369,
+      "l2_norm": 0.5449468493461609,
+      "token_text": " ForCanBeConverted"
+    },
+    {
+      "rank": 108,
+      "token_id": 118260,
+      "l2_norm": 0.5449468493461609,
+      "token_text": "\u00e1vac\u00ed"
+    },
+    {
+      "rank": 109,
+      "token_id": 128009,
+      "l2_norm": 0.5449468493461609,
+      "token_text": "<|eot_id|>"
+    },
+    {
+      "rank": 110,
+      "token_id": 128186,
+      "l2_norm": 0.5449469089508057,
+      "token_text": "<|reserved_special_token_178|>"
+    },
+    {
+      "rank": 111,
+      "token_id": 128116,
+      "l2_norm": 0.5449471473693848,
+      "token_text": "<|reserved_special_token_108|>"
+    },
+    {
+      "rank": 112,
+      "token_id": 128165,
+      "l2_norm": 0.5449471473693848,
+      "token_text": "<|reserved_special_token_157|>"
+    },
+    {
+      "rank": 113,
+      "token_id": 128191,
+      "l2_norm": 0.5449472069740295,
+      "token_text": "<|reserved_special_token_183|>"
+    },
+    {
+      "rank": 114,
+      "token_id": 181,
+      "l2_norm": 0.5449473261833191,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 115,
+      "token_id": 128148,
+      "l2_norm": 0.5449473261833191,
+      "token_text": "<|reserved_special_token_140|>"
+    },
+    {
+      "rank": 116,
+      "token_id": 128223,
+      "l2_norm": 0.5449473857879639,
+      "token_text": "<|reserved_special_token_215|>"
+    },
+    {
+      "rank": 117,
+      "token_id": 128039,
+      "l2_norm": 0.5449475646018982,
+      "token_text": "<|reserved_special_token_31|>"
+    },
+    {
+      "rank": 118,
+      "token_id": 128134,
+      "l2_norm": 0.5449475646018982,
+      "token_text": "<|reserved_special_token_126|>"
+    },
+    {
+      "rank": 119,
+      "token_id": 128156,
+      "l2_norm": 0.5449476838111877,
+      "token_text": "<|reserved_special_token_148|>"
+    },
+    {
+      "rank": 120,
+      "token_id": 128205,
+      "l2_norm": 0.5449476838111877,
+      "token_text": "<|reserved_special_token_197|>"
+    },
+    {
+      "rank": 121,
+      "token_id": 128012,
+      "l2_norm": 0.5449477434158325,
+      "token_text": "<|reserved_special_token_4|>"
+    },
+    {
+      "rank": 122,
+      "token_id": 128019,
+      "l2_norm": 0.5449477434158325,
+      "token_text": "<|reserved_special_token_11|>"
+    },
+    {
+      "rank": 123,
+      "token_id": 128194,
+      "l2_norm": 0.5449477434158325,
+      "token_text": "<|reserved_special_token_186|>"
+    },
+    {
+      "rank": 124,
+      "token_id": 128210,
+      "l2_norm": 0.5449477434158325,
+      "token_text": "<|reserved_special_token_202|>"
+    },
+    {
+      "rank": 125,
+      "token_id": 128079,
+      "l2_norm": 0.5449478030204773,
+      "token_text": "<|reserved_special_token_71|>"
+    },
+    {
+      "rank": 126,
+      "token_id": 128038,
+      "l2_norm": 0.5449478626251221,
+      "token_text": "<|reserved_special_token_30|>"
+    },
+    {
+      "rank": 127,
+      "token_id": 128203,
+      "l2_norm": 0.5449479222297668,
+      "token_text": "<|reserved_special_token_195|>"
+    },
+    {
+      "rank": 128,
+      "token_id": 128211,
+      "l2_norm": 0.5449479818344116,
+      "token_text": "<|reserved_special_token_203|>"
+    },
+    {
+      "rank": 129,
+      "token_id": 89472,
+      "l2_norm": 0.5449480414390564,
+      "token_text": "useRalative"
+    },
+    {
+      "rank": 130,
+      "token_id": 128230,
+      "l2_norm": 0.5449480414390564,
+      "token_text": "<|reserved_special_token_222|>"
+    },
+    {
+      "rank": 131,
+      "token_id": 128217,
+      "l2_norm": 0.5449481010437012,
+      "token_text": "<|reserved_special_token_209|>"
+    },
+    {
+      "rank": 132,
+      "token_id": 128073,
+      "l2_norm": 0.5449482798576355,
+      "token_text": "<|reserved_special_token_65|>"
+    },
+    {
+      "rank": 133,
+      "token_id": 128146,
+      "l2_norm": 0.5449482798576355,
+      "token_text": "<|reserved_special_token_138|>"
+    },
+    {
+      "rank": 134,
+      "token_id": 128160,
+      "l2_norm": 0.544948399066925,
+      "token_text": "<|reserved_special_token_152|>"
+    },
+    {
+      "rank": 135,
+      "token_id": 128090,
+      "l2_norm": 0.5449484586715698,
+      "token_text": "<|reserved_special_token_82|>"
+    },
+    {
+      "rank": 136,
+      "token_id": 128206,
+      "l2_norm": 0.5449484586715698,
+      "token_text": "<|reserved_special_token_198|>"
+    },
+    {
+      "rank": 137,
+      "token_id": 186,
+      "l2_norm": 0.5449485778808594,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 138,
+      "token_id": 128195,
+      "l2_norm": 0.5449485778808594,
+      "token_text": "<|reserved_special_token_187|>"
+    },
+    {
+      "rank": 139,
+      "token_id": 128062,
+      "l2_norm": 0.5449486374855042,
+      "token_text": "<|reserved_special_token_54|>"
+    },
+    {
+      "rank": 140,
+      "token_id": 128237,
+      "l2_norm": 0.5449486374855042,
+      "token_text": "<|reserved_special_token_229|>"
+    },
+    {
+      "rank": 141,
+      "token_id": 128040,
+      "l2_norm": 0.5449486970901489,
+      "token_text": "<|reserved_special_token_32|>"
+    },
+    {
+      "rank": 142,
+      "token_id": 128163,
+      "l2_norm": 0.5449487566947937,
+      "token_text": "<|reserved_special_token_155|>"
+    },
+    {
+      "rank": 143,
+      "token_id": 128174,
+      "l2_norm": 0.5449487566947937,
+      "token_text": "<|reserved_special_token_166|>"
+    },
+    {
+      "rank": 144,
+      "token_id": 128208,
+      "l2_norm": 0.5449488759040833,
+      "token_text": "<|reserved_special_token_200|>"
+    },
+    {
+      "rank": 145,
+      "token_id": 128241,
+      "l2_norm": 0.5449488759040833,
+      "token_text": "<|reserved_special_token_233|>"
+    },
+    {
+      "rank": 146,
+      "token_id": 128189,
+      "l2_norm": 0.544948935508728,
+      "token_text": "<|reserved_special_token_181|>"
+    },
+    {
+      "rank": 147,
+      "token_id": 185,
+      "l2_norm": 0.5449489951133728,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 148,
+      "token_id": 128140,
+      "l2_norm": 0.5449489951133728,
+      "token_text": "<|reserved_special_token_132|>"
+    },
+    {
+      "rank": 149,
+      "token_id": 128180,
+      "l2_norm": 0.5449489951133728,
+      "token_text": "<|reserved_special_token_172|>"
+    },
+    {
+      "rank": 150,
+      "token_id": 128085,
+      "l2_norm": 0.5449491739273071,
+      "token_text": "<|reserved_special_token_77|>"
+    },
+    {
+      "rank": 151,
+      "token_id": 128006,
+      "l2_norm": 0.5449492335319519,
+      "token_text": "<|start_header_id|>"
+    },
+    {
+      "rank": 152,
+      "token_id": 128082,
+      "l2_norm": 0.5449492335319519,
+      "token_text": "<|reserved_special_token_74|>"
+    },
+    {
+      "rank": 153,
+      "token_id": 128118,
+      "l2_norm": 0.5449492335319519,
+      "token_text": "<|reserved_special_token_110|>"
+    },
+    {
+      "rank": 154,
+      "token_id": 128026,
+      "l2_norm": 0.5449492931365967,
+      "token_text": "<|reserved_special_token_18|>"
+    },
+    {
+      "rank": 155,
+      "token_id": 128060,
+      "l2_norm": 0.5449493527412415,
+      "token_text": "<|reserved_special_token_52|>"
+    },
+    {
+      "rank": 156,
+      "token_id": 128182,
+      "l2_norm": 0.5449493527412415,
+      "token_text": "<|reserved_special_token_174|>"
+    },
+    {
+      "rank": 157,
+      "token_id": 128144,
+      "l2_norm": 0.5449494123458862,
+      "token_text": "<|reserved_special_token_136|>"
+    },
+    {
+      "rank": 158,
+      "token_id": 128253,
+      "l2_norm": 0.5449494123458862,
+      "token_text": "<|reserved_special_token_245|>"
+    },
+    {
+      "rank": 159,
+      "token_id": 128124,
+      "l2_norm": 0.544949471950531,
+      "token_text": "<|reserved_special_token_116|>"
+    },
+    {
+      "rank": 160,
+      "token_id": 128017,
+      "l2_norm": 0.5449495315551758,
+      "token_text": "<|reserved_special_token_9|>"
+    },
+    {
+      "rank": 161,
+      "token_id": 128218,
+      "l2_norm": 0.5449495315551758,
+      "token_text": "<|reserved_special_token_210|>"
+    },
+    {
+      "rank": 162,
+      "token_id": 128199,
+      "l2_norm": 0.5449496507644653,
+      "token_text": "<|reserved_special_token_191|>"
+    },
+    {
+      "rank": 163,
+      "token_id": 128121,
+      "l2_norm": 0.5449497699737549,
+      "token_text": "<|reserved_special_token_113|>"
+    },
+    {
+      "rank": 164,
+      "token_id": 128122,
+      "l2_norm": 0.5449498891830444,
+      "token_text": "<|reserved_special_token_114|>"
+    },
+    {
+      "rank": 165,
+      "token_id": 118508,
+      "l2_norm": 0.544950008392334,
+      "token_text": "\u00e1vaj\u00edc\u00ed"
+    },
+    {
+      "rank": 166,
+      "token_id": 128143,
+      "l2_norm": 0.5449500679969788,
+      "token_text": "<|reserved_special_token_135|>"
+    },
+    {
+      "rank": 167,
+      "token_id": 128136,
+      "l2_norm": 0.5449501276016235,
+      "token_text": "<|reserved_special_token_128|>"
+    },
+    {
+      "rank": 168,
+      "token_id": 128177,
+      "l2_norm": 0.5449501276016235,
+      "token_text": "<|reserved_special_token_169|>"
+    },
+    {
+      "rank": 169,
+      "token_id": 128240,
+      "l2_norm": 0.5449501276016235,
+      "token_text": "<|reserved_special_token_232|>"
+    },
+    {
+      "rank": 170,
+      "token_id": 128126,
+      "l2_norm": 0.5449501872062683,
+      "token_text": "<|reserved_special_token_118|>"
+    },
+    {
+      "rank": 171,
+      "token_id": 128161,
+      "l2_norm": 0.5449501872062683,
+      "token_text": "<|reserved_special_token_153|>"
+    },
+    {
+      "rank": 172,
+      "token_id": 128216,
+      "l2_norm": 0.5449502468109131,
+      "token_text": "<|reserved_special_token_208|>"
+    },
+    {
+      "rank": 173,
+      "token_id": 103003,
+      "l2_norm": 0.5449503660202026,
+      "token_text": "\u0430\u0440\u0430\u043a\u0442"
+    },
+    {
+      "rank": 174,
+      "token_id": 128117,
+      "l2_norm": 0.5449503660202026,
+      "token_text": "<|reserved_special_token_109|>"
+    },
+    {
+      "rank": 175,
+      "token_id": 128137,
+      "l2_norm": 0.5449503660202026,
+      "token_text": "<|reserved_special_token_129|>"
+    },
+    {
+      "rank": 176,
+      "token_id": 128172,
+      "l2_norm": 0.5449503660202026,
+      "token_text": "<|reserved_special_token_164|>"
+    },
+    {
+      "rank": 177,
+      "token_id": 128037,
+      "l2_norm": 0.5449504256248474,
+      "token_text": "<|reserved_special_token_29|>"
+    },
+    {
+      "rank": 178,
+      "token_id": 128095,
+      "l2_norm": 0.5449504256248474,
+      "token_text": "<|reserved_special_token_87|>"
+    },
+    {
+      "rank": 179,
+      "token_id": 128015,
+      "l2_norm": 0.5449504852294922,
+      "token_text": "<|reserved_special_token_7|>"
+    },
+    {
+      "rank": 180,
+      "token_id": 128135,
+      "l2_norm": 0.5449506044387817,
+      "token_text": "<|reserved_special_token_127|>"
+    },
+    {
+      "rank": 181,
+      "token_id": 128013,
+      "l2_norm": 0.5449507236480713,
+      "token_text": "<|reserved_special_token_5|>"
+    },
+    {
+      "rank": 182,
+      "token_id": 128050,
+      "l2_norm": 0.5449507236480713,
+      "token_text": "<|reserved_special_token_42|>"
+    },
+    {
+      "rank": 183,
+      "token_id": 128105,
+      "l2_norm": 0.5449507236480713,
+      "token_text": "<|reserved_special_token_97|>"
+    },
+    {
+      "rank": 184,
+      "token_id": 128108,
+      "l2_norm": 0.5449507236480713,
+      "token_text": "<|reserved_special_token_100|>"
+    },
+    {
+      "rank": 185,
+      "token_id": 128222,
+      "l2_norm": 0.5449507236480713,
+      "token_text": "<|reserved_special_token_214|>"
+    },
+    {
+      "rank": 186,
+      "token_id": 128023,
+      "l2_norm": 0.5449508428573608,
+      "token_text": "<|reserved_special_token_15|>"
+    },
+    {
+      "rank": 187,
+      "token_id": 128096,
+      "l2_norm": 0.5449509024620056,
+      "token_text": "<|reserved_special_token_88|>"
+    },
+    {
+      "rank": 188,
+      "token_id": 128214,
+      "l2_norm": 0.5449509620666504,
+      "token_text": "<|reserved_special_token_206|>"
+    },
+    {
+      "rank": 189,
+      "token_id": 128225,
+      "l2_norm": 0.5449510216712952,
+      "token_text": "<|reserved_special_token_217|>"
+    },
+    {
+      "rank": 190,
+      "token_id": 128057,
+      "l2_norm": 0.5449510812759399,
+      "token_text": "<|reserved_special_token_49|>"
+    },
+    {
+      "rank": 191,
+      "token_id": 128072,
+      "l2_norm": 0.5449510812759399,
+      "token_text": "<|reserved_special_token_64|>"
+    },
+    {
+      "rank": 192,
+      "token_id": 128201,
+      "l2_norm": 0.5449510812759399,
+      "token_text": "<|reserved_special_token_193|>"
+    },
+    {
+      "rank": 193,
+      "token_id": 128215,
+      "l2_norm": 0.5449510812759399,
+      "token_text": "<|reserved_special_token_207|>"
+    },
+    {
+      "rank": 194,
+      "token_id": 128018,
+      "l2_norm": 0.5449511408805847,
+      "token_text": "<|reserved_special_token_10|>"
+    },
+    {
+      "rank": 195,
+      "token_id": 128032,
+      "l2_norm": 0.5449512004852295,
+      "token_text": "<|reserved_special_token_24|>"
+    },
+    {
+      "rank": 196,
+      "token_id": 128249,
+      "l2_norm": 0.5449512600898743,
+      "token_text": "<|reserved_special_token_241|>"
+    },
+    {
+      "rank": 197,
+      "token_id": 128071,
+      "l2_norm": 0.544951319694519,
+      "token_text": "<|reserved_special_token_63|>"
+    },
+    {
+      "rank": 198,
+      "token_id": 128031,
+      "l2_norm": 0.5449513792991638,
+      "token_text": "<|reserved_special_token_23|>"
+    },
+    {
+      "rank": 199,
+      "token_id": 128076,
+      "l2_norm": 0.5449513792991638,
+      "token_text": "<|reserved_special_token_68|>"
+    },
+    {
+      "rank": 200,
+      "token_id": 128185,
+      "l2_norm": 0.5449513792991638,
+      "token_text": "<|reserved_special_token_177|>"
+    },
+    {
+      "rank": 201,
+      "token_id": 128036,
+      "l2_norm": 0.5449514985084534,
+      "token_text": "<|reserved_special_token_28|>"
+    },
+    {
+      "rank": 202,
+      "token_id": 128248,
+      "l2_norm": 0.5449514985084534,
+      "token_text": "<|reserved_special_token_240|>"
+    },
+    {
+      "rank": 203,
+      "token_id": 122746,
+      "l2_norm": 0.5449516773223877,
+      "token_text": "\u0438\u043b\u0430\u043a\u0442\u0438"
+    },
+    {
+      "rank": 204,
+      "token_id": 128128,
+      "l2_norm": 0.5449516773223877,
+      "token_text": "<|reserved_special_token_120|>"
+    },
+    {
+      "rank": 205,
+      "token_id": 128077,
+      "l2_norm": 0.5449517369270325,
+      "token_text": "<|reserved_special_token_69|>"
+    },
+    {
+      "rank": 206,
+      "token_id": 128166,
+      "l2_norm": 0.5449517965316772,
+      "token_text": "<|reserved_special_token_158|>"
+    },
+    {
+      "rank": 207,
+      "token_id": 128075,
+      "l2_norm": 0.544951856136322,
+      "token_text": "<|reserved_special_token_67|>"
+    },
+    {
+      "rank": 208,
+      "token_id": 128078,
+      "l2_norm": 0.5449519157409668,
+      "token_text": "<|reserved_special_token_70|>"
+    },
+    {
+      "rank": 209,
+      "token_id": 128058,
+      "l2_norm": 0.5449520349502563,
+      "token_text": "<|reserved_special_token_50|>"
+    },
+    {
+      "rank": 210,
+      "token_id": 128150,
+      "l2_norm": 0.5449520945549011,
+      "token_text": "<|reserved_special_token_142|>"
+    },
+    {
+      "rank": 211,
+      "token_id": 128111,
+      "l2_norm": 0.5449521541595459,
+      "token_text": "<|reserved_special_token_103|>"
+    },
+    {
+      "rank": 212,
+      "token_id": 128252,
+      "l2_norm": 0.5449521541595459,
+      "token_text": "<|reserved_special_token_244|>"
+    },
+    {
+      "rank": 213,
+      "token_id": 128087,
+      "l2_norm": 0.5449522733688354,
+      "token_text": "<|reserved_special_token_79|>"
+    },
+    {
+      "rank": 214,
+      "token_id": 128209,
+      "l2_norm": 0.5449522733688354,
+      "token_text": "<|reserved_special_token_201|>"
+    },
+    {
+      "rank": 215,
+      "token_id": 128238,
+      "l2_norm": 0.5449522733688354,
+      "token_text": "<|reserved_special_token_230|>"
+    },
+    {
+      "rank": 216,
+      "token_id": 128033,
+      "l2_norm": 0.544952392578125,
+      "token_text": "<|reserved_special_token_25|>"
+    },
+    {
+      "rank": 217,
+      "token_id": 128088,
+      "l2_norm": 0.5449525117874146,
+      "token_text": "<|reserved_special_token_80|>"
+    },
+    {
+      "rank": 218,
+      "token_id": 128043,
+      "l2_norm": 0.5449525713920593,
+      "token_text": "<|reserved_special_token_35|>"
+    },
+    {
+      "rank": 219,
+      "token_id": 128226,
+      "l2_norm": 0.5449526309967041,
+      "token_text": "<|reserved_special_token_218|>"
+    },
+    {
+      "rank": 220,
+      "token_id": 128245,
+      "l2_norm": 0.5449526309967041,
+      "token_text": "<|reserved_special_token_237|>"
+    },
+    {
+      "rank": 221,
+      "token_id": 128250,
+      "l2_norm": 0.5449526906013489,
+      "token_text": "<|reserved_special_token_242|>"
+    },
+    {
+      "rank": 222,
+      "token_id": 128193,
+      "l2_norm": 0.5449528098106384,
+      "token_text": "<|reserved_special_token_185|>"
+    },
+    {
+      "rank": 223,
+      "token_id": 178,
+      "l2_norm": 0.5449528694152832,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 224,
+      "token_id": 128035,
+      "l2_norm": 0.5449528694152832,
+      "token_text": "<|reserved_special_token_27|>"
+    },
+    {
+      "rank": 225,
+      "token_id": 128224,
+      "l2_norm": 0.544952929019928,
+      "token_text": "<|reserved_special_token_216|>"
+    },
+    {
+      "rank": 226,
+      "token_id": 128086,
+      "l2_norm": 0.5449529886245728,
+      "token_text": "<|reserved_special_token_78|>"
+    },
+    {
+      "rank": 227,
+      "token_id": 128098,
+      "l2_norm": 0.5449529886245728,
+      "token_text": "<|reserved_special_token_90|>"
+    },
+    {
+      "rank": 228,
+      "token_id": 128112,
+      "l2_norm": 0.5449530482292175,
+      "token_text": "<|reserved_special_token_104|>"
+    },
+    {
+      "rank": 229,
+      "token_id": 128063,
+      "l2_norm": 0.5449531674385071,
+      "token_text": "<|reserved_special_token_55|>"
+    },
+    {
+      "rank": 230,
+      "token_id": 128029,
+      "l2_norm": 0.5449532270431519,
+      "token_text": "<|reserved_special_token_21|>"
+    },
+    {
+      "rank": 231,
+      "token_id": 128066,
+      "l2_norm": 0.5449532270431519,
+      "token_text": "<|reserved_special_token_58|>"
+    },
+    {
+      "rank": 232,
+      "token_id": 128101,
+      "l2_norm": 0.5449532270431519,
+      "token_text": "<|reserved_special_token_93|>"
+    },
+    {
+      "rank": 233,
+      "token_id": 128155,
+      "l2_norm": 0.5449533462524414,
+      "token_text": "<|reserved_special_token_147|>"
+    },
+    {
+      "rank": 234,
+      "token_id": 128049,
+      "l2_norm": 0.5449534058570862,
+      "token_text": "<|reserved_special_token_41|>"
+    },
+    {
+      "rank": 235,
+      "token_id": 128044,
+      "l2_norm": 0.544953465461731,
+      "token_text": "<|reserved_special_token_36|>"
+    },
+    {
+      "rank": 236,
+      "token_id": 128244,
+      "l2_norm": 0.5449535846710205,
+      "token_text": "<|reserved_special_token_236|>"
+    },
+    {
+      "rank": 237,
+      "token_id": 128251,
+      "l2_norm": 0.5449537038803101,
+      "token_text": "<|reserved_special_token_243|>"
+    },
+    {
+      "rank": 238,
+      "token_id": 128236,
+      "l2_norm": 0.5449537634849548,
+      "token_text": "<|reserved_special_token_228|>"
+    },
+    {
+      "rank": 239,
+      "token_id": 128027,
+      "l2_norm": 0.5449540615081787,
+      "token_text": "<|reserved_special_token_19|>"
+    },
+    {
+      "rank": 240,
+      "token_id": 128080,
+      "l2_norm": 0.5449540615081787,
+      "token_text": "<|reserved_special_token_72|>"
+    },
+    {
+      "rank": 241,
+      "token_id": 128007,
+      "l2_norm": 0.5449541211128235,
+      "token_text": "<|end_header_id|>"
+    },
+    {
+      "rank": 242,
+      "token_id": 128068,
+      "l2_norm": 0.5449541211128235,
+      "token_text": "<|reserved_special_token_60|>"
+    },
+    {
+      "rank": 243,
+      "token_id": 128042,
+      "l2_norm": 0.5449542999267578,
+      "token_text": "<|reserved_special_token_34|>"
+    },
+    {
+      "rank": 244,
+      "token_id": 110043,
+      "l2_norm": 0.5449545383453369,
+      "token_text": "\u0435\u0440\u0438\u0441\u0442\u0438"
+    },
+    {
+      "rank": 245,
+      "token_id": 128054,
+      "l2_norm": 0.5449545383453369,
+      "token_text": "<|reserved_special_token_46|>"
+    },
+    {
+      "rank": 246,
+      "token_id": 128119,
+      "l2_norm": 0.5449545383453369,
+      "token_text": "<|reserved_special_token_111|>"
+    },
+    {
+      "rank": 247,
+      "token_id": 128020,
+      "l2_norm": 0.5449545979499817,
+      "token_text": "<|reserved_special_token_12|>"
+    },
+    {
+      "rank": 248,
+      "token_id": 128067,
+      "l2_norm": 0.5449547171592712,
+      "token_text": "<|reserved_special_token_59|>"
+    },
+    {
+      "rank": 249,
+      "token_id": 128008,
+      "l2_norm": 0.5449548363685608,
+      "token_text": "<|eom_id|>"
+    },
+    {
+      "rank": 250,
+      "token_id": 128138,
+      "l2_norm": 0.5449548363685608,
+      "token_text": "<|reserved_special_token_130|>"
+    },
+    {
+      "rank": 251,
+      "token_id": 128242,
+      "l2_norm": 0.5449548363685608,
+      "token_text": "<|reserved_special_token_234|>"
+    },
+    {
+      "rank": 252,
+      "token_id": 128175,
+      "l2_norm": 0.5449549555778503,
+      "token_text": "<|reserved_special_token_167|>"
+    },
+    {
+      "rank": 253,
+      "token_id": 128022,
+      "l2_norm": 0.5449550747871399,
+      "token_text": "<|reserved_special_token_14|>"
+    },
+    {
+      "rank": 254,
+      "token_id": 128188,
+      "l2_norm": 0.5449550747871399,
+      "token_text": "<|reserved_special_token_180|>"
+    },
+    {
+      "rank": 255,
+      "token_id": 120048,
+      "l2_norm": 0.5449551343917847,
+      "token_text": "\u91cd\u8907\u91cd\u8907"
+    },
+    {
+      "rank": 256,
+      "token_id": 128091,
+      "l2_norm": 0.5449551343917847,
+      "token_text": "<|reserved_special_token_83|>"
+    },
+    {
+      "rank": 257,
+      "token_id": 128129,
+      "l2_norm": 0.5449551939964294,
+      "token_text": "<|reserved_special_token_121|>"
+    },
+    {
+      "rank": 258,
+      "token_id": 128002,
+      "l2_norm": 0.5449554324150085,
+      "token_text": "<|reserved_special_token_0|>"
+    },
+    {
+      "rank": 259,
+      "token_id": 128046,
+      "l2_norm": 0.5449554920196533,
+      "token_text": "<|reserved_special_token_38|>"
+    },
+    {
+      "rank": 260,
+      "token_id": 128113,
+      "l2_norm": 0.5449555516242981,
+      "token_text": "<|reserved_special_token_105|>"
+    },
+    {
+      "rank": 261,
+      "token_id": 128200,
+      "l2_norm": 0.5449556112289429,
+      "token_text": "<|reserved_special_token_192|>"
+    },
+    {
+      "rank": 262,
+      "token_id": 128010,
+      "l2_norm": 0.5449556708335876,
+      "token_text": "<|python_tag|>"
+    },
+    {
+      "rank": 263,
+      "token_id": 128069,
+      "l2_norm": 0.5449556708335876,
+      "token_text": "<|reserved_special_token_61|>"
+    },
+    {
+      "rank": 264,
+      "token_id": 128047,
+      "l2_norm": 0.5449557304382324,
+      "token_text": "<|reserved_special_token_39|>"
+    },
+    {
+      "rank": 265,
+      "token_id": 128115,
+      "l2_norm": 0.5449557304382324,
+      "token_text": "<|reserved_special_token_107|>"
+    },
+    {
+      "rank": 266,
+      "token_id": 128016,
+      "l2_norm": 0.5449560284614563,
+      "token_text": "<|reserved_special_token_8|>"
+    },
+    {
+      "rank": 267,
+      "token_id": 128028,
+      "l2_norm": 0.5449560284614563,
+      "token_text": "<|reserved_special_token_20|>"
+    },
+    {
+      "rank": 268,
+      "token_id": 128131,
+      "l2_norm": 0.5449561476707458,
+      "token_text": "<|reserved_special_token_123|>"
+    },
+    {
+      "rank": 269,
+      "token_id": 128139,
+      "l2_norm": 0.5449563264846802,
+      "token_text": "<|reserved_special_token_131|>"
+    },
+    {
+      "rank": 270,
+      "token_id": 128212,
+      "l2_norm": 0.5449564456939697,
+      "token_text": "<|reserved_special_token_204|>"
+    },
+    {
+      "rank": 271,
+      "token_id": 128149,
+      "l2_norm": 0.5449567437171936,
+      "token_text": "<|reserved_special_token_141|>"
+    },
+    {
+      "rank": 272,
+      "token_id": 128234,
+      "l2_norm": 0.5449573397636414,
+      "token_text": "<|reserved_special_token_226|>"
+    },
+    {
+      "rank": 273,
+      "token_id": 128024,
+      "l2_norm": 0.5449576377868652,
+      "token_text": "<|reserved_special_token_16|>"
+    },
+    {
+      "rank": 274,
+      "token_id": 128159,
+      "l2_norm": 0.5449578166007996,
+      "token_text": "<|reserved_special_token_151|>"
+    },
+    {
+      "rank": 275,
+      "token_id": 128231,
+      "l2_norm": 0.5449580550193787,
+      "token_text": "<|reserved_special_token_223|>"
+    },
+    {
+      "rank": 276,
+      "token_id": 128084,
+      "l2_norm": 0.5449581146240234,
+      "token_text": "<|reserved_special_token_76|>"
+    },
+    {
+      "rank": 277,
+      "token_id": 128094,
+      "l2_norm": 0.5449584126472473,
+      "token_text": "<|reserved_special_token_86|>"
+    },
+    {
+      "rank": 278,
+      "token_id": 128243,
+      "l2_norm": 0.5449585914611816,
+      "token_text": "<|reserved_special_token_235|>"
+    },
+    {
+      "rank": 279,
+      "token_id": 128052,
+      "l2_norm": 0.5449586510658264,
+      "token_text": "<|reserved_special_token_44|>"
+    },
+    {
+      "rank": 280,
+      "token_id": 128198,
+      "l2_norm": 0.5449588298797607,
+      "token_text": "<|reserved_special_token_190|>"
+    },
+    {
+      "rank": 281,
+      "token_id": 128239,
+      "l2_norm": 0.5449588894844055,
+      "token_text": "<|reserved_special_token_231|>"
+    },
+    {
+      "rank": 282,
+      "token_id": 128097,
+      "l2_norm": 0.5449591875076294,
+      "token_text": "<|reserved_special_token_89|>"
+    },
+    {
+      "rank": 283,
+      "token_id": 184,
+      "l2_norm": 0.5449593663215637,
+      "token_text": "\ufffd"
+    },
+    {
+      "rank": 284,
+      "token_id": 128099,
+      "l2_norm": 0.5449594259262085,
+      "token_text": "<|reserved_special_token_91|>"
+    },
+    {
+      "rank": 285,
+      "token_id": 128154,
+      "l2_norm": 0.5449598431587219,
+      "token_text": "<|reserved_special_token_146|>"
+    },
+    {
+      "rank": 286,
+      "token_id": 128233,
+      "l2_norm": 0.5449599027633667,
+      "token_text": "<|reserved_special_token_225|>"
+    },
+    {
+      "rank": 287,
+      "token_id": 79883,
+      "l2_norm": 0.5449600219726562,
+      "token_text": "\tTokenNameIdentifier"
+    },
+    {
+      "rank": 288,
+      "token_id": 128254,
+      "l2_norm": 0.5449602007865906,
+      "token_text": "<|reserved_special_token_246|>"
+    },
+    {
+      "rank": 289,
+      "token_id": 128187,
+      "l2_norm": 0.5449613332748413,
+      "token_text": "<|reserved_special_token_179|>"
+    },
+    {
+      "rank": 290,
+      "token_id": 128255,
+      "l2_norm": 0.5449613332748413,
+      "token_text": "<|reserved_special_token_247|>"
+    },
+    {
+      "rank": 291,
+      "token_id": 119465,
+      "l2_norm": 0.5449619293212891,
+      "token_text": " \u043f\u0440\u0438\u0441\u0443\u0442\u0441\u0442\u0432"
+    },
+    {
+      "rank": 292,
+      "token_id": 128081,
+      "l2_norm": 0.5449625849723816,
+      "token_text": "<|reserved_special_token_73|>"
+    },
+    {
+      "rank": 293,
+      "token_id": 128183,
+      "l2_norm": 0.5449628233909607,
+      "token_text": "<|reserved_special_token_175|>"
+    },
+    {
+      "rank": 294,
+      "token_id": 128120,
+      "l2_norm": 0.5449633598327637,
+      "token_text": "<|reserved_special_token_112|>"
+    },
+    {
+      "rank": 295,
+      "token_id": 128025,
+      "l2_norm": 0.5449638366699219,
+      "token_text": "<|reserved_special_token_17|>"
+    },
+    {
+      "rank": 296,
+      "token_id": 128219,
+      "l2_norm": 0.5449649095535278,
+      "token_text": "<|reserved_special_token_211|>"
+    },
+    {
+      "rank": 297,
+      "token_id": 128056,
+      "l2_norm": 0.5449650883674622,
+      "token_text": "<|reserved_special_token_48|>"
+    },
+    {
+      "rank": 298,
+      "token_id": 128061,
+      "l2_norm": 0.5449655652046204,
+      "token_text": "<|reserved_special_token_53|>"
+    },
+    {
+      "rank": 299,
+      "token_id": 128045,
+      "l2_norm": 0.5449678301811218,
+      "token_text": "<|reserved_special_token_37|>"
+    },
+    {
+      "rank": 300,
+      "token_id": 128109,
+      "l2_norm": 0.5449679493904114,
+      "token_text": "<|reserved_special_token_101|>"
+    },
+    {
+      "rank": 301,
+      "token_id": 128202,
+      "l2_norm": 0.5449682474136353,
+      "token_text": "<|reserved_special_token_194|>"
+    },
+    {
+      "rank": 302,
+      "token_id": 128127,
+      "l2_norm": 0.5449686050415039,
+      "token_text": "<|reserved_special_token_119|>"
+    },
+    {
+      "rank": 303,
+      "token_id": 128083,
+      "l2_norm": 0.544969379901886,
+      "token_text": "<|reserved_special_token_75|>"
+    },
+    {
+      "rank": 304,
+      "token_id": 128197,
+      "l2_norm": 0.544969379901886,
+      "token_text": "<|reserved_special_token_189|>"
+    },
+    {
+      "rank": 305,
+      "token_id": 128053,
+      "l2_norm": 0.5449696183204651,
+      "token_text": "<|reserved_special_token_45|>"
+    },
+    {
+      "rank": 306,
+      "token_id": 128123,
+      "l2_norm": 0.5449700951576233,
+      "token_text": "<|reserved_special_token_115|>"
+    },
+    {
+      "rank": 307,
+      "token_id": 128184,
+      "l2_norm": 0.5449702143669128,
+      "token_text": "<|reserved_special_token_176|>"
+    },
+    {
+      "rank": 308,
+      "token_id": 128055,
+      "l2_norm": 0.5449705123901367,
+      "token_text": "<|reserved_special_token_47|>"
+    },
+    {
+      "rank": 309,
+      "token_id": 128196,
+      "l2_norm": 0.5449709892272949,
+      "token_text": "<|reserved_special_token_188|>"
+    },
+    {
+      "rank": 310,
+      "token_id": 128178,
+      "l2_norm": 0.5449712872505188,
+      "token_text": "<|reserved_special_token_170|>"
+    },
+    {
+      "rank": 311,
+      "token_id": 128093,
+      "l2_norm": 0.5449714064598083,
+      "token_text": "<|reserved_special_token_85|>"
+    },
+    {
+      "rank": 312,
+      "token_id": 128158,
+      "l2_norm": 0.5449715256690979,
+      "token_text": "<|reserved_special_token_150|>"
+    },
+    {
+      "rank": 313,
+      "token_id": 126647,
+      "l2_norm": 0.54497230052948,
+      "token_text": "l\u00e1sil"
+    },
+    {
+      "rank": 314,
+      "token_id": 128153,
+      "l2_norm": 0.54497230052948,
+      "token_text": "<|reserved_special_token_145|>"
+    },
+    {
+      "rank": 315,
+      "token_id": 128167,
+      "l2_norm": 0.54497230052948,
+      "token_text": "<|reserved_special_token_159|>"
+    },
+    {
+      "rank": 316,
+      "token_id": 128030,
+      "l2_norm": 0.5449724793434143,
+      "token_text": "<|reserved_special_token_22|>"
+    },
+    {
+      "rank": 317,
+      "token_id": 128169,
+      "l2_norm": 0.5449727773666382,
+      "token_text": "<|reserved_special_token_161|>"
+    },
+    {
+      "rank": 318,
+      "token_id": 128164,
+      "l2_norm": 0.5449733138084412,
+      "token_text": "<|reserved_special_token_156|>"
+    },
+    {
+      "rank": 319,
+      "token_id": 128190,
+      "l2_norm": 0.5449733138084412,
+      "token_text": "<|reserved_special_token_182|>"
+    },
+    {
+      "rank": 320,
+      "token_id": 128152,
+      "l2_norm": 0.5449743866920471,
+      "token_text": "<|reserved_special_token_144|>"
+    },
+    {
+      "rank": 321,
+      "token_id": 128179,
+      "l2_norm": 0.5449745655059814,
+      "token_text": "<|reserved_special_token_171|>"
+    },
+    {
+      "rank": 322,
+      "token_id": 128104,
+      "l2_norm": 0.5449752807617188,
+      "token_text": "<|reserved_special_token_96|>"
+    },
+    {
+      "rank": 323,
+      "token_id": 112620,
+      "l2_norm": 0.5449753403663635,
+      "token_text": " \u043f\u0456\u0434\u0442\u0440\u0438\u043c"
+    },
+    {
+      "rank": 324,
+      "token_id": 128228,
+      "l2_norm": 0.5449756383895874,
+      "token_text": "<|reserved_special_token_220|>"
+    },
+    {
+      "rank": 325,
+      "token_id": 128048,
+      "l2_norm": 0.5449759364128113,
+      "token_text": "<|reserved_special_token_40|>"
+    },
+    {
+      "rank": 326,
+      "token_id": 128103,
+      "l2_norm": 0.5449762344360352,
+      "token_text": "<|reserved_special_token_95|>"
+    },
+    {
+      "rank": 327,
+      "token_id": 128181,
+      "l2_norm": 0.5449768304824829,
+      "token_text": "<|reserved_special_token_173|>"
+    },
+    {
+      "rank": 328,
+      "token_id": 128133,
+      "l2_norm": 0.5449787378311157,
+      "token_text": "<|reserved_special_token_125|>"
+    },
+    {
+      "rank": 329,
+      "token_id": 128100,
+      "l2_norm": 0.5449798107147217,
+      "token_text": "<|reserved_special_token_92|>"
+    },
+    {
+      "rank": 330,
+      "token_id": 128247,
+      "l2_norm": 0.5449802279472351,
+      "token_text": "<|reserved_special_token_239|>"
+    },
+    {
+      "rank": 331,
+      "token_id": 128125,
+      "l2_norm": 0.5449813008308411,
+      "token_text": "<|reserved_special_token_117|>"
+    },
+    {
+      "rank": 332,
+      "token_id": 28587,
+      "l2_norm": 0.5449826717376709,
+      "token_text": "\ufffd\ufffd\u53d6"
+    },
+    {
+      "rank": 333,
+      "token_id": 128130,
+      "l2_norm": 0.5449832081794739,
+      "token_text": "<|reserved_special_token_122|>"
+    },
+    {
+      "rank": 334,
+      "token_id": 127367,
+      "l2_norm": 0.5449838042259216,
+      "token_text": "\u0131ml\u0131"
+    },
+    {
+      "rank": 335,
+      "token_id": 128213,
+      "l2_norm": 0.544985294342041,
+      "token_text": "<|reserved_special_token_205|>"
+    },
+    {
+      "rank": 336,
+      "token_id": 127438,
+      "l2_norm": 0.5449965000152588,
+      "token_text": "\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d"
+    },
+    {
+      "rank": 337,
+      "token_id": 108653,
+      "l2_norm": 0.5450083017349243,
+      "token_text": "\u00e1tky"
+    },
+    {
+      "rank": 338,
+      "token_id": 106216,
+      "l2_norm": 0.5450396537780762,
+      "token_text": "\u0131nt\u0131"
+    },
+    {
+      "rank": 339,
+      "token_id": 110024,
+      "l2_norm": 0.5450472831726074,
+      "token_text": " CLIIIK"
+    },
+    {
+      "rank": 340,
+      "token_id": 112162,
+      "l2_norm": 0.545072078704834,
+      "token_text": "\u0443\u0432\u0430\u0442\u0438\u0441\u044f"
+    },
+    {
+      "rank": 341,
+      "token_id": 90050,
+      "l2_norm": 0.5450775623321533,
+      "token_text": "_ComCallableWrapper"
+    },
+    {
+      "rank": 342,
+      "token_id": 115721,
+      "l2_norm": 0.5450778007507324,
+      "token_text": "\u00e1tn\u00ed"
+    },
+    {
+      "rank": 343,
+      "token_id": 120424,
+      "l2_norm": 0.5450847744941711,
+      "token_text": "espo\u0148"
+    },
+    {
+      "rank": 344,
+      "token_id": 89475,
+      "l2_norm": 0.5450850129127502,
+      "token_text": "elementGuidId"
+    },
+    {
+      "rank": 345,
+      "token_id": 127748,
+      "l2_norm": 0.5450855493545532,
+      "token_text": "\u0131mlar"
+    },
+    {
+      "rank": 346,
+      "token_id": 122032,
+      "l2_norm": 0.5450869202613831,
+      "token_text": "\u00e1hnout"
+    },
+    {
+      "rank": 347,
+      "token_id": 108918,
+      "l2_norm": 0.5450999140739441,
+      "token_text": "\u0430\u043b\u0430\u0441\u044f"
+    },
+    {
+      "rank": 348,
+      "token_id": 114091,
+      "l2_norm": 0.5451194643974304,
+      "token_text": "\u00fcsl\u00fcman"
+    },
+    {
+      "rank": 349,
+      "token_id": 123997,
+      "l2_norm": 0.5451245307922363,
+      "token_text": "alardan"
+    },
+    {
+      "rank": 350,
+      "token_id": 89471,
+      "l2_norm": 0.5451428294181824,
+      "token_text": "useRal"
+    },
+    {
+      "rank": 351,
+      "token_id": 102564,
+      "l2_norm": 0.5451507568359375,
+      "token_text": "\u0131ld\u0131"
+    },
+    {
+      "rank": 352,
+      "token_id": 114185,
+      "l2_norm": 0.5451590418815613,
+      "token_text": "\u0131ms\u0131z"
+    },
+    {
+      "rank": 353,
+      "token_id": 89473,
+      "l2_norm": 0.5451709628105164,
+      "token_text": "useRalativeImagePath"
+    },
+    {
+      "rank": 354,
+      "token_id": 109045,
+      "l2_norm": 0.5451880693435669,
+      "token_text": "krvldkf"
+    },
+    {
+      "rank": 355,
+      "token_id": 38335,
+      "l2_norm": 0.5452386140823364,
+      "token_text": "\">\r\n\r\n"
+    },
+    {
+      "rank": 356,
+      "token_id": 58508,
+      "l2_norm": 0.5452705025672913,
+      "token_text": ":-------------</"
+    },
+    {
+      "rank": 357,
+      "token_id": 127877,
+      "l2_norm": 0.5452734231948853,
+      "token_text": " Co\u011fraf"
+    },
+    {
+      "rank": 358,
+      "token_id": 108577,
+      "l2_norm": 0.5452778935432434,
+      "token_text": "ilmektedir"
+    },
+    {
+      "rank": 359,
+      "token_id": 120454,
+      "l2_norm": 0.545281171798706,
+      "token_text": "l\u0131klar\u0131"
+    },
+    {
+      "rank": 360,
+      "token_id": 112907,
+      "l2_norm": 0.5453082323074341,
+      "token_text": "uyordu"
+    },
+    {
+      "rank": 361,
+      "token_id": 115970,
+      "l2_norm": 0.5453353524208069,
+      "token_text": "\u00fcyordu"
+    },
+    {
+      "rank": 362,
+      "token_id": 110150,
+      "l2_norm": 0.5453542470932007,
+      "token_text": "\u00e1tku"
+    },
+    {
+      "rank": 363,
+      "token_id": 126634,
+      "l2_norm": 0.5454769134521484,
+      "token_text": " p\u0159iroz"
+    },
+    {
+      "rank": 364,
+      "token_id": 115216,
+      "l2_norm": 0.5455062389373779,
+      "token_text": "\u044e\u0447\u0438\u0441\u044c"
+    },
+    {
+      "rank": 365,
+      "token_id": 124114,
+      "l2_norm": 0.5455161333084106,
+      "token_text": " \u0437\u0430\u043d\u0438\u043c"
+    },
+    {
+      "rank": 366,
+      "token_id": 112969,
+      "l2_norm": 0.5455287098884583,
+      "token_text": " nhi\u1ec5"
+    },
+    {
+      "rank": 367,
+      "token_id": 121475,
+      "l2_norm": 0.5455514192581177,
+      "token_text": "\u043d\u0456\u0446\u0438\u043f"
+    },
+    {
+      "rank": 368,
+      "token_id": 109744,
+      "l2_norm": 0.545556902885437,
+      "token_text": "acakt\u0131r"
+    },
+    {
+      "rank": 369,
+      "token_id": 115129,
+      "l2_norm": 0.5455846190452576,
+      "token_text": "l\u0131kl\u0131"
+    },
+    {
+      "rank": 370,
+      "token_id": 119000,
+      "l2_norm": 0.545612633228302,
+      "token_text": "\u043f\u0435\u043a\u0438"
+    },
+    {
+      "rank": 371,
+      "token_id": 116171,
+      "l2_norm": 0.5456694960594177,
+      "token_text": "c\u0131l\u0131k"
+    },
+    {
+      "rank": 372,
+      "token_id": 117098,
+      "l2_norm": 0.5456929206848145,
+      "token_text": " \u0437\u0430\u0437\u043d\u0430\u0447"
+    },
+    {
+      "rank": 373,
+      "token_id": 127954,
+      "l2_norm": 0.5457335114479065,
+      "token_text": "j\u00edc\u00edm"
+    },
+    {
+      "rank": 374,
+      "token_id": 106920,
+      "l2_norm": 0.5457346439361572,
+      "token_text": "rodn\u00ed"
+    },
+    {
+      "rank": 375,
+      "token_id": 81259,
+      "l2_norm": 0.5457435846328735,
+      "token_text": "artisanlib"
+    },
+    {
+      "rank": 376,
+      "token_id": 123745,
+      "l2_norm": 0.5457574725151062,
+      "token_text": " zahrn"
+    },
+    {
+      "rank": 377,
+      "token_id": 124069,
+      "l2_norm": 0.5457743406295776,
+      "token_text": " p\u0159ibli\u017e"
+    },
+    {
+      "rank": 378,
+      "token_id": 96348,
+      "l2_norm": 0.5458167791366577,
+      "token_text": "',\r\r\n"
+    },
+    {
+      "rank": 379,
+      "token_id": 111691,
+      "l2_norm": 0.5458240509033203,
+      "token_text": "abanc\u0131"
+    },
+    {
+      "rank": 380,
+      "token_id": 126357,
+      "l2_norm": 0.5458868145942688,
+      "token_text": " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+    },
+    {
+      "rank": 381,
+      "token_id": 126626,
+      "l2_norm": 0.5458924174308777,
+      "token_text": " \u0430\u0434\u043c\u0456\u043d\u0456\u0441\u0442\u0440\u0430\u0442\u0438\u0432"
+    },
+    {
+      "rank": 382,
+      "token_id": 117929,
+      "l2_norm": 0.5459455251693726,
+      "token_text": " \u0432\u0438\u0445\u043e\u0432"
+    },
+    {
+      "rank": 383,
+      "token_id": 114836,
+      "l2_norm": 0.545974612236023,
+      "token_text": "\u30fc\u30b7\u30e7\u30f3"
+    },
+    {
+      "rank": 384,
+      "token_id": 112054,
+      "l2_norm": 0.5459996461868286,
+      "token_text": "t\u011bz"
+    },
+    {
+      "rank": 385,
+      "token_id": 124971,
+      "l2_norm": 0.5460361838340759,
+      "token_text": " \u0627\u0628\u0631\u0627\u0647"
+    },
+    {
+      "rank": 386,
+      "token_id": 113983,
+      "l2_norm": 0.5460540652275085,
+      "token_text": "ac\u0131l\u0131k"
+    },
+    {
+      "rank": 387,
+      "token_id": 33786,
+      "l2_norm": 0.5461180806159973,
+      "token_text": "webElementProperties"
+    },
+    {
+      "rank": 388,
+      "token_id": 119003,
+      "l2_norm": 0.5461376905441284,
+      "token_text": " ta\u015f\u0131y"
+    },
+    {
+      "rank": 389,
+      "token_id": 115108,
+      "l2_norm": 0.5461726188659668,
+      "token_text": " \u767e\u5ea6\u6d41\u91cf"
+    },
+    {
+      "rank": 390,
+      "token_id": 119776,
+      "l2_norm": 0.5462161898612976,
+      "token_text": " yapt\u0131\u011f"
+    },
+    {
+      "rank": 391,
+      "token_id": 107102,
+      "l2_norm": 0.5462357401847839,
+      "token_text": "\u0131yordu"
+    },
+    {
+      "rank": 392,
+      "token_id": 118228,
+      "l2_norm": 0.5462824702262878,
+      "token_text": " p\u0159edsed"
+    },
+    {
+      "rank": 393,
+      "token_id": 121671,
+      "l2_norm": 0.5464948415756226,
+      "token_text": " d\u00fc\u015f\u00fcnc"
+    },
+    {
+      "rank": 394,
+      "token_id": 66534,
+      "l2_norm": 0.5465562343597412,
+      "token_text": "'];\r\n\r\n"
+    },
+    {
+      "rank": 395,
+      "token_id": 125786,
+      "l2_norm": 0.546806812286377,
+      "token_text": " nebezpe\u010d"
+    },
+    {
+      "rank": 396,
+      "token_id": 107996,
+      "l2_norm": 0.5468420386314392,
+      "token_text": " \u0432\u0438\u0437\u043d\u0430\u0447"
+    },
+    {
+      "rank": 397,
+      "token_id": 122047,
+      "l2_norm": 0.546861469745636,
+      "token_text": " \u0437\u0443\u0441\u0442\u0440\u0456"
+    },
+    {
+      "rank": 398,
+      "token_id": 115487,
+      "l2_norm": 0.5469119548797607,
+      "token_text": " kr\u00e1lov"
+    },
+    {
+      "rank": 399,
+      "token_id": 104516,
+      "l2_norm": 0.5469503402709961,
+      "token_text": "\u0131lm\u0131\u015f"
+    },
+    {
+      "rank": 400,
+      "token_id": 114767,
+      "l2_norm": 0.5469803214073181,
+      "token_text": "iyesi"
+    },
+    {
+      "rank": 401,
+      "token_id": 118751,
+      "l2_norm": 0.5470337271690369,
+      "token_text": " \u0434\u043e\u0437\u0432\u043e\u043b\u044f"
+    },
+    {
+      "rank": 402,
+      "token_id": 70784,
+      "l2_norm": 0.5471528172492981,
+      "token_text": "Japgolly"
+    },
+    {
+      "rank": 403,
+      "token_id": 95073,
+      "l2_norm": 0.547244668006897,
+      "token_text": "-vesm"
+    },
+    {
+      "rank": 404,
+      "token_id": 127769,
+      "l2_norm": 0.5474026799201965,
+      "token_text": " \u0432\u044b\u0440\u0430\u0449\u0438"
+    },
+    {
+      "rank": 405,
+      "token_id": 105672,
+      "l2_norm": 0.5476181507110596,
+      "token_text": " \u0440\u043e\u0437\u0432\u0438\u0442"
+    },
+    {
+      "rank": 406,
+      "token_id": 125808,
+      "l2_norm": 0.5476659536361694,
+      "token_text": "lar\u0131ndaki"
+    },
+    {
+      "rank": 407,
+      "token_id": 125759,
+      "l2_norm": 0.5478771924972534,
+      "token_text": " \u0432\u0456\u0434\u0440\u0456\u0437"
+    },
+    {
+      "rank": 408,
+      "token_id": 115944,
+      "l2_norm": 0.5479027032852173,
+      "token_text": " vzd\u00e1l"
+    },
+    {
+      "rank": 409,
+      "token_id": 120894,
+      "l2_norm": 0.5479511022567749,
+      "token_text": " p\u0159\u00edtom"
+    },
+    {
+      "rank": 410,
+      "token_id": 36225,
+      "l2_norm": 0.5479861497879028,
+      "token_text": "\ufffd\ufffd\u52a0"
+    },
+    {
+      "rank": 411,
+      "token_id": 93249,
+      "l2_norm": 0.5481211543083191,
+      "token_text": "();\r\r\n"
+    },
+    {
+      "rank": 412,
+      "token_id": 119162,
+      "l2_norm": 0.5481615662574768,
+      "token_text": " \u0432\u0438\u0437\u043d\u0430\u0447\u0430"
+    },
+    {
+      "rank": 413,
+      "token_id": 126257,
+      "l2_norm": 0.5481740236282349,
+      "token_text": "\u045f\u042d"
+    },
+    {
+      "rank": 414,
+      "token_id": 119709,
+      "l2_norm": 0.5481979250907898,
+      "token_text": "kyn\u011b"
+    },
+    {
+      "rank": 415,
+      "token_id": 124647,
+      "l2_norm": 0.5482887625694275,
+      "token_text": "iteln\u00e9"
+    },
+    {
+      "rank": 416,
+      "token_id": 127711,
+      "l2_norm": 0.5483328104019165,
+      "token_text": "d\u0131ktan"
+    },
+    {
+      "rank": 417,
+      "token_id": 103754,
+      "l2_norm": 0.5484836101531982,
+      "token_text": " \u0432\u0438\u043a\u043e\u0440\u0438\u0441\u0442"
+    },
+    {
+      "rank": 418,
+      "token_id": 123107,
+      "l2_norm": 0.5485116839408875,
+      "token_text": "mamas\u0131"
+    },
+    {
+      "rank": 419,
+      "token_id": 70316,
+      "l2_norm": 0.5485324263572693,
+      "token_text": "erusform"
+    },
+    {
+      "rank": 420,
+      "token_id": 123611,
+      "l2_norm": 0.548595666885376,
+      "token_text": " \u010ceskosloven"
+    },
+    {
+      "rank": 421,
+      "token_id": 31836,
+      "l2_norm": 0.548659086227417,
+      "token_text": ">\r\r\n"
+    },
+    {
+      "rank": 422,
+      "token_id": 123584,
+      "l2_norm": 0.5486851334571838,
+      "token_text": " Ka\u017ed"
+    },
+    {
+      "rank": 423,
+      "token_id": 125022,
+      "l2_norm": 0.5487589836120605,
+      "token_text": "\u045fN"
+    },
+    {
+      "rank": 424,
+      "token_id": 122315,
+      "l2_norm": 0.5489312410354614,
+      "token_text": "m\u00fc\u015ft\u00fcr"
+    },
+    {
+      "rank": 425,
+      "token_id": 127994,
+      "l2_norm": 0.5490391850471497,
+      "token_text": "\u0432\u0430\u0442\u0438\u0441\u044f"
+    },
+    {
+      "rank": 426,
+      "token_id": 105787,
+      "l2_norm": 0.549352765083313,
+      "token_text": "\u258d\u258d\u258d\u258d"
+    },
+    {
+      "rank": 427,
+      "token_id": 112206,
+      "l2_norm": 0.5496675968170166,
+      "token_text": " otev\u0159"
+    },
+    {
+      "rank": 428,
+      "token_id": 119833,
+      "l2_norm": 0.5499094724655151,
+      "token_text": " m\u00fccadel"
+    },
+    {
+      "rank": 429,
+      "token_id": 113720,
+      "l2_norm": 0.5500558614730835,
+      "token_text": " a\u00e7\u0131klam"
+    },
+    {
+      "rank": 430,
+      "token_id": 120592,
+      "l2_norm": 0.5501699447631836,
+      "token_text": "\u0442\u0438\u0441\u044f"
+    },
+    {
+      "rank": 431,
+      "token_id": 118377,
+      "l2_norm": 0.5503110885620117,
+      "token_text": " mezin\u00e1"
+    },
+    {
+      "rank": 432,
+      "token_id": 44001,
+      "l2_norm": 0.5503622889518738,
+      "token_text": "_AdjustorThunk"
+    },
+    {
+      "rank": 433,
+      "token_id": 124703,
+      "l2_norm": 0.5504435300827026,
+      "token_text": "\u0131rlar"
+    },
+    {
+      "rank": 434,
+      "token_id": 104121,
+      "l2_norm": 0.5505931973457336,
+      "token_text": "iyordu"
+    },
+    {
+      "rank": 435,
+      "token_id": 127024,
+      "l2_norm": 0.5506204962730408,
+      "token_text": " \u043f\u0440\u043e\u0444\u0438\u043b\u0430\u043a\u0442\u0438"
+    },
+    {
+      "rank": 436,
+      "token_id": 82354,
+      "l2_norm": 0.550998866558075,
+      "token_text": "(){\r\n\r\n"
+    },
+    {
+      "rank": 437,
+      "token_id": 116286,
+      "l2_norm": 0.5510155558586121,
+      "token_text": " v\u1eef"
+    },
+    {
+      "rank": 438,
+      "token_id": 127719,
+      "l2_norm": 0.551023542881012,
+      "token_text": " \u0440\u043e\u0437\u0432\u0438"
+    },
+    {
+      "rank": 439,
+      "token_id": 31960,
+      "l2_norm": 0.5510421395301819,
+      "token_text": "quotelev"
+    },
+    {
+      "rank": 440,
+      "token_id": 111750,
+      "l2_norm": 0.5511484742164612,
+      "token_text": " \u0440\u0430\u0441\u043f\u043e\u043b\u043e\u0436"
+    },
+    {
+      "rank": 441,
+      "token_id": 62420,
+      "l2_norm": 0.5512778162956238,
+      "token_text": ");\r\r\n"
+    },
+    {
+      "rank": 442,
+      "token_id": 107818,
+      "l2_norm": 0.5513017773628235,
+      "token_text": "\u00e1rn\u00ed"
+    },
+    {
+      "rank": 443,
+      "token_id": 47072,
+      "l2_norm": 0.5515894293785095,
+      "token_text": "webElementX"
+    },
+    {
+      "rank": 444,
+      "token_id": 120318,
+      "l2_norm": 0.5516605377197266,
+      "token_text": "\u91b4\u91b4"
+    },
+    {
+      "rank": 445,
+      "token_id": 117949,
+      "l2_norm": 0.552026629447937,
+      "token_text": "e\u015ftir"
+    },
+    {
+      "rank": 446,
+      "token_id": 117521,
+      "l2_norm": 0.5520980358123779,
+      "token_text": "en\u00edze"
+    },
+    {
+      "rank": 447,
+      "token_id": 127671,
+      "l2_norm": 0.5522356629371643,
+      "token_text": " vystav"
+    },
+    {
+      "rank": 448,
+      "token_id": 126754,
+      "l2_norm": 0.5522981882095337,
+      "token_text": "d\u0131klar\u0131"
+    },
+    {
+      "rank": 449,
+      "token_id": 126157,
+      "l2_norm": 0.5525410771369934,
+      "token_text": " \u043d\u0430\u0439\u043a\u0440\u0430"
+    },
+    {
+      "rank": 450,
+      "token_id": 126778,
+      "l2_norm": 0.5526041984558105,
+      "token_text": " \u043f\u0440\u0438\u043d\u0430\u0434\u043b\u0435\u0436"
+    },
+    {
+      "rank": 451,
+      "token_id": 120325,
+      "l2_norm": 0.5530861616134644,
+      "token_text": " \u0434\u043e\u0437\u0432\u043e\u043b"
+    },
+    {
+      "rank": 452,
+      "token_id": 127865,
+      "l2_norm": 0.5531038045883179,
+      "token_text": " \u043e\u0441\u043b\u043e\u0436"
+    },
+    {
+      "rank": 453,
+      "token_id": 114540,
+      "l2_norm": 0.5533987879753113,
+      "token_text": " \u0432\u043e\u0437\u0434\u0435\u0439\u0441\u0442\u0432"
+    },
+    {
+      "rank": 454,
+      "token_id": 108980,
+      "l2_norm": 0.5534399747848511,
+      "token_text": " smlou"
+    },
+    {
+      "rank": 455,
+      "token_id": 87829,
+      "l2_norm": 0.5541775822639465,
+      "token_text": " }\r\r\n"
+    },
+    {
+      "rank": 456,
+      "token_id": 112803,
+      "l2_norm": 0.5541927218437195,
+      "token_text": "\u00fcsl\u00fc"
+    },
+    {
+      "rank": 457,
+      "token_id": 123510,
+      "l2_norm": 0.5544321537017822,
+      "token_text": " kuchy"
+    },
+    {
+      "rank": 458,
+      "token_id": 109414,
+      "l2_norm": 0.5545341372489929,
+      "token_text": " zdravot"
+    },
+    {
+      "rank": 459,
+      "token_id": 51574,
+      "l2_norm": 0.5547942519187927,
+      "token_text": " {\r\r\n"
+    },
+    {
+      "rank": 460,
+      "token_id": 125029,
+      "l2_norm": 0.5550127029418945,
+      "token_text": " \u03bd\u03b5\u03c6\u03bf\u03ba"
+    },
+    {
+      "rank": 461,
+      "token_id": 126169,
+      "l2_norm": 0.5550592541694641,
+      "token_text": "a\u0159ilo"
+    },
+    {
+      "rank": 462,
+      "token_id": 114178,
+      "l2_norm": 0.5551211833953857,
+      "token_text": " jednodu"
+    },
+    {
+      "rank": 463,
+      "token_id": 113924,
+      "l2_norm": 0.5552442669868469,
+      "token_text": " \u0437\u0443\u0441\u0442"
+    },
+    {
+      "rank": 464,
+      "token_id": 120232,
+      "l2_norm": 0.5562019944190979,
+      "token_text": " ovliv"
+    },
+    {
+      "rank": 465,
+      "token_id": 100509,
+      "l2_norm": 0.5564594268798828,
+      "token_text": "\u045f\u045f\u045f\u045f\u045f\u045f\u045f\u045f\u045f\u045f\u045f\u045f\u045f\u045f\u045f\u045f"
+    },
+    {
+      "rank": 466,
+      "token_id": 110525,
+      "l2_norm": 0.556491494178772,
+      "token_text": " vzd\u011bl"
+    },
+    {
+      "rank": 467,
+      "token_id": 113774,
+      "l2_norm": 0.5572593212127686,
+      "token_text": " pova\u017e"
+    },
+    {
+      "rank": 468,
+      "token_id": 123563,
+      "l2_norm": 0.5573325753211975,
+      "token_text": " zvy\u0161"
+    },
+    {
+      "rank": 469,
+      "token_id": 45222,
+      "l2_norm": 0.5575560331344604,
+      "token_text": ";\r\r\n"
+    },
+    {
+      "rank": 470,
+      "token_id": 125799,
+      "l2_norm": 0.5577268004417419,
+      "token_text": "\ufffdnh"
+    },
+    {
+      "rank": 471,
+      "token_id": 98100,
+      "l2_norm": 0.5581569671630859,
+      "token_text": "(stypy"
+    },
+    {
+      "rank": 472,
+      "token_id": 115977,
+      "l2_norm": 0.5598194599151611,
+      "token_text": " \u043e\u0433\u0440\u0430\u043d\u0438\u0447"
+    },
+    {
+      "rank": 473,
+      "token_id": 116815,
+      "l2_norm": 0.5600069165229797,
+      "token_text": " obvyk"
+    },
+    {
+      "rank": 474,
+      "token_id": 117909,
+      "l2_norm": 0.5603656768798828,
+      "token_text": " zvl\u00e1\u0161t"
+    },
+    {
+      "rank": 475,
+      "token_id": 112668,
+      "l2_norm": 0.5605833530426025,
+      "token_text": " t\u00fcket"
+    },
+    {
+      "rank": 476,
+      "token_id": 126445,
+      "l2_norm": 0.5608293414115906,
+      "token_text": " belirlen"
+    },
+    {
+      "rank": 477,
+      "token_id": 108457,
+      "l2_norm": 0.5609095096588135,
+      "token_text": "lard\u0131"
+    },
+    {
+      "rank": 478,
+      "token_id": 113050,
+      "l2_norm": 0.5624664425849915,
+      "token_text": "mu\u015ftur"
+    },
+    {
+      "rank": 479,
+      "token_id": 125437,
+      "l2_norm": 0.5635169148445129,
+      "token_text": ".:.:.:.:.:.:.:.:.:.:.:.:.:.:.:.:"
+    },
+    {
+      "rank": 480,
+      "token_id": 121267,
+      "l2_norm": 0.5640824437141418,
+      "token_text": " \u043f\u043e\u0437\u0432\u043e\u043b"
+    },
+    {
+      "rank": 481,
+      "token_id": 113689,
+      "l2_norm": 0.5641408562660217,
+      "token_text": "\u30fb\u2501\u30fb\u2501"
+    },
+    {
+      "rank": 482,
+      "token_id": 87474,
+      "l2_norm": 0.5644848942756653,
+      "token_text": "\u7121\u3057\u3055\u3093"
+    },
+    {
+      "rank": 483,
+      "token_id": 123046,
+      "l2_norm": 0.5650178790092468,
+      "token_text": ".**************\n"
+    },
+    {
+      "rank": 484,
+      "token_id": 103870,
+      "l2_norm": 0.5651900172233582,
+      "token_text": " ka\u017ed"
+    },
+    {
+      "rank": 485,
+      "token_id": 125654,
+      "l2_norm": 0.565360426902771,
+      "token_text": " uv\u011bdom"
+    },
+    {
+      "rank": 486,
+      "token_id": 90412,
+      "l2_norm": 0.5660974979400635,
+      "token_text": "selectorMethod"
+    },
+    {
+      "rank": 487,
+      "token_id": 112464,
+      "l2_norm": 0.5661452412605286,
+      "token_text": "\u30fb\u2501"
+    },
+    {
+      "rank": 488,
+      "token_id": 106176,
+      "l2_norm": 0.5665695071220398,
+      "token_text": " \u00fada"
+    },
+    {
+      "rank": 489,
+      "token_id": 105983,
+      "l2_norm": 0.5672656893730164,
+      "token_text": " \u0432\u0438\u0440\u043e\u0431"
+    },
+    {
+      "rank": 490,
+      "token_id": 100260,
+      "l2_norm": 0.5676499605178833,
+      "token_text": "\u045f\u045f"
+    },
+    {
+      "rank": 491,
+      "token_id": 45794,
+      "l2_norm": 0.5686762928962708,
+      "token_text": ">tagger"
+    },
+    {
+      "rank": 492,
+      "token_id": 55722,
+      "l2_norm": 0.5687514543533325,
+      "token_text": " },\r\n\r\n"
+    },
+    {
+      "rank": 493,
+      "token_id": 123228,
+      "l2_norm": 0.5688079595565796,
+      "token_text": "\u045f\u045f\u045f"
+    },
+    {
+      "rank": 494,
+      "token_id": 115109,
+      "l2_norm": 0.5690038204193115,
+      "token_text": "\u5468\u6536\u5f55"
+    },
+    {
+      "rank": 495,
+      "token_id": 76371,
+      "l2_norm": 0.5693298578262329,
+      "token_text": "LANGADM"
+    },
+    {
+      "rank": 496,
+      "token_id": 115107,
+      "l2_norm": 0.5693891048431396,
+      "token_text": " \u9996\u9875\u7b2c"
+    },
+    {
+      "rank": 497,
+      "token_id": 79008,
+      "l2_norm": 0.5695325136184692,
+      "token_text": " \"\";\r\n\r\n"
+    },
+    {
+      "rank": 498,
+      "token_id": 110655,
+      "l2_norm": 0.5695715546607971,
+      "token_text": " zprac"
+    },
+    {
+      "rank": 499,
+      "token_id": 125779,
+      "l2_norm": 0.5699231028556824,
+      "token_text": " \u03bd\u03b5\u03c6\u03ce\u03c3\u03b5\u03b9\u03c2"
+    },
+    {
+      "rank": 500,
+      "token_id": 94489,
+      "l2_norm": 0.5699923634529114,
+      "token_text": ")))));\r\n"
+    }
+  ],
+  "statistics": {
+    "min_norm": 0.5442078709602356,
+    "max_norm": 1.3783626556396484,
+    "median_norm": 0.9889916181564331,
+    "mean_norm": 0.9870073449767256
+  }
+}

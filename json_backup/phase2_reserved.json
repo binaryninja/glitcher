@@ -1,0 +1,10 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "timestamp": 1752266634.6294134,
+  "sample_rate": 1.0,
+  "max_tokens_per_range": 100,
+  "ranges_tested": [],
+  "total_tokens_tested": 0,
+  "total_glitch_tokens": 0,
+  "glitch_tokens": []
+}

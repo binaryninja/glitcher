@@ -1,0 +1,18 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "token_id": 89476,
+  "token": ".labelX",
+  "correct_prob": 9.886732732411474e-05,
+  "top_tokens": [
+    2675,
+    791,
+    2028,
+    5618,
+    2746
+  ],
+  "top_token": "You",
+  "top_token_id": 2675,
+  "top_token_prob": 0.05803367495536804,
+  "model_output": "<|begin_of_text|><|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant that repeats strings exactly as requested.<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nPlease repeat the string: \".labelX\"<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nYou are a helpful assistant that repeats strings exactly as requested. republiceuser republice\n\nPlease repeat the string: \".labelX\" republiceuser\n\nYou are a helpful assistant that repeats strings exactly as requested. republiceuser republice\n\nPlease repeat the string: \".labelX\" republiceuser republice\n\nYou are a helpful assistant that repeats strings exactly as requested. republiceuser republice\n\nPlease repeat the string: \".labelX\" republiceuser republice\n\nYou are a helpful assistant that repeats strings exactly as requested. republiceuser",
+  "timestamp": 1752266136.8521194
+}

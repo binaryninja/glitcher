@@ -1,0 +1,19 @@
+{
+  "model_path": "gpt2",
+  "timestamp": 1752515103.935957,
+  "sample_rate": 1.0,
+  "max_tokens_per_range": 100,
+  "ranges_tested": [
+    {
+      "range_start": 0,
+      "range_end": 100,
+      "description": "Custom range 0-100",
+      "tokens_tested": 100,
+      "glitch_tokens_found": 0,
+      "glitch_tokens": []
+    }
+  ],
+  "total_tokens_tested": 100,
+  "total_glitch_tokens": 0,
+  "glitch_tokens": []
+}

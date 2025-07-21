@@ -64,11 +64,14 @@ glitcher genetic meta-llama/Llama-3.2-1B-Instruct --batch --token-file glitch_to
 # Genetic algorithm with custom token file and output
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --token-file custom_glitch_tokens.json --output genetic_results_custom.json --generations 60
 
-# Genetic algorithm with real-time GUI animation
+# Genetic algorithm with real-time GUI animation showing full string construction
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --gui --base-text "The quick brown" --generations 50
 
 # GUI with custom parameters and batch mode
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --gui --batch --generations 30 --population-size 25
+
+# GUI showing enhanced string visualization with token positioning
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --gui --base-text "Hello world, this is a test of" --generations 40 --population-size 30
 
 # Test specific token IDs
 glitcher test meta-llama/Llama-3.2-1B-Instruct --token-ids 89472,127438,85069
@@ -267,17 +270,24 @@ When using genetic algorithm, results include evolved token combinations:
 When using `--gui` flag, the genetic algorithm displays a live animation window showing:
 
 - **Fitness Evolution Chart**: Live graph of best and average fitness over generations
+- **Enhanced Info Panel**: Real-time context display including:
+  - Target token prediction context
+  - Full string construction visualization: `[evolved_tokens] + "base_text"`
+  - Complete input string shown to model
+  - Baseline vs current probability comparison
+- **Token Combination Display**: Current best evolved tokens with:
+  - Token IDs and decoded token texts
+  - Full constructed string showing token positioning
+  - Visual separation between evolved tokens and base text
+  - Complete prediction context
 - **Current Statistics Panel**: Real-time metrics including:
   - Current generation number
-  - Best fitness score
-  - Average population fitness
-  - Probability reduction percentage
-  - Evolution progress
-- **Token Combination Display**: Current best token combination with:
-  - Token IDs
-  - Decoded token texts (when available)
-  - Fitness score of current best individual
-- **Base Information**: Target token and baseline probability
+  - Best fitness score and probability reduction
+  - Evolution progress and token combination fitness
+- **Token Evolution Analysis**: Enhanced comparison showing:
+  - Original base text vs evolved string construction
+  - Complete prediction impact analysis
+  - Real-time probability transformation tracking
 
 ### GUI Usage Examples
 
@@ -304,19 +314,33 @@ pip install matplotlib
 pip install tkinter  # Usually pre-installed with Python
 ```
 
-### GUI Features
-- **Real-time Updates**: Animation updates every generation
-- **Interactive Window**: Resizable, zoomable plots
+### Enhanced GUI Features
+- **Full String Visualization**: Shows complete token positioning and string construction
+- **Real-time Context Updates**: Live display of how evolved tokens modify the input
+- **String Construction Display**: Clear visualization of `[evolved_tokens] + "base_text" = "full_string"`
+- **Token Positioning Markers**: Visual separation between evolved prefix and base text
+- **Complete Prediction Analysis**: Real-time tracking of probability transformations
+- **Interactive Window**: Resizable, zoomable plots with professional formatting
 - **Auto-scaling**: Axes automatically adjust to data range
 - **Color-coded Status**: Visual indicators for performance levels
+- **Enhanced Formatting**: Monospace fonts and emoji indicators for clarity
 - **Stay-alive Mode**: Window remains open after evolution completes
-- **Close-to-exit**: Simply close the window to terminate visualization
+
+### Enhanced String Visualization
+The GUI now clearly shows:
+1. **Token Insertion Point**: How evolved tokens are positioned at the beginning of text
+2. **String Construction**: Visual format `[evolved_tokens] + "base_text" = "result"`
+3. **Context Awareness**: Complete input string being fed to the model
+4. **Real-time Changes**: Live updates showing string modifications during evolution
+5. **Prediction Impact**: How string changes affect target token probabilities
 
 ### GUI Performance Notes
 - GUI adds minimal overhead to genetic algorithm execution
+- String visualization updates in real-time during evolution
 - Animation updates happen asynchronously
 - Window can be closed at any time without stopping evolution
 - Works with both single and batch experiment modes
+- Enhanced formatting optimized for readability
 
 ## Code Style Guidelines
 - Follow PEP 8 conventions for Python code

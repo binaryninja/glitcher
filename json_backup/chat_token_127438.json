@@ -1,0 +1,18 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "token_id": 127438,
+  "token": "\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d",
+  "correct_prob": 5.470304245136504e-07,
+  "top_tokens": [
+    10634,
+    67,
+    198,
+    52096,
+    144
+  ],
+  "top_token": "\ufffd",
+  "top_token_id": 10634,
+  "top_token_prob": 0.09514481574296951,
+  "model_output": "Repeat this exactly once: \u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\u258d\ufffd",
+  "timestamp": 1752269167.4417741
+}

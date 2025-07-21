@@ -1,0 +1,202 @@
+# Range-based mining log
+{"event": "start", "model": "gpt2", "ranges": 1}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5930, "token_text": " Put"}
+{"event": "token_error", "token_id": 5930, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5626, "token_text": " NOT"}
+{"event": "token_error", "token_id": 5626, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5842, "token_text": "Us"}
+{"event": "token_error", "token_id": 5842, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5753, "token_text": "uls"}
+{"event": "token_error", "token_id": 5753, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5439, "token_text": "lo"}
+{"event": "token_error", "token_id": 5439, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5978, "token_text": "olt"}
+{"event": "token_error", "token_id": 5978, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5896, "token_text": " Love"}
+{"event": "token_error", "token_id": 5896, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5637, "token_text": " remaining"}
+{"event": "token_error", "token_id": 5637, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5817, "token_text": "ortion"}
+{"event": "token_error", "token_id": 5817, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5126, "token_text": "asp"}
+{"event": "token_error", "token_id": 5126, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5094, "token_text": " Public"}
+{"event": "token_error", "token_id": 5094, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5298, "token_text": " raise"}
+{"event": "token_error", "token_id": 5298, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5120, "token_text": " proceed"}
+{"event": "token_error", "token_id": 5120, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5200, "token_text": " Sup"}
+{"event": "token_error", "token_id": 5200, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5872, "token_text": "arden"}
+{"event": "token_error", "token_id": 5872, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5745, "token_text": " organizations"}
+{"event": "token_error", "token_id": 5745, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5309, "token_text": "ucky"}
+{"event": "token_error", "token_id": 5309, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5919, "token_text": " Phot"}
+{"event": "token_error", "token_id": 5919, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5696, "token_text": " materials"}
+{"event": "token_error", "token_id": 5696, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5103, "token_text": " construction"}
+{"event": "token_error", "token_id": 5103, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5630, "token_text": " sust"}
+{"event": "token_error", "token_id": 5630, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5944, "token_text": "Ob"}
+{"event": "token_error", "token_id": 5944, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5885, "token_text": " possibility"}
+{"event": "token_error", "token_id": 5885, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5969, "token_text": " fixed"}
+{"event": "token_error", "token_id": 5969, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5027, "token_text": " Gal"}
+{"event": "token_error", "token_id": 5027, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5775, "token_text": " enemies"}
+{"event": "token_error", "token_id": 5775, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5296, "token_text": " trip"}
+{"event": "token_error", "token_id": 5296, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5987, "token_text": "essor"}
+{"event": "token_error", "token_id": 5987, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5792, "token_text": " Whe"}
+{"event": "token_error", "token_id": 5792, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5724, "token_text": " rot"}
+{"event": "token_error", "token_id": 5724, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5026, "token_text": " sem"}
+{"event": "token_error", "token_id": 5026, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5364, "token_text": " committed"}
+{"event": "token_error", "token_id": 5364, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5730, "token_text": "oking"}
+{"event": "token_error", "token_id": 5730, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5157, "token_text": " Back"}
+{"event": "token_error", "token_id": 5157, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5295, "token_text": " determined"}
+{"event": "token_error", "token_id": 5295, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5471, "token_text": " opposition"}
+{"event": "token_error", "token_id": 5471, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5732, "token_text": " increases"}
+{"event": "token_error", "token_id": 5732, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5408, "token_text": " expression"}
+{"event": "token_error", "token_id": 5408, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5898, "token_text": "foot"}
+{"event": "token_error", "token_id": 5898, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5082, "token_text": "agement"}
+{"event": "token_error", "token_id": 5082, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5555, "token_text": " Photo"}
+{"event": "token_error", "token_id": 5555, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5447, "token_text": " defined"}
+{"event": "token_error", "token_id": 5447, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5001, "token_text": " purchase"}
+{"event": "token_error", "token_id": 5001, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5670, "token_text": " focused"}
+{"event": "token_error", "token_id": 5670, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5513, "token_text": " sch"}
+{"event": "token_error", "token_id": 5513, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5332, "token_text": "85"}
+{"event": "token_error", "token_id": 5332, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5492, "token_text": "Please"}
+{"event": "token_error", "token_id": 5492, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5510, "token_text": " African"}
+{"event": "token_error", "token_id": 5510, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5163, "token_text": " exchange"}
+{"event": "token_error", "token_id": 5163, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5683, "token_text": " Ext"}
+{"event": "token_error", "token_id": 5683, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5485, "token_text": " shape"}
+{"event": "token_error", "token_id": 5485, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5347, "token_text": " ing"}
+{"event": "token_error", "token_id": 5347, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5090, "token_text": "emies"}
+{"event": "token_error", "token_id": 5090, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5190, "token_text": " restaur"}
+{"event": "token_error", "token_id": 5190, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5050, "token_text": " methods"}
+{"event": "token_error", "token_id": 5050, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5594, "token_text": " belong"}
+{"event": "token_error", "token_id": 5594, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5019, "token_text": " mere"}
+{"event": "token_error", "token_id": 5019, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5128, "token_text": " input"}
+{"event": "token_error", "token_id": 5128, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5392, "token_text": " conclud"}
+{"event": "token_error", "token_id": 5392, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5534, "token_text": " 01"}
+{"event": "token_error", "token_id": 5534, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5358, "token_text": " conflict"}
+{"event": "token_error", "token_id": 5358, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5159, "token_text": "Image"}
+{"event": "token_error", "token_id": 5159, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5762, "token_text": " wearing"}
+{"event": "token_error", "token_id": 5762, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5113, "token_text": " fant"}
+{"event": "token_error", "token_id": 5113, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5117, "token_text": "arp"}
+{"event": "token_error", "token_id": 5117, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5682, "token_text": " homes"}
+{"event": "token_error", "token_id": 5682, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5932, "token_text": " Child"}
+{"event": "token_error", "token_id": 5932, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5739, "token_text": " frame"}
+{"event": "token_error", "token_id": 5739, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5180, "token_text": " Chris"}
+{"event": "token_error", "token_id": 5180, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5183, "token_text": "hat"}
+{"event": "token_error", "token_id": 5183, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5334, "token_text": " Their"}
+{"event": "token_error", "token_id": 5334, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5994, "token_text": " Type"}
+{"event": "token_error", "token_id": 5994, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5663, "token_text": "igrants"}
+{"event": "token_error", "token_id": 5663, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5034, "token_text": "rie"}
+{"event": "token_error", "token_id": 5034, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5847, "token_text": "iser"}
+{"event": "token_error", "token_id": 5847, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5487, "token_text": "ansion"}
+{"event": "token_error", "token_id": 5487, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5237, "token_text": "62"}
+{"event": "token_error", "token_id": 5237, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5669, "token_text": "amin"}
+{"event": "token_error", "token_id": 5669, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5074, "token_text": " Carol"}
+{"event": "token_error", "token_id": 5074, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5367, "token_text": "\u00af\u00af"}
+{"event": "token_error", "token_id": 5367, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5714, "token_text": "stein"}
+{"event": "token_error", "token_id": 5714, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5905, "token_text": " Expl"}
+{"event": "token_error", "token_id": 5905, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5343, "token_text": "ijuana"}
+{"event": "token_error", "token_id": 5343, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5607, "token_text": "97"}
+{"event": "token_error", "token_id": 5607, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5230, "token_text": " internet"}
+{"event": "token_error", "token_id": 5230, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5643, "token_text": "ads"}
+{"event": "token_error", "token_id": 5643, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5879, "token_text": " prove"}
+{"event": "token_error", "token_id": 5879, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5311, "token_text": " Kh"}
+{"event": "token_error", "token_id": 5311, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5727, "token_text": " marijuana"}
+{"event": "token_error", "token_id": 5727, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5976, "token_text": "hab"}
+{"event": "token_error", "token_id": 5976, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5494, "token_text": " hun"}
+{"event": "token_error", "token_id": 5494, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5435, "token_text": " Ukrain"}
+{"event": "token_error", "token_id": 5435, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5599, "token_text": " Master"}
+{"event": "token_error", "token_id": 5599, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5882, "token_text": " Long"}
+{"event": "token_error", "token_id": 5882, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5616, "token_text": " Mel"}
+{"event": "token_error", "token_id": 5616, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5102, "token_text": "anged"}
+{"event": "token_error", "token_id": 5102, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5609, "token_text": " changing"}
+{"event": "token_error", "token_id": 5609, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5437, "token_text": " Jones"}
+{"event": "token_error", "token_id": 5437, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5078, "token_text": " switch"}
+{"event": "token_error", "token_id": 5078, "error": "'stop_token'", "range": "Custom range 5000-6000"}
+{"event": "testing_token", "range": "Custom range 5000-6000", "token_id": 5940, "token_text": " conservative"}
+{"event": "token_error", "token_id": 5940, "error": "'stop_token'", "range": "Custom range 5000-6000"}

@@ -9,6 +9,8 @@ setup(
         "transformers>=4.30.0",
         "accelerate>=0.20.0",
         "tqdm>=4.64.0",
+        "matplotlib>=3.5.0",
+        "mistralai>=1.0.0",
     ],
     entry_points={
         'console_scripts': [

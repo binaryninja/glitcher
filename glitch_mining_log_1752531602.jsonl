@@ -1,0 +1,3 @@
+# Glitch Mining Log - Detailed token evaluation
+{"event": "start", "info": {"model_name": "mistralai/Ministral-8B-Instruct-2410", "device": "cuda:0", "is_llama32": false, "mining_params": {"num_iterations": 2000, "batch_size": 16, "k": 32, "enhanced_validation": true, "max_tokens": 600, "num_attempts": 4, "asr_threshold": 0.5}}}
+{"event": "template_info", "info": {"template_name": "builtin_ministral-8b-instruct-2410", "system_format": null, "user_format": null, "assistant_prefill": null, "uses_builtin_template": true}}

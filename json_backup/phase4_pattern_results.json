@@ -1,0 +1,5959 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "timestamp": 1752263575.946929,
+  "max_tokens_scanned": 75000,
+  "total_candidates": 500,
+  "total_glitch_tokens": 115,
+  "success_rate": 0.23,
+  "pattern_distribution": {
+    "special_prefixes": 5974,
+    "unicode_corruption": 2991,
+    "encoding_artifacts": 666,
+    "script_mixing_any": 32774,
+    "bracket_anomalies": 780,
+    "whitespace_anomalies": 665,
+    "punctuation_spam": 115,
+    "repeated_chars": 268,
+    "data_leakage": 529,
+    "dot_sequences": 65,
+    "code_artifacts": 142,
+    "byte_order_marks": 6,
+    "invisible_chars": 10,
+    "programming_typos": 617,
+    "currency_mixed": 105,
+    "box_drawing": 2,
+    "progress_bars": 1
+  },
+  "pattern_success_rates": {
+    "repeated_chars": {
+      "candidates": 37,
+      "glitches": 0,
+      "success_rate": 0.0
+    },
+    "code_artifacts": {
+      "candidates": 6,
+      "glitches": 0,
+      "success_rate": 0.0
+    },
+    "unicode_corruption": {
+      "candidates": 410,
+      "glitches": 114,
+      "success_rate": 0.2780487804878049
+    },
+    "data_leakage": {
+      "candidates": 24,
+      "glitches": 0,
+      "success_rate": 0.0
+    },
+    "programming_typos": {
+      "candidates": 27,
+      "glitches": 0,
+      "success_rate": 0.0
+    },
+    "whitespace_anomalies": {
+      "candidates": 235,
+      "glitches": 6,
+      "success_rate": 0.02553191489361702
+    },
+    "currency_mixed": {
+      "candidates": 39,
+      "glitches": 0,
+      "success_rate": 0.0
+    },
+    "special_prefixes": {
+      "candidates": 164,
+      "glitches": 4,
+      "success_rate": 0.024390243902439025
+    },
+    "bracket_anomalies": {
+      "candidates": 159,
+      "glitches": 0,
+      "success_rate": 0.0
+    },
+    "dot_sequences": {
+      "candidates": 13,
+      "glitches": 1,
+      "success_rate": 0.07692307692307693
+    },
+    "punctuation_spam": {
+      "candidates": 7,
+      "glitches": 0,
+      "success_rate": 0.0
+    },
+    "encoding_artifacts": {
+      "candidates": 132,
+      "glitches": 108,
+      "success_rate": 0.8181818181818182
+    },
+    "script_mixing_any": {
+      "candidates": 92,
+      "glitches": 1,
+      "success_rate": 0.010869565217391304
+    },
+    "byte_order_marks": {
+      "candidates": 3,
+      "glitches": 1,
+      "success_rate": 0.3333333333333333
+    },
+    "invisible_chars": {
+      "candidates": 4,
+      "glitches": 1,
+      "success_rate": 0.25
+    }
+  },
+  "log_file": "pattern_mining_log_1752263571.jsonl",
+  "results": [
+    {
+      "token_id": 24484,
+      "token": "++){\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 35791,
+      "token": "$config",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 44601,
+      "token": "******/\n\n",
+      "token_length": 9,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 54199,
+      "token": "*******/\n\n",
+      "token_length": 10,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 55310,
+      "token": "-----------\n\n",
+      "token_length": 13,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 63545,
+      "token": "$username",
+      "token_length": 9,
+      "matching_patterns": [
+        "programming_typos",
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 66364,
+      "token": "__()\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 66987,
+      "token": "------\n\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 69403,
+      "token": "----------\n\n",
+      "token_length": 12,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 70143,
+      "token": "---------\n\n",
+      "token_length": 11,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 71131,
+      "token": "......\n\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 71774,
+      "token": "-----\n\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 71918,
+      "token": "--------\n\n",
+      "token_length": 10,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 72637,
+      "token": "-------\n\n",
+      "token_length": 9,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 73748,
+      "token": "++){\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 74240,
+      "token": "******\r\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 4,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1454,
+      "token": "();\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1679,
+      "token": "();\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 2195,
+      "token": "...\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 2892,
+      "token": "()\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 3086,
+      "token": " });\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 3317,
+      "token": "));\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 3652,
+      "token": "()\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 3657,
+      "token": "$this",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 4117,
+      "token": "\ufeffusing",
+      "token_length": 6,
+      "matching_patterns": [
+        "script_mixing_any",
+        "byte_order_marks",
+        "invisible_chars"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 4489,
+      "token": "))\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 4649,
+      "token": "});\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 4854,
+      "token": ".getElementById",
+      "token_length": 15,
+      "matching_patterns": [
+        "code_artifacts",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 4965,
+      "token": "));\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 5344,
+      "token": "());\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 5445,
+      "token": "_config",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 5585,
+      "token": "...\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 5904,
+      "token": "))\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 6094,
+      "token": "){\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 6333,
+      "token": "());\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 6343,
+      "token": "*/\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 6939,
+      "token": "++){\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "special_prefixes",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 7466,
+      "token": "();\r\n\r\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 8229,
+      "token": "\tinline",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "data_leakage",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 9000,
+      "token": "})\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 9763,
+      "token": " })\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 9801,
+      "token": "])\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 10294,
+      "token": " {}\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 10359,
+      "token": "]);\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 10665,
+      "token": ">();\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 10669,
+      "token": "-\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 11090,
+      "token": "_settings",
+      "token_length": 9,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 11910,
+      "token": "++)\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 12275,
+      "token": "]);\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 12647,
+      "token": "())\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 12679,
+      "token": " });\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 12853,
+      "token": "_CONFIG",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 13050,
+      "token": "(){\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 13090,
+      "token": "){\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 13300,
+      "token": "*/\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 13407,
+      "token": "()\n\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 13417,
+      "token": "())\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 14237,
+      "token": "++;\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 14578,
+      "token": "$result",
+      "token_length": 7,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 14665,
+      "token": "----------\n",
+      "token_length": 11,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 14745,
+      "token": "$sql",
+      "token_length": 4,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 14941,
+      "token": " []\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 15276,
+      "token": "\"));\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 15364,
+      "token": "])\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 15759,
+      "token": "\"));\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 15799,
+      "token": " [];\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 15804,
+      "token": "%\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 16300,
+      "token": ">();\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 16638,
+      "token": "});\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 18218,
+      "token": "();\n\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 18490,
+      "token": "()\r\n\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 18706,
+      "token": "\ufeffnamespace",
+      "token_length": 10,
+      "matching_patterns": [
+        "script_mixing_any",
+        "byte_order_marks",
+        "invisible_chars"
+      ],
+      "pattern_count": 3,
+      "is_glitch": true
+    },
+    {
+      "token_id": 19276,
+      "token": "({\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 19327,
+      "token": "_\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 19789,
+      "token": ")))\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 19888,
+      "token": "(){\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 19908,
+      "token": "@\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 20015,
+      "token": "$scope",
+      "token_length": 6,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 20048,
+      "token": ".getElementsBy",
+      "token_length": 14,
+      "matching_patterns": [
+        "code_artifacts",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 20838,
+      "token": "....\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 20931,
+      "token": "_setting",
+      "token_length": 8,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 20979,
+      "token": "))\n\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 20999,
+      "token": " {};\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 21318,
+      "token": "$string",
+      "token_length": 7,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 21732,
+      "token": ")));\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 21812,
+      "token": "():\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 22174,
+      "token": "));\r\n\r\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 22242,
+      "token": "*\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 22316,
+      "token": "_username",
+      "token_length": 9,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 22341,
+      "token": "++;\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 22445,
+      "token": "'));\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 22669,
+      "token": "']);\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 23123,
+      "token": "*******\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 23341,
+      "token": ")));\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 23494,
+      "token": "_;\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 23547,
+      "token": " ]);\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 24022,
+      "token": " []\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 24287,
+      "token": "'])\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 24441,
+      "token": "_setopt",
+      "token_length": 7,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 24554,
+      "token": "-inline",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 25174,
+      "token": "__\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 25403,
+      "token": "$user",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 25833,
+      "token": "!!\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "punctuation_spam"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 25863,
+      "token": "'))\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 25895,
+      "token": "(),\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 26187,
+      "token": "-config",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 26196,
+      "token": "()));\n\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 26221,
+      "token": " ();\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 26727,
+      "token": "']);\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 26815,
+      "token": "\")]\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 26906,
+      "token": " })\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 26959,
+      "token": "\tconfig",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "data_leakage",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 26972,
+      "token": "--------------------------------------------------------------------------\n",
+      "token_length": 75,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 26999,
+      "token": "-----------\n",
+      "token_length": 12,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 27064,
+      "token": "*\r\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 27135,
+      "token": "\"))\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 27507,
+      "token": "------\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 27567,
+      "token": "--\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 27585,
+      "token": "#\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 27676,
+      "token": "...\n\n\n\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 27677,
+      "token": ")))));\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 27858,
+      "token": "$id",
+      "token_length": 3,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 28072,
+      "token": "******/\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 28225,
+      "token": " }));\n\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 28319,
+      "token": "--}}\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "special_prefixes",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 28411,
+      "token": " });\n\n\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 28871,
+      "token": ")]\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 29175,
+      "token": "\"))\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 29194,
+      "token": ")){\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 29448,
+      "token": "});\n\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 29475,
+      "token": " });\r\n\r\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 29489,
+      "token": "<>();\n\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 29547,
+      "token": "---------\n",
+      "token_length": 10,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 29670,
+      "token": "*/\r\n\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 29765,
+      "token": "--------\n",
+      "token_length": 9,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 30058,
+      "token": "());\r\n\r\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 30629,
+      "token": ")]\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 30815,
+      "token": ".getElementsByTagName",
+      "token_length": 21,
+      "matching_patterns": [
+        "code_artifacts",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 32091,
+      "token": "))\r\n\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 32583,
+      "token": "{}\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 33031,
+      "token": "()));\r\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 33157,
+      "token": "!!!\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "punctuation_spam"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 33582,
+      "token": "_INLINE",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 33716,
+      "token": "__()\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "special_prefixes",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 33905,
+      "token": " ()\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 34037,
+      "token": "$stmt",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 34451,
+      "token": " ));\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 34721,
+      "token": "\u200b\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "invisible_chars"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 34836,
+      "token": ".getElementsByClassName",
+      "token_length": 23,
+      "matching_patterns": [
+        "code_artifacts",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 35183,
+      "token": "});\r\n\r\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 35241,
+      "token": " {}\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 35289,
+      "token": "_SETTINGS",
+      "token_length": 9,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 35427,
+      "token": " [];\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 35432,
+      "token": "%.\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 35864,
+      "token": "-----\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 35929,
+      "token": "...\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 36199,
+      "token": "})\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 36215,
+      "token": "*/\n\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 36308,
+      "token": "-------\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 36512,
+      "token": "_Config",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 36628,
+      "token": "*******/\n",
+      "token_length": 9,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 36796,
+      "token": "'));\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 36826,
+      "token": "_configuration",
+      "token_length": 14,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 37307,
+      "token": ")))\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 38028,
+      "token": "]))\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 38079,
+      "token": " [...]\n\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 38959,
+      "token": "-->\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 39325,
+      "token": ",...\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": true
+    },
+    {
+      "token_id": 40042,
+      "token": "-->\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 40258,
+      "token": "$response",
+      "token_length": 9,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 40673,
+      "token": "'])\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 40849,
+      "token": ")):\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 40969,
+      "token": "$MESS",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 41074,
+      "token": "():\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 41132,
+      "token": "-settings",
+      "token_length": 9,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 41417,
+      "token": "'))\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 41473,
+      "token": "$url",
+      "token_length": 4,
+      "matching_patterns": [
+        "data_leakage",
+        "currency_mixed",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 41825,
+      "token": "__)\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 42001,
+      "token": "[];\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 42125,
+      "token": "+\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 42291,
+      "token": " ){\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 42444,
+      "token": "#\r\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 42501,
+      "token": " []);\n\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 42943,
+      "token": "));\n\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 42953,
+      "token": "--;\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": true
+    },
+    {
+      "token_id": 42971,
+      "token": "_inline",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 43040,
+      "token": "_;\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 43349,
+      "token": "$post",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 43550,
+      "token": "]]\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 43619,
+      "token": "()){\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 43796,
+      "token": "_USERNAME",
+      "token_length": 9,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 43857,
+      "token": "$str",
+      "token_length": 4,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 43921,
+      "token": "$message",
+      "token_length": 8,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 44001,
+      "token": "_AdjustorThunk",
+      "token_length": 14,
+      "matching_patterns": [
+        "code_artifacts",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 44160,
+      "token": "})\n\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 45198,
+      "token": "...\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 45310,
+      "token": "$arity",
+      "token_length": 6,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 45416,
+      "token": "}));\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 45464,
+      "token": "---\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 45751,
+      "token": "])\n\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 46055,
+      "token": "--------------\n",
+      "token_length": 15,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 46200,
+      "token": "\"])\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 46424,
+      "token": "$file",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 46906,
+      "token": "***\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 47656,
+      "token": "%\r\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 48549,
+      "token": "}}\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 48586,
+      "token": "...\"\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 49060,
+      "token": "$item",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 49359,
+      "token": "_shortcode",
+      "token_length": 10,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 49371,
+      "token": "'){\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 49502,
+      "token": "\tsetTimeout",
+      "token_length": 11,
+      "matching_patterns": [
+        "unicode_corruption",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 49722,
+      "token": " ))\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 49998,
+      "token": "]))\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 50430,
+      "token": "$mail",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 50508,
+      "token": "--){\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "special_prefixes",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 50960,
+      "token": "$criteria",
+      "token_length": 9,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 51062,
+      "token": "()))\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 51624,
+      "token": "###\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 51740,
+      "token": "_);\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 51821,
+      "token": "<>();\r\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 51840,
+      "token": "$IFn",
+      "token_length": 4,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 52038,
+      "token": "\"){\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 52039,
+      "token": "$title",
+      "token_length": 6,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 52040,
+      "token": " }),\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 52130,
+      "token": "...\n\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 52584,
+      "token": "$options",
+      "token_length": 8,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 52646,
+      "token": "_online",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 52722,
+      "token": ">();\r\n\r\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 52732,
+      "token": "({\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 52854,
+      "token": "())\n\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 53424,
+      "token": "##\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 53636,
+      "token": "getConfig",
+      "token_length": 9,
+      "matching_patterns": [
+        "data_leakage",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 53803,
+      "token": "$email",
+      "token_length": 6,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 54851,
+      "token": "--\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": true
+    },
+    {
+      "token_id": 55553,
+      "token": " ();\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 55591,
+      "token": "\"]);\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 55762,
+      "token": "_unicode",
+      "token_length": 8,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 55816,
+      "token": "])\r\n\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 56222,
+      "token": " {};\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 56328,
+      "token": "$list",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 56631,
+      "token": "]);\r\n\r\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 57019,
+      "token": "\"]);\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 57101,
+      "token": ".GetHashCode",
+      "token_length": 12,
+      "matching_patterns": [
+        "data_leakage",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 57277,
+      "token": "**\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 57439,
+      "token": "------------\n",
+      "token_length": 13,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 57819,
+      "token": "$msg",
+      "token_length": 4,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 57970,
+      "token": "----\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 58093,
+      "token": " ])\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 58279,
+      "token": "$password",
+      "token_length": 9,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 58670,
+      "token": "))))\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 58775,
+      "token": "_DIPSETTING",
+      "token_length": 11,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 58965,
+      "token": "*****\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 58991,
+      "token": "_\r\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 59044,
+      "token": "**/\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 59228,
+      "token": "()))\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 59257,
+      "token": "]));\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 59277,
+      "token": " ){\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 59319,
+      "token": "){\r\n\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 59437,
+      "token": "\")));\r\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 59546,
+      "token": "@Configuration",
+      "token_length": 14,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 59972,
+      "token": "--;\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": true
+    },
+    {
+      "token_id": 60055,
+      "token": "_SETTING",
+      "token_length": 8,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 60250,
+      "token": "_configs",
+      "token_length": 8,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 60415,
+      "token": "_userdata",
+      "token_length": 9,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 60579,
+      "token": "**\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 60580,
+      "token": "());\n\n\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 60858,
+      "token": ".getConfig",
+      "token_length": 10,
+      "matching_patterns": [
+        "data_leakage",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 60941,
+      "token": "();\n\n\n\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 61366,
+      "token": ")),\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 61388,
+      "token": "___\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 61556,
+      "token": "-setting",
+      "token_length": 8,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 61560,
+      "token": "%)\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 62121,
+      "token": "]));\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 62377,
+      "token": " })\n\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 62619,
+      "token": "\ufeff\n",
+      "token_length": 2,
+      "matching_patterns": [
+        "unicode_corruption",
+        "byte_order_marks",
+        "invisible_chars"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 62748,
+      "token": "$status",
+      "token_length": 7,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 62757,
+      "token": "...]\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 62927,
+      "token": "...)\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "dot_sequences"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 62951,
+      "token": "$field",
+      "token_length": 6,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 63069,
+      "token": " [])\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 63217,
+      "token": "----------------------------------------------------------------------\n",
+      "token_length": 71,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 63251,
+      "token": "$image",
+      "token_length": 6,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 63290,
+      "token": "\tsetState",
+      "token_length": 9,
+      "matching_patterns": [
+        "unicode_corruption",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 63547,
+      "token": "_);\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 63664,
+      "token": "__\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 63832,
+      "token": "---------------\n",
+      "token_length": 16,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 64030,
+      "token": "\tsettings",
+      "token_length": 9,
+      "matching_patterns": [
+        "unicode_corruption",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 64413,
+      "token": "$json",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 65140,
+      "token": "@GetMapping",
+      "token_length": 11,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 65171,
+      "token": "******\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 65213,
+      "token": "__))\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "special_prefixes",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 65377,
+      "token": "__);\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 66152,
+      "token": "::\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "punctuation_spam"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 66260,
+      "token": "$smarty",
+      "token_length": 7,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 66910,
+      "token": "-------------\n",
+      "token_length": 14,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 67002,
+      "token": "$link",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 67256,
+      "token": "\tConfig",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "data_leakage",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 67526,
+      "token": "$\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 67863,
+      "token": " getConfig",
+      "token_length": 10,
+      "matching_patterns": [
+        "data_leakage",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 67916,
+      "token": "}()\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 68029,
+      "token": "()\n\n\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 68060,
+      "token": "__)\n\n\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 68393,
+      "token": "']))\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 68536,
+      "token": " }}\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 68675,
+      "token": "$self",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 68907,
+      "token": "()\r\n\r\n\r\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 68964,
+      "token": ")])\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 69113,
+      "token": "?!\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "punctuation_spam"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 69346,
+      "token": "$request",
+      "token_length": 8,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 69564,
+      "token": "_));\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "special_prefixes",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 69979,
+      "token": "-online",
+      "token_length": 7,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 70227,
+      "token": "-\r\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": true
+    },
+    {
+      "token_id": 70593,
+      "token": "?;\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "punctuation_spam"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 70640,
+      "token": " ()\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 71038,
+      "token": "\"));\r\n\r\n",
+      "token_length": 8,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 71291,
+      "token": "??\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "punctuation_spam"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 71720,
+      "token": "getElementsByTagName",
+      "token_length": 20,
+      "matching_patterns": [
+        "code_artifacts",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 71741,
+      "token": "})\r\n\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 71852,
+      "token": "_CONFIGURATION",
+      "token_length": 14,
+      "matching_patterns": [
+        "data_leakage",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 71946,
+      "token": " {}\r\n\r\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 72075,
+      "token": ")))))\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "repeated_chars",
+        "unicode_corruption",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 72215,
+      "token": "$class",
+      "token_length": 6,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 72576,
+      "token": ")];\r\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 72668,
+      "token": "'])){\r\n",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 72869,
+      "token": "_Settings",
+      "token_length": 9,
+      "matching_patterns": [
+        "programming_typos",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 73012,
+      "token": "$info",
+      "token_length": 5,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 73186,
+      "token": "%;\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "special_prefixes"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 73203,
+      "token": "]])\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 73308,
+      "token": "\")){\r\n",
+      "token_length": 6,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 73458,
+      "token": "\tusername",
+      "token_length": 9,
+      "matching_patterns": [
+        "unicode_corruption",
+        "programming_typos",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 73489,
+      "token": "\")]\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 74016,
+      "token": "();\r\n\r\n\r\n",
+      "token_length": 9,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 74031,
+      "token": ";;\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "punctuation_spam"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 74329,
+      "token": "$results",
+      "token_length": 8,
+      "matching_patterns": [
+        "currency_mixed",
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 74763,
+      "token": ")];\n\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 74922,
+      "token": ")}\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 3,
+      "is_glitch": false
+    },
+    {
+      "token_id": 94,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 95,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 96,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 97,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 98,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 99,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 100,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 101,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 102,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 103,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 104,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 105,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 106,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 107,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 108,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 109,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 110,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 111,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 112,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 113,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 114,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 115,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 116,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 117,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 118,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 119,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 120,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 121,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 122,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 123,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 124,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 125,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 126,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 127,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 128,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 129,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 130,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 131,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 132,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 133,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 134,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 135,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 136,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 137,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 138,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 139,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 140,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 141,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 142,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 143,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 144,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 145,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 146,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 147,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 148,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 149,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 150,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 151,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 152,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 153,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 154,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 155,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 156,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 157,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 158,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 159,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 160,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 161,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 162,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 163,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 164,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 165,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 166,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 167,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 168,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 169,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 170,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 171,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 172,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 173,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 174,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 175,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 176,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 177,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 178,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 179,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 180,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 181,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 182,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 183,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 184,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 185,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 186,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 187,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 222,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 223,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 224,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 225,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 226,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 227,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 228,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 229,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 230,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 231,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 232,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 233,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 234,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 235,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 236,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 237,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 238,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 239,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 240,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 241,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 242,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 243,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 244,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 245,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 246,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 247,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 248,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 249,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 250,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 251,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 252,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 253,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 254,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 255,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 378,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 382,
+      "token": ".\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 401,
+      "token": ";\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 464,
+      "token": ";\r\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 515,
+      "token": "--------",
+      "token_length": 8,
+      "matching_patterns": [
+        "repeated_chars",
+        "special_prefixes"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 545,
+      "token": "();\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 557,
+      "token": " }\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 601,
+      "token": "********",
+      "token_length": 8,
+      "matching_patterns": [
+        "repeated_chars",
+        "special_prefixes"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 629,
+      "token": ");\n\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 633,
+      "token": "}\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 639,
+      "token": " \ufffd",
+      "token_length": 2,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 696,
+      "token": ")\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 741,
+      "token": ");\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 746,
+      "token": "()\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 748,
+      "token": "\tif",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "script_mixing_any"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 776,
+      "token": "----------------",
+      "token_length": 16,
+      "matching_patterns": [
+        "repeated_chars",
+        "special_prefixes"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 851,
+      "token": "_id",
+      "token_length": 3,
+      "matching_patterns": [
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 903,
+      "token": "****************",
+      "token_length": 16,
+      "matching_patterns": [
+        "repeated_chars",
+        "special_prefixes"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 987,
+      "token": " {\r\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1035,
+      "token": "**\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "special_prefixes"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1085,
+      "token": "#include",
+      "token_length": 8,
+      "matching_patterns": [
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1125,
+      "token": "));\n",
+      "token_length": 4,
+      "matching_patterns": [
+        "unicode_corruption",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1192,
+      "token": "))\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1240,
+      "token": ")\r\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1241,
+      "token": "\tpublic",
+      "token_length": 7,
+      "matching_patterns": [
+        "unicode_corruption",
+        "script_mixing_any"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1265,
+      "token": "_in",
+      "token_length": 3,
+      "matching_patterns": [
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1284,
+      "token": "_st",
+      "token_length": 3,
+      "matching_patterns": [
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1287,
+      "token": "){\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1300,
+      "token": "\ufffd",
+      "token_length": 1,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 1301,
+      "token": " \ufffd",
+      "token_length": 2,
+      "matching_patterns": [
+        "unicode_corruption",
+        "encoding_artifacts"
+      ],
+      "pattern_count": 2,
+      "is_glitch": true
+    },
+    {
+      "token_id": 1363,
+      "token": ">\n\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1381,
+      "token": "########",
+      "token_length": 8,
+      "matching_patterns": [
+        "repeated_chars",
+        "special_prefixes"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1434,
+      "token": "--------------------------------",
+      "token_length": 32,
+      "matching_patterns": [
+        "repeated_chars",
+        "special_prefixes"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1449,
+      "token": "());\n",
+      "token_length": 5,
+      "matching_patterns": [
+        "unicode_corruption",
+        "bracket_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1459,
+      "token": ">\r\n",
+      "token_length": 3,
+      "matching_patterns": [
+        "unicode_corruption",
+        "whitespace_anomalies"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    },
+    {
+      "token_id": 1467,
+      "token": "#define",
+      "token_length": 7,
+      "matching_patterns": [
+        "special_prefixes",
+        "script_mixing_any"
+      ],
+      "pattern_count": 2,
+      "is_glitch": false
+    }
+  ]
+}

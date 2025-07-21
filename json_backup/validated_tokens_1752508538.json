@@ -1,0 +1,80 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B-Instruct",
+  "validation_config": {
+    "max_tokens": 1000,
+    "device": "cuda",
+    "quant_type": "float16",
+    "sample_size": 5
+  },
+  "results": [
+    {
+      "token_id": 70784,
+      "token": "Japgolly",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 79423,
+      "token": " thuisontvangst",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 79826,
+      "token": " BCHP",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 53355,
+      "token": "igrationBuilder",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114533,
+      "token": "ーカー",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    }
+  ],
+  "confirmed_glitch_tokens": [
+    "Japgolly",
+    " thuisontvangst",
+    " BCHP",
+    "igrationBuilder",
+    "ーカー"
+  ],
+  "confirmed_glitch_token_ids": [
+    70784,
+    79423,
+    79826,
+    53355,
+    114533
+  ],
+  "false_positives": [],
+  "false_positive_ids": [],
+  "summary": {
+    "total_tested": 5,
+    "confirmed_glitch": 5,
+    "false_positives": 0,
+    "confirmation_rate": 100.0
+  },
+  "log_file": "token_validation_1752508535.jsonl",
+  "timestamp": 1752508538.245349
+}

@@ -216,7 +216,7 @@ def find_tokens_in_range(
 
 
 def range_based_mining(
-    model_path: str,
+    model_path: str = None,
     range_start: int = None,
     range_end: int = None,
     unicode_ranges: bool = False,
@@ -224,45 +224,58 @@ def range_based_mining(
     sample_rate: float = 0.1,
     max_tokens_per_range: int = 100,
     device: str = "auto",
-    output_file: str = "range_mining_results.json"
+    output_file: str = "range_mining_results.json",
+    model=None,
+    tokenizer=None
 ) -> Dict[str, Any]:
     """
     Perform range-based mining for glitch tokens
 
     Args:
-        model_path: Path to the model
+        model_path: Path to the model (required if model/tokenizer not provided)
         range_start: Starting token ID (if doing single range)
         range_end: Ending token ID (if doing single range)
         unicode_ranges: Whether to mine Unicode ranges
         special_ranges: Whether to mine special token ranges
         sample_rate: Fraction of tokens to sample from each range
         max_tokens_per_range: Maximum tokens to test per range
-        device: Device to use
+        device: Device to use (ignored if model/tokenizer provided)
         output_file: Output file for results
+        model: Pre-loaded model (optional)
+        tokenizer: Pre-loaded tokenizer (optional)
 
     Returns:
         Dictionary with mining results
     """
-    print(f"Loading model: {model_path}")
+    # Handle model loading
+    if model is None or tokenizer is None:
+        if model_path is None:
+            raise ValueError("Either model_path or both model and tokenizer must be provided")
 
-    # Load model and tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
+        print(f"Loading model: {model_path}")
 
-    if device == "auto":
-        device_map = "auto"
+        # Load model and tokenizer
+        tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+        if device == "auto":
+            device_map = "auto"
+        else:
+            device_map = {"": device}
+
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            torch_dtype=torch.bfloat16,
+            device_map=device_map
+        )
+
+        print(f"Model loaded on {model.device}")
+        model_name = model_path
     else:
-        device_map = {"": device}
-
-    model = AutoModelForCausalLM.from_pretrained(
-        model_path,
-        torch_dtype=torch.bfloat16,
-        device_map=device_map
-    )
-
-    print(f"Model loaded on {model.device}")
+        print("Using pre-loaded model and tokenizer")
+        model_name = model.config._name_or_path
 
     # Get chat template
-    chat_template = get_template_for_model(model.config._name_or_path, tokenizer)
+    chat_template = get_template_for_model(model_name, tokenizer)
 
     # Determine ranges to test
     ranges_to_test = []
@@ -286,7 +299,7 @@ def range_based_mining(
 
     # Results storage
     results = {
-        "model_path": model_path,
+        "model_path": model_path or model_name,
         "timestamp": time.time(),
         "sample_rate": sample_rate,
         "max_tokens_per_range": max_tokens_per_range,
@@ -300,7 +313,7 @@ def range_based_mining(
     log_file = f"range_mining_log_{int(time.time())}.jsonl"
     with open(log_file, 'w') as f:
         f.write("# Range-based mining log\n")
-        f.write(json.dumps({"event": "start", "model": model_path, "ranges": len(ranges_to_test)}) + "\n")
+        f.write(json.dumps({"event": "start", "model": model_path or model_name, "ranges": len(ranges_to_test)}) + "\n")
 
     # Test each range
     for range_idx, (start, end, description) in enumerate(ranges_to_test):

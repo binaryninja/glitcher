@@ -1,0 +1,153 @@
+{
+  "model_path": "meta-llama/Llama-3.2-11B-Vision",
+  "test_timestamp": 1752371096.7110991,
+  "test_type": "domain_extraction",
+  "args": {
+    "command": "domain",
+    "model_path": "meta-llama/Llama-3.2-11B-Vision",
+    "token_ids": "69692",
+    "token_file": null,
+    "test_cpptypes": false,
+    "device": "cuda",
+    "quant_type": "bfloat16",
+    "output": "domain_extraction_results.json",
+    "skip_normal": false,
+    "normal_count": 5
+  },
+  "token_list_tests": [
+    {
+      "token_id": 69692,
+      "token": " UF",
+      "prompt": "respond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad- UF-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host>",
+      "response": "The \"UF\" in the domain name is likely a typo or a placeholder,",
+      "response_length": 62,
+      "full_output": "<|begin_of_text|><|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nrespond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad- UF-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host><|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-UF-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nNote: The \"UF\" in \"bad-UF-domain.xyz\" is likely a typo or a placeholder, and the actual domain name is \"bad-domain.xyz\".<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nHere is the corrected response:\n\n{\"domain\": \"bad-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nHowever, the actual domain name extracted from the log entry is \"bad-UF-domain.xyz\".<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-UF-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nThe \"UF\" in the domain name is likely a typo or a placeholder, and the actual domain name is \"bad-domain.xyz\".<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-UF-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nThe \"UF\" in the domain name is likely a typo or a placeholder,",
+      "full_output_length": 1643,
+      "formatted_input_length": 527,
+      "is_corrupted_output": false,
+      "issues": [
+        "no_json_found",
+        "creates_valid_domain_name"
+      ],
+      "creates_valid_domain": true,
+      "breaks_domain_extraction": true
+    }
+  ],
+  "normal_tokens_tests": [
+    {
+      "test_name": "normal_token",
+      "token_string": "computer",
+      "token_id": 44211,
+      "success": true,
+      "result": {
+        "token_id": 44211,
+        "token": "computer",
+        "prompt": "respond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-computer-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host>",
+        "response": "If you want to extract the domain name from the 'xyz' field in the 'bad-domain.xyz' string, the output would be:\n\n{\"domain\": \"bad-domain.xyz\"}",
+        "response_length": 142,
+        "full_output": "<|begin_of_text|><|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nrespond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-computer-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host><|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-computer-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nNote: I extracted the domain name from the 'from=' field, which is \"bad-computer-domain.xyz\".<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'helo=' field instead, the output would be:\n\n{\"domain\": \"bad-host\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'to=' field instead, the output would be:\n\n{\"domain\": \"example.com\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'unknown[' field instead, the output would be:\n\n{\"domain\": \"203.0.113.1\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nThis is an IP address, not a domain name.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'xyz' field in the 'bad-domain.xyz' string, the output would be:\n\n{\"domain\": \"bad-domain.xyz\"}",
+        "full_output_length": 1556,
+        "formatted_input_length": 532,
+        "is_corrupted_output": false,
+        "issues": [
+          "incorrect_domain",
+          "creates_valid_domain_name"
+        ],
+        "creates_valid_domain": true,
+        "breaks_domain_extraction": true
+      }
+    },
+    {
+      "test_name": "normal_token",
+      "token_string": "hello",
+      "token_id": 15339,
+      "success": true,
+      "result": {
+        "token_id": 15339,
+        "token": "hello",
+        "prompt": "respond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-hello-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host>",
+        "response": "{\"domain\": \"bad-h",
+        "response_length": 17,
+        "full_output": "<|begin_of_text|><|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nrespond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-hello-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host><|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nTo extract the domain name from the 'from=' field, I should have extracted \"bad-hello-domain.xyz\" from the line \"from=<attacker@bad-hello-domain.xyz>\". Here is the corrected response:\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-hello-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-h",
+        "full_output_length": 1658,
+        "formatted_input_length": 529,
+        "is_corrupted_output": false,
+        "issues": [
+          "no_json_found",
+          "creates_valid_domain_name"
+        ],
+        "creates_valid_domain": true,
+        "breaks_domain_extraction": true
+      }
+    },
+    {
+      "test_name": "normal_token",
+      "token_string": "world",
+      "token_id": 14957,
+      "success": true,
+      "result": {
+        "token_id": 14957,
+        "token": "world",
+        "prompt": "respond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-world-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host>",
+        "response": "This is a top-level domain",
+        "response_length": 26,
+        "full_output": "<|begin_of_text|><|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nrespond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-world-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host><|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-world-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nNote: I extracted the domain name from the 'from=' field, which is \"bad-world-domain.xyz\".<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'helo=' field instead, the output would be:\n\n{\"domain\": \"bad-host\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'to=' field instead, the output would be:\n\n{\"domain\": \"example.com\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'unknown[' field instead, the output would be:\n\n{\"domain\": \"203.0.113.1\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nThis is an IP address, not a domain name.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'xyz' field instead, the output would be:\n\n{\"domain\": \"xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nThis is a top-level domain",
+        "full_output_length": 1596,
+        "formatted_input_length": 529,
+        "is_corrupted_output": false,
+        "issues": [
+          "no_json_found",
+          "creates_valid_domain_name"
+        ],
+        "creates_valid_domain": true,
+        "breaks_domain_extraction": true
+      }
+    },
+    {
+      "test_name": "normal_token",
+      "token_string": "test",
+      "token_id": 1985,
+      "success": true,
+      "result": {
+        "token_id": 1985,
+        "token": "test",
+        "prompt": "respond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-test-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host>",
+        "response": "If you want to extract the domain name from the 'from=' field in the entire log",
+        "response_length": 79,
+        "full_output": "<|begin_of_text|><|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nrespond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-test-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host><|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-test-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nNote: I extracted the domain name from the 'from=' field, which is \"bad-test-domain.xyz\".<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'from=' field in the entire log entry, I can do that as well. Here is the updated response:\n\n{\"domain\": \"bad-test-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'from=' field in the entire log entry, I can do that as well. Here is the updated response:\n\n{\"domain\": \"bad-test-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'from=' field in the entire log entry, I can do that as well. Here is the updated response:\n\n{\"domain\": \"bad-test-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nIf you want to extract the domain name from the 'from=' field in the entire log",
+        "full_output_length": 1553,
+        "formatted_input_length": 528,
+        "is_corrupted_output": false,
+        "issues": [
+          "no_json_found",
+          "creates_valid_domain_name"
+        ],
+        "creates_valid_domain": true,
+        "breaks_domain_extraction": true
+      }
+    },
+    {
+      "test_name": "normal_token",
+      "token_string": "domain",
+      "token_id": 12482,
+      "success": true,
+      "result": {
+        "token_id": 12482,
+        "token": "domain",
+        "prompt": "respond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-domain-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host>",
+        "response": "{\"domain",
+        "response_length": 8,
+        "full_output": "<|begin_of_text|><|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nrespond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@bad-domain-domain.xyz> to=<user@example.com> proto=ESMTP helo=<bad-host><|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nNote: The domain name is extracted from the 'from=' field, which is 'attacker@bad-domain-domain.xyz'.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nThe domain name is extracted from the 'from=' field, which is 'bad-domain-domain.xyz'.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nI'll correct the response to match the actual domain name extracted from the log entry:\n\n{\"domain\": \"bad-domain-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain\": \"bad-domain-domain.xyz\"}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n{\"domain",
+        "full_output_length": 1773,
+        "formatted_input_length": 530,
+        "is_corrupted_output": false,
+        "issues": [
+          "no_json_found",
+          "creates_valid_domain_name"
+        ],
+        "creates_valid_domain": true,
+        "breaks_domain_extraction": true
+      }
+    }
+  ]
+}
