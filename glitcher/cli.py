@@ -10,6 +10,7 @@ import signal
 import sys
 import time
 from pathlib import Path
+from typing import Optional
 
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -22,6 +23,20 @@ from glitcher.model import (
     initialize_model_and_tokenizer
 )
 
+# Import genetic algorithm functionality
+from .genetic import GeneticProbabilityReducer, GeneticBatchRunner, RealTimeGeneticAnimator, GeneticAnimationCallback
+
+# Import range mining functionality
+try:
+    import sys
+    import os
+    parent_dir = os.path.dirname(os.path.dirname(__file__))
+    if parent_dir not in sys.path:
+        sys.path.insert(0, parent_dir)
+    from range_mining import range_based_mining
+except ImportError:
+    range_based_mining = None
+
 # Import validation tests
 # from glitcher.tests.validation.run_all_tests import run_all_validation_tests
 
@@ -32,7 +47,7 @@ class GlitcherCLI:
     def __init__(self):
         self.model = None
         self.tokenizer = None
-        self.args = None
+        self.args: Optional[argparse.Namespace] = None
         self.progress = {
             "model_path": "",
             "num_iterations": 0,
@@ -116,6 +131,29 @@ class GlitcherCLI:
         mine_parser.add_argument(
             "--asr-threshold", type=float, default=0.5,
             help="ASR threshold for considering token a glitch (default: 0.5)"
+        )
+
+        # Range mining options
+        mine_parser.add_argument(
+            "--mode", type=str, default="entropy",
+            choices=["entropy", "range", "unicode", "special"],
+            help="Mining mode: entropy (default), range, unicode, or special"
+        )
+        mine_parser.add_argument(
+            "--range-start", type=int,
+            help="Starting token ID for range mining (requires --mode range)"
+        )
+        mine_parser.add_argument(
+            "--range-end", type=int,
+            help="Ending token ID for range mining (requires --mode range)"
+        )
+        mine_parser.add_argument(
+            "--sample-rate", type=float, default=0.1,
+            help="Fraction of tokens to sample in range mining (0.0-1.0, default: 0.1)"
+        )
+        mine_parser.add_argument(
+            "--max-tokens-per-range", type=int, default=100,
+            help="Maximum tokens to test per range in range mining (default: 100)"
         )
 
         # Test command
@@ -272,6 +310,120 @@ class GlitcherCLI:
             help="Number of normal tokens to test as control (default: 5)"
         )
 
+        # Classify command
+        classify_parser = subparsers.add_parser("classify", help="Classify glitch tokens by their effects")
+        classify_parser.add_argument("model_path", help="Path or name of the model to test")
+        classify_parser.add_argument(
+            "--token-ids", type=str,
+            help="Comma-separated list of token IDs to classify"
+        )
+        classify_parser.add_argument(
+            "--token-file", type=str,
+            help="JSON file containing token IDs to classify"
+        )
+        classify_parser.add_argument(
+            "--output", type=str, default="classified_tokens.json",
+            help="Output file for results (default: classified_tokens.json)"
+        )
+        classify_parser.add_argument(
+            "--device", type=str, default="cuda",
+            help="Device to use (default: cuda)"
+        )
+        classify_parser.add_argument(
+            "--quant-type", type=str, default="bfloat16",
+            choices=["bfloat16", "float16", "int8", "int4"],
+            help="Quantization type (default: bfloat16)"
+        )
+        classify_parser.add_argument(
+            "--temperature", type=float, default=0.0,
+            help="Temperature for model inference (default: 0.0)"
+        )
+        classify_parser.add_argument(
+            "--max-tokens", type=int, default=200,
+            help="Maximum tokens to generate per test (default: 200)"
+        )
+        classify_parser.add_argument(
+            "--debug-responses", action="store_true",
+            help="Enable detailed response logging"
+        )
+        classify_parser.add_argument(
+            "--email-extraction-only", action="store_true",
+            help="Only run email extraction tests"
+        )
+        classify_parser.add_argument(
+            "--domain-extraction-only", action="store_true",
+            help="Only run domain extraction tests"
+        )
+        classify_parser.add_argument(
+            "--behavioral-only", action="store_true",
+            help="Only run behavioral tests"
+        )
+        classify_parser.add_argument(
+            "--functional-only", action="store_true",
+            help="Only run functional tests"
+        )
+
+        # Genetic command
+        genetic_parser = subparsers.add_parser("genetic", help="Use genetic algorithm to breed glitch token combinations")
+        genetic_parser.add_argument("model_path", help="Path or name of the model to test")
+        genetic_parser.add_argument(
+            "--base-text", type=str, default="The quick brown",
+            help="Base text to test probability reduction on (default: 'The quick brown')"
+        )
+        genetic_parser.add_argument(
+            "--target-token", type=str,
+            help="Specific token to target (auto-detected if not provided)"
+        )
+        genetic_parser.add_argument(
+            "--token-file", type=str, default="glitch_tokens.json",
+            help="JSON file containing glitch tokens (default: glitch_tokens.json)"
+        )
+        genetic_parser.add_argument(
+            "--population-size", type=int, default=50,
+            help="Population size for genetic algorithm (default: 50)"
+        )
+        genetic_parser.add_argument(
+            "--generations", type=int, default=100,
+            help="Maximum number of generations (default: 100)"
+        )
+        genetic_parser.add_argument(
+            "--mutation-rate", type=float, default=0.1,
+            help="Mutation rate (0.0-1.0, default: 0.1)"
+        )
+        genetic_parser.add_argument(
+            "--crossover-rate", type=float, default=0.7,
+            help="Crossover rate (0.0-1.0, default: 0.7)"
+        )
+        genetic_parser.add_argument(
+            "--elite-size", type=int, default=5,
+            help="Elite size for genetic algorithm (default: 5)"
+        )
+        genetic_parser.add_argument(
+            "--max-tokens", type=int, default=3,
+            help="Maximum tokens per individual combination (default: 3)"
+        )
+        genetic_parser.add_argument(
+            "--output", type=str, default="genetic_results.json",
+            help="Output file for results (default: genetic_results.json)"
+        )
+        genetic_parser.add_argument(
+            "--device", type=str, default="cuda",
+            help="Device to use (default: cuda)"
+        )
+        genetic_parser.add_argument(
+            "--quant-type", type=str, default="bfloat16",
+            choices=["bfloat16", "float16", "int8", "int4"],
+            help="Quantization type (default: bfloat16)"
+        )
+        genetic_parser.add_argument(
+            "--batch", action="store_true",
+            help="Run batch experiments across multiple scenarios"
+        )
+        genetic_parser.add_argument(
+            "--gui", action="store_true",
+            help="Show real-time GUI animation of genetic algorithm evolution"
+        )
+
         return parser
 
     def load_model(self):
@@ -330,6 +482,10 @@ class GlitcherCLI:
 
     def run_mining(self):
         """Run the mining process."""
+        # Check if this is range mining mode
+        if self.args.mode in ["range", "unicode", "special"]:
+            self.run_range_mining()
+            return
         # Initialize progress
         if self.args.resume and self.load_progress():
             # Verify the model path is the same
@@ -435,6 +591,76 @@ class GlitcherCLI:
             print(f"Error during mining: {e}")
             # Save progress on error
             self.save_progress(final=True)
+
+    def run_range_mining(self):
+        """Run range-based mining process."""
+        if range_based_mining is None:
+            print("Error: range_mining module not available. Please ensure range_mining.py is accessible.")
+            return
+        # Validate range mining arguments
+        if self.args.mode == "range":
+            if self.args.range_start is None or self.args.range_end is None:
+                print("Error: --range-start and --range-end are required for range mode")
+                return
+            if self.args.range_start >= self.args.range_end:
+                print("Error: --range-start must be less than --range-end")
+                return
+
+        if self.args.sample_rate <= 0 or self.args.sample_rate > 1:
+            print("Error: --sample-rate must be between 0 and 1")
+            return
+
+        # Set up range mining parameters
+        range_start = self.args.range_start
+        range_end = self.args.range_end
+        unicode_ranges = self.args.mode == "unicode"
+        special_ranges = self.args.mode == "special"
+        sample_rate = self.args.sample_rate
+        max_tokens_per_range = self.args.max_tokens_per_range
+
+        # Generate output filename based on mode
+        if self.args.output == "glitch_tokens.json":  # default output
+            if self.args.mode == "range":
+                output_file = f"range_mining_{self.args.range_start}_{self.args.range_end}.json"
+            elif self.args.mode == "unicode":
+                output_file = "unicode_range_mining.json"
+            elif self.args.mode == "special":
+                output_file = "special_range_mining.json"
+        else:
+            output_file = self.args.output
+
+        print(f"Starting {self.args.mode} mining mode...")
+        print(f"Sample rate: {sample_rate}")
+        print(f"Max tokens per range: {max_tokens_per_range}")
+        print(f"Output file: {output_file}")
+
+        try:
+            # Run range-based mining
+            results = range_based_mining(
+                model_path=self.args.model_path,
+                range_start=range_start,
+                range_end=range_end,
+                unicode_ranges=unicode_ranges,
+                special_ranges=special_ranges,
+                sample_rate=sample_rate,
+                max_tokens_per_range=max_tokens_per_range,
+                device=self.args.device,
+                output_file=output_file,
+                model=self.model,
+                tokenizer=self.tokenizer
+            )
+
+            print(f"\n=== RANGE MINING COMPLETED ===")
+            print(f"Total tokens tested: {results['total_tokens_tested']}")
+            print(f"Total glitch tokens found: {results['total_glitch_tokens']}")
+            if results['total_tokens_tested'] > 0:
+                glitch_rate = results['total_glitch_tokens'] / results['total_tokens_tested']
+                print(f"Glitch rate: {glitch_rate:.1%}")
+            print(f"Results saved to: {output_file}")
+
+        except Exception as e:
+            print(f"Error during range mining: {e}")
+            raise
 
     def run_token_test(self):
         """Test specific tokens for glitch properties."""
@@ -814,7 +1040,253 @@ class GlitcherCLI:
             print("🌐 Domain extraction testing completed!")
 
         except Exception as e:
-            print(f"❌ Error during domain extraction testing: {e}")
+            print(f"❌ Error in domain extraction: {e}")
+            raise
+
+    def run_classification(self):
+        """Run glitch token classification."""
+        try:
+            # Import the new classification system
+            from .classification.glitch_classifier import GlitchClassifier
+            from .classification.types import TestConfig
+            from .classification.cli import load_token_ids
+
+            print(f"🔍 Classifying glitch tokens with model: {self.args.model_path}")
+            print("=" * 60)
+
+            # Validate arguments
+            if not any([getattr(self.args, 'token_ids', None),
+                       getattr(self.args, 'token_file', None)]):
+                print("❌ Error: Must specify either --token-ids or --token-file")
+                return
+
+            # Load token IDs
+            token_ids = load_token_ids(self.args)
+            print(f"Loaded {len(token_ids)} token IDs to classify")
+
+            # Create test configuration
+            config = TestConfig(
+                max_tokens=getattr(self.args, 'max_tokens', 200),
+                temperature=getattr(self.args, 'temperature', 0.0),
+                enable_debug=getattr(self.args, 'debug_responses', False),
+                simple_template=False
+            )
+
+            # Initialize classifier
+            classifier = GlitchClassifier(
+                model_path=self.args.model_path,
+                device=getattr(self.args, 'device', 'cuda'),
+                quant_type=getattr(self.args, 'quant_type', 'bfloat16'),
+                config=config
+            )
+
+            # Handle special test modes
+            if getattr(self.args, 'email_extraction_only', False):
+                print("Running email extraction tests only...")
+                summary = classifier.run_email_extraction_only(token_ids)
+                output_file = self.args.output.replace('.json', '_email_extraction.json')
+
+            elif getattr(self.args, 'domain_extraction_only', False):
+                print("Running domain extraction tests only...")
+                summary = classifier.run_domain_extraction_only(token_ids)
+                output_file = self.args.output.replace('.json', '_domain_extraction.json')
+
+            else:
+                # Run full classification
+                print(f"Running full classification on {len(token_ids)} tokens...")
+
+                # Filter tests based on mode
+                if getattr(self.args, 'behavioral_only', False):
+                    print("Filtering to behavioral tests only...")
+                elif getattr(self.args, 'functional_only', False):
+                    print("Filtering to functional tests only...")
+
+                # Run classification
+                results = classifier.classify_tokens(token_ids)
+
+                # Get summary
+                summary = classifier.get_results_summary()
+                summary["classifications"] = [result.to_dict() for result in results]
+
+                # Add detailed extraction results
+                if hasattr(classifier, '_detailed_email_results') and classifier._detailed_email_results:
+                    summary["detailed_email_results"] = classifier._detailed_email_results
+                if hasattr(classifier, '_detailed_domain_results') and classifier._detailed_domain_results:
+                    summary["detailed_domain_results"] = classifier._detailed_domain_results
+
+                output_file = self.args.output
+
+                # Print summary table
+                classifier.print_summary_table()
+
+            # Save results
+            import json
+            with open(output_file, 'w') as f:
+                json.dump(summary, f, indent=2)
+            print(f"\n✅ Results saved to {output_file}")
+
+        except Exception as e:
+            print(f"❌ Error in classification: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
+
+    def run_genetic(self):
+        """Run genetic algorithm for breeding glitch token combinations."""
+        try:
+            print("🧬 Starting genetic algorithm for breeding glitch token combinations...")
+            print(f"Model: {self.args.model_path}")
+            print(f"Base text: '{self.args.base_text}'")
+            print(f"Population size: {self.args.population_size}")
+            print(f"Generations: {self.args.generations}")
+
+            # Setup GUI if requested
+            gui_callback = None
+            if self.args.gui:
+                try:
+                    print("🎬 Initializing real-time GUI animation...")
+                    animator = RealTimeGeneticAnimator(
+                        base_text=self.args.base_text,
+                        max_generations=self.args.generations
+                    )
+                    gui_callback = GeneticAnimationCallback(animator)
+                except ImportError as e:
+                    print(f"⚠️  GUI not available: {e}")
+                    print("Install matplotlib for GUI support: pip install matplotlib")
+                    gui_callback = None
+                except Exception as e:
+                    print(f"⚠️  Failed to initialize GUI: {e}")
+                    gui_callback = None
+
+            if self.args.batch:
+                # Run batch experiments
+                print("🔬 Running batch experiments...")
+
+                # Create batch runner
+                runner = GeneticBatchRunner(self.args.model_path, self.args.token_file)
+
+                # Set up scenarios (you can customize these)
+                scenarios = [
+                    {
+                        'name': 'quick_brown_fox',
+                        'base_text': 'The quick brown',
+                        'target_token': None,
+                        'ga_params': {
+                            'population_size': self.args.population_size,
+                            'max_generations': self.args.generations,
+                            'max_tokens_per_individual': self.args.max_tokens
+                        }
+                    },
+                    {
+                        'name': 'common_phrase',
+                        'base_text': 'Hello world',
+                        'target_token': None,
+                        'ga_params': {
+                            'population_size': self.args.population_size,
+                            'max_generations': self.args.generations,
+                            'max_tokens_per_individual': self.args.max_tokens
+                        }
+                    }
+                ]
+
+                # Add scenarios and run
+                for scenario in scenarios:
+                    runner.add_scenario(**scenario)
+
+                # Run all experiments
+                results = runner.run_all_experiments()
+
+                # Save results
+                output_path = Path(self.args.output).parent
+                runner.save_results(str(output_path))
+
+                print(f"\n✅ Batch results saved to {output_path}")
+                print(runner.generate_report())
+
+            else:
+                # Run single experiment
+                print("🧬 Running single genetic algorithm experiment...")
+
+                # Create genetic algorithm instance
+                ga = GeneticProbabilityReducer(
+                    model_name=self.args.model_path,
+                    base_text=self.args.base_text,
+                    target_token=self.args.target_token,
+                    gui_callback=gui_callback
+                )
+
+                # Configure GA parameters
+                ga.population_size = self.args.population_size
+                ga.max_generations = self.args.generations
+                ga.mutation_rate = self.args.mutation_rate
+                ga.crossover_rate = self.args.crossover_rate
+                ga.elite_size = self.args.elite_size
+                ga.max_tokens_per_individual = self.args.max_tokens
+
+                # Load model and tokens
+                ga.load_model()
+                ga.load_glitch_tokens(self.args.token_file)
+
+                # Run evolution
+                final_population = ga.run_evolution()
+
+                # Prepare results
+                results = {
+                    'model_name': self.args.model_path,
+                    'base_text': self.args.base_text,
+                    'target_token_id': ga.target_token_id,
+                    'target_token_text': ga.tokenizer.decode([ga.target_token_id]) if ga.target_token_id else None,
+                    'baseline_probability': ga.baseline_probability,
+                    'ga_parameters': {
+                        'population_size': ga.population_size,
+                        'max_generations': ga.max_generations,
+                        'mutation_rate': ga.mutation_rate,
+                        'crossover_rate': ga.crossover_rate,
+                        'max_tokens_per_individual': ga.max_tokens_per_individual
+                    },
+                    'results': []
+                }
+
+                # Add top results
+                for individual in final_population[:10]:  # Top 10 results
+                    token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
+                    results['results'].append({
+                        'tokens': individual.tokens,
+                        'token_texts': token_texts,
+                        'fitness': individual.fitness,
+                        'baseline_prob': individual.baseline_prob,
+                        'modified_prob': individual.modified_prob,
+                        'reduction_percentage': ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
+                    })
+
+                # Save results
+                with open(self.args.output, 'w', encoding='utf-8') as f:
+                    json.dump(results, f, indent=2, ensure_ascii=False)
+
+                print(f"\n✅ Results saved to {self.args.output}")
+
+                # Display top results
+                print("\n🏆 Top Results:")
+                for i, individual in enumerate(final_population[:5], 1):
+                    token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
+                    reduction_pct = ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
+                    print(f"{i}. Tokens: {individual.tokens} ({token_texts})")
+                    print(f"   Fitness: {individual.fitness:.6f}")
+                    print(f"   Probability reduction: {reduction_pct:.2f}%")
+                    print()
+
+                # Keep GUI alive if it was used
+                if gui_callback:
+                    print("🖼️  GUI animation is live. Close the window when done viewing.")
+                    try:
+                        gui_callback.keep_alive(duration=None)  # Keep alive until window closed
+                    except KeyboardInterrupt:
+                        print("⏹️  GUI closed by user.")
+
+        except Exception as e:
+            print(f"❌ Error in genetic algorithm: {e}")
+            import traceback
+            traceback.print_exc()
             raise
 
     def run(self):
@@ -834,6 +1306,12 @@ class GlitcherCLI:
             return
         elif self.args.command == "domain":
             self.run_domain_extraction()
+            return
+        elif self.args.command == "classify":
+            self.run_classification()
+            return
+        elif self.args.command == "genetic":
+            self.run_genetic()
             return
 
         # Load model for other commands
