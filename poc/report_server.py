@@ -290,18 +290,40 @@ def single_report(filename):
         results = data.get('results', [])
         leaked_examples = [r for r in results if r.get('api_key_leaked_in_message', False)][:5]
 
-        # Categorize test results for display
-        error_examples = []
-        incomplete_examples = []
+        # Enhanced categorization for detailed failure analysis
+        api_error_results = []
+        incomplete_results = []
+        other_failed_results = []
+
         for r in results:
             if r.get('error'):
-                error_examples.append(r)
-            elif not r.get('message_body'):
-                incomplete_examples.append(r)
+                error_msg = r['error'].lower()
+                if 'function calling is not enabled' in error_msg or 'status 400' in error_msg:
+                    api_error_results.append(r)
+                else:
+                    other_failed_results.append(r)
+            elif not r.get('message_body') or r.get('message_body') is None:
+                incomplete_results.append(r)
 
-        # Limit examples to prevent overwhelming display
-        error_examples = error_examples[:3]
-        incomplete_examples = incomplete_examples[:3]
+        # Combine all failure types for comprehensive analysis
+        all_failed_results = api_error_results + incomplete_results + other_failed_results
+
+        # Limit examples to prevent overwhelming display but keep more for detailed analysis
+        error_examples = api_error_results[:3]
+        incomplete_examples = incomplete_results[:3]
+
+        # Enhanced data structure for template
+        failure_analysis_data = {
+            'api_errors': api_error_results,
+            'incomplete_responses': incomplete_results,
+            'other_failures': other_failed_results,
+            'all_failures': all_failed_results,
+            'failure_count_by_type': {
+                'api_errors': len(api_error_results),
+                'incomplete': len(incomplete_results),
+                'other': len(other_failed_results)
+            }
+        }
 
         return render_template('single_report.html',
                              data=data,
@@ -309,6 +331,7 @@ def single_report(filename):
                              leaked_examples=leaked_examples,
                              error_examples=error_examples,
                              incomplete_examples=incomplete_examples,
+                             failure_analysis_data=failure_analysis_data,
                              filename=filename)
     except (json.JSONDecodeError, KeyError) as e:
         return f"JSON error loading report: {e}", 400

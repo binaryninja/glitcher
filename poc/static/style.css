@@ -642,3 +642,108 @@ tr:last-child td {
 .rank-header .fas {
     margin-right: 0.5rem;
 }
+
+/* Collapsible Failure Analysis */
+.collapse {
+    display: none;
+}
+
+.collapse.show {
+    display: block;
+}
+
+.collapsible-header {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.collapsible-header:hover {
+    background-color: var(--light-gray);
+}
+
+.collapsible-header .fas.fa-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+.collapsible-header[aria-expanded="true"] .fas.fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Failure Analysis Styles */
+.failure-analysis-card {
+    border-left: 4px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.failure-analysis-card.api-error {
+    border-left-color: var(--danger-color);
+}
+
+.failure-analysis-card.incomplete-response {
+    border-left-color: var(--warning-color);
+}
+
+.failure-details {
+    background-color: var(--light-gray);
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+}
+
+.failure-details pre {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.parsing-result-card {
+    background-color: var(--light-gray);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1rem;
+    text-align: center;
+    height: 100%;
+}
+
+.parsing-result-card h6 {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--medium-gray);
+}
+
+.response-section {
+    margin-bottom: 1.5rem;
+}
+
+.response-section h6 {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+}
+
+.response-content {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1rem;
+}
+
+.badge-lg {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+}
+
+/* Animation for smooth expand/collapse */
+.collapsing {
+    position: relative;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s ease;
+}
