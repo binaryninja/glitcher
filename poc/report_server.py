@@ -34,12 +34,24 @@ def load_reports():
         'multi_model': []
     }
 
-    # Find all JSON report files
-    single_pattern = "mistral_injection_test_results_*.json"
-    multi_pattern = "mistral_multi_model_injection_results_*.json"
+    # Find all JSON report files (support multiple naming patterns)
+    single_patterns = [
+        "prompt_injection_test_results_*.json",
+        "*_injection_test_results_*.json",
+        "mistral_injection_test_results_*.json"  # backward compatibility
+    ]
+    multi_patterns = [
+        "prompt_injection_multi_model_results_*.json",
+        "*_multi_model_injection_results_*.json",
+        "mistral_multi_model_injection_results_*.json"  # backward compatibility
+    ]
 
     # Load single model reports
-    for file_path in glob.glob(single_pattern):
+    all_single_files = set()
+    for pattern in single_patterns:
+        all_single_files.update(glob.glob(pattern))
+
+    for file_path in all_single_files:
         try:
             if not os.path.exists(file_path):
                 continue
@@ -77,7 +89,11 @@ def load_reports():
             print(f"Unexpected error loading {file_path}: {e}")
 
     # Load multi-model reports
-    for file_path in glob.glob(multi_pattern):
+    all_multi_files = set()
+    for pattern in multi_patterns:
+        all_multi_files.update(glob.glob(pattern))
+
+    for file_path in all_multi_files:
         try:
             if not os.path.exists(file_path):
                 continue
@@ -490,7 +506,7 @@ def refresh_reports():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    print("🌐 Starting Mistral Injection Report Server...")
+    print("🌐 Starting Prompt Injection Report Server...")
     print("📊 Available at: http://localhost:5000")
     print("🔄 Reports will be auto-loaded from current directory")
 
