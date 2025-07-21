@@ -1,0 +1,8 @@
+# Web server dependencies for Mistral Injection Analysis Reports
+Flask==2.3.3
+plotly==5.17.0
+Jinja2==3.1.2
+Werkzeug==2.3.7
+
+# Optional: For better performance and production deployment
+gunicorn==21.2.0

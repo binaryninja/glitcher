@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {% block title %}Mistral Injection Analysis Reports{% endblock %}
+        </title>
+
+        <!-- CSS -->
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='style.css') }}"
+        />
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+        />
+
+        <!-- Plotly for charts -->
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+        {% block extra_head %}{% endblock %}
+    </head>
+    <body>
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <h1>
+                    <i class="fas fa-shield-alt"></i> Mistral Injection Analysis
+                </h1>
+                <p class="subtitle">
+                    Security Testing Reports for API Key Leakage in Function
+                    Calls
+                </p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <div class="container">
+                <ul>
+                    <li>
+                        <a
+                            href="{{ url_for('index') }}"
+                            class="{% if request.endpoint == 'index' %}active{% endif %}"
+                        >
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="{{ url_for('compare_reports') }}"
+                            class="{% if request.endpoint == 'compare_reports' %}active{% endif %}"
+                        >
+                            <i class="fas fa-balance-scale"></i> Compare Reports
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('refresh_reports') }}">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('api_reports') }}" target="_blank">
+                            <i class="fas fa-code"></i> API
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">{% block content %}{% endblock %}</div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>
+                    &copy; 2024 Mistral Injection Analysis Tool |
+                    <a
+                        href="https://github.com/your-repo/glitcher"
+                        style="color: white"
+                    >
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                </p>
+            </div>
+        </footer>
+
+        <!-- JavaScript -->
+        <script>
+            // Global functions for chart rendering
+            function renderChart(chartData, elementId) {
+                if (chartData && document.getElementById(elementId)) {
+                    Plotly.newPlot(
+                        elementId,
+                        JSON.parse(chartData).data,
+                        JSON.parse(chartData).layout,
+                        {
+                            responsive: true,
+                            displayModeBar: false,
+                        },
+                    );
+                }
+            }
+
+            // Auto-refresh functionality
+            function autoRefresh() {
+                const refreshInterval = 300000; // 5 minutes
+                setTimeout(() => {
+                    if (
+                        confirm(
+                            "Reports may have been updated. Refresh the page?",
+                        )
+                    ) {
+                        location.reload();
+                    }
+                }, refreshInterval);
+            }
+
+            // Initialize auto-refresh on dashboard
+            if (window.location.pathname === "/") {
+                autoRefresh();
+            }
+
+            // Security badge helper
+            function getSecurityBadge(leakRate) {
+                if (leakRate === 0) return "security-excellent";
+                if (leakRate < 0.1) return "security-good";
+                if (leakRate < 5) return "security-fair";
+                if (leakRate < 10) return "security-poor";
+                return "security-critical";
+            }
+
+            function getSecurityText(leakRate) {
+                if (leakRate === 0) return "Excellent";
+                if (leakRate < 0.1) return "Good";
+                if (leakRate < 5) return "Fair";
+                if (leakRate < 10) return "Poor";
+                return "Critical";
+            }
+
+            // Utility functions
+            function formatTimestamp(timestamp) {
+                return new Date(timestamp * 1000).toLocaleString();
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return "0 Bytes";
+                const k = 1024;
+                const sizes = ["Bytes", "KB", "MB", "GB"];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return (
+                    parseFloat((bytes / Math.pow(k, i)).toFixed(2)) +
+                    " " +
+                    sizes[i]
+                );
+            }
+
+            // Copy to clipboard functionality
+            function copyToClipboard(text) {
+                navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                        showToast("Copied to clipboard!", "success");
+                    })
+                    .catch((err) => {
+                        console.error("Could not copy text: ", err);
+                        showToast("Failed to copy to clipboard", "error");
+                    });
+            }
+
+            // Toast notifications
+            function showToast(message, type = "info") {
+                const toast = document.createElement("div");
+                toast.className = `toast toast-${type}`;
+                toast.textContent = message;
+                toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 4px;
+                color: white;
+                font-weight: 500;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+
+                switch (type) {
+                    case "success":
+                        toast.style.backgroundColor = "#27ae60";
+                        break;
+                    case "error":
+                        toast.style.backgroundColor = "#e74c3c";
+                        break;
+                    case "warning":
+                        toast.style.backgroundColor = "#f39c12";
+                        break;
+                    default:
+                        toast.style.backgroundColor = "#3498db";
+                }
+
+                document.body.appendChild(toast);
+
+                // Fade in
+                setTimeout(() => (toast.style.opacity = "1"), 100);
+
+                // Fade out and remove
+                setTimeout(() => {
+                    toast.style.opacity = "0";
+                    setTimeout(() => document.body.removeChild(toast), 300);
+                }, 3000);
+            }
+
+            // Loading state management
+            function showLoading(elementId) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.innerHTML =
+                        '<div class="loading"></div> Loading...';
+                }
+            }
+
+            function hideLoading(elementId, content) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.innerHTML = content;
+                }
+            }
+
+            // Initialize tooltips and other interactive elements
+            document.addEventListener("DOMContentLoaded", function () {
+                // Add click handlers for copy buttons
+                document.querySelectorAll(".copy-btn").forEach((btn) => {
+                    btn.addEventListener("click", function () {
+                        const target = this.getAttribute("data-copy-target");
+                        const element = document.querySelector(target);
+                        if (element) {
+                            copyToClipboard(element.textContent);
+                        }
+                    });
+                });
+
+                // Add hover effects for report cards
+                document.querySelectorAll(".report-card").forEach((card) => {
+                    card.addEventListener("mouseenter", function () {
+                        this.style.transform = "translateY(-4px)";
+                    });
+
+                    card.addEventListener("mouseleave", function () {
+                        this.style.transform = "translateY(0)";
+                    });
+                });
+
+                // Initialize collapsible sections
+                document
+                    .querySelectorAll(".collapsible-header")
+                    .forEach((header) => {
+                        header.addEventListener("click", function () {
+                            const content = this.nextElementSibling;
+                            const icon = this.querySelector(".collapse-icon");
+
+                            if (
+                                content.style.display === "none" ||
+                                !content.style.display
+                            ) {
+                                content.style.display = "block";
+                                icon.style.transform = "rotate(90deg)";
+                            } else {
+                                content.style.display = "none";
+                                icon.style.transform = "rotate(0deg)";
+                            }
+                        });
+                    });
+            });
+        </script>
+
+        {% block extra_scripts %}{% endblock %}
+    </body>
+</html>

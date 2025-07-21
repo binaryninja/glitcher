@@ -1,0 +1,407 @@
+{% extends "base.html" %} {% block title %}Dashboard - Mistral Injection
+Analysis{% endblock %} {% block content %}
+<!-- Dashboard Header -->
+<div class="card">
+    <div class="card-header">
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+    </div>
+    <div class="card-body">
+        <div class="metrics-row">
+            <div class="metric-card">
+                <div class="metric-value">
+                    {{ reports.single_model|length }}
+                </div>
+                <div class="metric-label">Single Model Reports</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{ reports.multi_model|length }}</div>
+                <div class="metric-label">Multi-Model Reports</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">
+                    {{ reports.single_model|length + reports.multi_model|length
+                    }}
+                </div>
+                <div class="metric-label">Total Reports</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">
+                    {% if reports.single_model or reports.multi_model %} {% set
+                    all_reports = reports.single_model + reports.multi_model %}
+                    {% set sorted_reports =
+                    all_reports|sort(attribute='file_timestamp', reverse=True)
+                    %} {{ sorted_reports[0].formatted_time if sorted_reports
+                    else 'None' }} {% else %} None {% endif %}
+                </div>
+                <div class="metric-label">Latest Report</div>
+            </div>
+        </div>
+
+        {% if not reports.single_model and not reports.multi_model %}
+        <div class="alert alert-info">
+            <h4><i class="fas fa-info-circle"></i> No Reports Found</h4>
+            <p>
+                No injection test reports have been generated yet. Run the
+                following command to create reports:
+            </p>
+            <div class="code-block">
+                python mistral_prompt_injection_secret_to_tool.py injection
+                --model mistral-large-latest
+            </div>
+            <p>Or run multi-model testing:</p>
+            <div class="code-block">
+                python mistral_prompt_injection_secret_to_tool.py multi
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Single Model Reports Section -->
+{% if reports.single_model %}
+<div class="card">
+    <div class="card-header">
+        <h3>
+            <i class="fas fa-robot"></i> Single Model Reports ({{
+            reports.single_model|length }})
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="reports-grid">
+            {% for report in reports.single_model %} {% if loop.index <= 6 %}
+            <div class="report-card">
+                <div class="report-card-header">
+                    <div class="report-title">
+                        {{ report.model_tested or 'Unknown Model' }}
+                    </div>
+                    <div class="report-meta">
+                        <i class="fas fa-clock"></i> {{ report.formatted_time }}
+                    </div>
+                </div>
+                <div class="report-card-body">
+                    <div class="report-stats">
+                        <div class="stat">
+                            <div class="stat-value">
+                                {{ report.successful_tests or 0 }}
+                            </div>
+                            <div class="stat-label">Tests</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">
+                                {{ report.api_key_leaked or 0 }}
+                            </div>
+                            <div class="stat-label">Leaks</div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-2">
+                        {% set leak_rate = report.leak_percentage or 0 %}
+                        <span
+                            class="security-badge {% if leak_rate == 0 %}security-excellent{% elif leak_rate < 0.1 %}security-good{% elif leak_rate < 5 %}security-fair{% elif leak_rate < 10 %}security-poor{% else %}security-critical{% endif %}"
+                        >
+                            {{ "%.1f"|format(leak_rate) }}% Leak Rate
+                        </span>
+                    </div>
+
+                    <div class="progress">
+                        <div
+                            class="progress-bar {% if leak_rate == 0 %}progress-excellent{% elif leak_rate < 0.1 %}progress-good{% elif leak_rate < 5 %}progress-fair{% elif leak_rate < 10 %}progress-poor{% else %}progress-critical{% endif %}"
+                            style="width: {{ [leak_rate, 100]|min }}%"
+                        ></div>
+                    </div>
+
+                    <div class="text-center mt-2">
+                        <a
+                            href="{{ url_for('single_report', filename=report.filename) }}"
+                            class="btn btn-primary btn-small"
+                        >
+                            <i class="fas fa-eye"></i> View Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %} {% endfor %}
+        </div>
+
+        {% if reports.single_model|length > 6 %}
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" onclick="showAllSingleReports()">
+                <i class="fas fa-chevron-down"></i> Show All {{
+                reports.single_model|length }} Reports
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Multi-Model Reports Section -->
+{% if reports.multi_model %}
+<div class="card">
+    <div class="card-header">
+        <h3>
+            <i class="fas fa-layer-group"></i> Multi-Model Comparison Reports
+            ({{ reports.multi_model|length }})
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="reports-grid">
+            {% for report in reports.multi_model %} {% if loop.index <= 4 %}
+            <div class="report-card">
+                <div class="report-card-header">
+                    <div class="report-title">Multi-Model Analysis</div>
+                    <div class="report-meta">
+                        <i class="fas fa-clock"></i> {{ report.formatted_time }}
+                    </div>
+                </div>
+                <div class="report-card-body">
+                    {% set params = report.test_parameters or {} %} {% set
+                    models_tested = params.models_tested or [] %} {% set
+                    comparison = report.comparison_analysis or {} %}
+
+                    <div class="report-stats">
+                        <div class="stat">
+                            <div class="stat-value">
+                                {{ models_tested|length }}
+                            </div>
+                            <div class="stat-label">Models</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">
+                                {{ params.num_tests or 0 }}
+                            </div>
+                            <div class="stat-label">Tests Each</div>
+                        </div>
+                    </div>
+
+                    {% if comparison.best_model and comparison.worst_model %}
+                    <div class="mb-2">
+                        <small class="text-muted"
+                            >Best: {{ comparison.best_model[0][:20] }}... ({{
+                            "%.1f"|format(comparison.best_model[1]) }}%)</small
+                        ><br />
+                        <small class="text-muted"
+                            >Worst: {{ comparison.worst_model[0][:20] }}... ({{
+                            "%.1f"|format(comparison.worst_model[1]) }}%)</small
+                        >
+                    </div>
+                    {% endif %} {% if comparison.problematic_models_count and
+                    comparison.problematic_models_count > 0 %}
+                    <div class="mb-2">
+                        <small class="text-warning"
+                            >⚠️ {{ comparison.problematic_models_count }}
+                            problematic models excluded</small
+                        >
+                    </div>
+                    {% endif %}
+
+                    <div class="text-center mb-2">
+                        {% if comparison.average_leak_rate %} {% set avg_rate =
+                        comparison.average_leak_rate %}
+                        <span
+                            class="security-badge {% if avg_rate == 0 %}security-excellent{% elif avg_rate < 0.1 %}security-good{% elif avg_rate < 5 %}security-fair{% elif avg_rate < 10 %}security-poor{% else %}security-critical{% endif %}"
+                        >
+                            {{ "%.1f"|format(avg_rate) }}% Avg Leak Rate
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="text-center mt-2">
+                        <a
+                            href="{{ url_for('multi_report', filename=report.filename) }}"
+                            class="btn btn-primary btn-small"
+                        >
+                            <i class="fas fa-chart-bar"></i> View Analysis
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %} {% endfor %}
+        </div>
+
+        {% if reports.multi_model|length > 4 %}
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" onclick="showAllMultiReports()">
+                <i class="fas fa-chevron-down"></i> Show All {{
+                reports.multi_model|length }} Reports
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Activity Section -->
+{% if reports.single_model or reports.multi_model %}
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-history"></i> Recent Activity</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Report</th>
+                        <th>Models</th>
+                        <th>Timestamp</th>
+                        <th>Key Metrics</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set all_reports = reports.single_model +
+                    reports.multi_model %} {% set sorted_reports =
+                    all_reports|sort(attribute='file_timestamp', reverse=True)
+                    %} {% for report in sorted_reports %} {% if loop.index <= 10
+                    %}
+                    <tr>
+                        <td>
+                            {% if report.comparison_analysis %}
+                            <span class="badge badge-primary"
+                                ><i class="fas fa-layer-group"></i> Multi</span
+                            >
+                            {% else %}
+                            <span class="badge badge-secondary"
+                                ><i class="fas fa-robot"></i> Single</span
+                            >
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if report.comparison_analysis %} Multi-Model
+                            Analysis {% else %} {{ (report.model_tested or
+                            'Unknown')[:30] }}{% if (report.model_tested or
+                            '')|length > 30 %}...{% endif %} {% endif %}
+                        </td>
+                        <td>
+                            {% if report.comparison_analysis %} {% set
+                            total_models = (report.test_parameters.models_tested
+                            or [])|length %} {% set valid_models =
+                            report.comparison_analysis.valid_models_count or 0
+                            %} {% set problematic_models =
+                            report.comparison_analysis.problematic_models_count
+                            or 0 %} {{ total_models }} models ({{ valid_models
+                            }} valid, {{ problematic_models }} problematic) {%
+                            else %} {% if report.has_compatibility_issues or not
+                            report.is_statistically_significant %} 1 model
+                            (problematic) {% else %} 1 model (valid) {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>{{ report.formatted_time }}</td>
+                        <td>
+                            {% if report.comparison_analysis %} Avg: {{
+                            "%.1f"|format(report.comparison_analysis.average_leak_rate
+                            or 0) }}% {% if
+                            report.comparison_analysis.valid_models_count == 0
+                            %}
+                            <span class="text-warning">(no valid models)</span>
+                            {% endif %} {% else %} {{
+                            "%.1f"|format(report.leak_percentage or 0) }}% leak
+                            rate {% if report.has_compatibility_issues %}
+                            <span class="text-warning">(unreliable)</span>
+                            {% elif not report.is_statistically_significant %}
+                            <span class="text-warning"
+                                >(insufficient data)</span
+                            >
+                            {% endif %} {% endif %}
+                        </td>
+                        <td>
+                            {% if report.comparison_analysis %}
+                            <a
+                                href="{{ url_for('multi_report', filename=report.filename) }}"
+                                class="btn btn-primary btn-small"
+                                >View</a
+                            >
+                            {% else %}
+                            <a
+                                href="{{ url_for('single_report', filename=report.filename) }}"
+                                class="btn btn-primary btn-small"
+                                >View</a
+                            >
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %} {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h4>Generate New Reports</h4>
+                <p class="text-muted">
+                    Run security tests to generate new injection analysis
+                    reports
+                </p>
+            </div>
+            <div>
+                <a
+                    href="{{ url_for('refresh_reports') }}"
+                    class="btn btn-secondary"
+                >
+                    <i class="fas fa-sync-alt"></i> Refresh Reports
+                </a>
+                <a
+                    href="{{ url_for('compare_reports') }}"
+                    class="btn btn-primary"
+                >
+                    <i class="fas fa-balance-scale"></i> Compare Reports
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <h5>Commands to generate reports:</h5>
+            <div class="code-block">
+                # Single model test python
+                mistral_prompt_injection_secret_to_tool.py injection --model
+                mistral-large-latest # Multi-model comparison python
+                mistral_prompt_injection_secret_to_tool.py multi # Interactive
+                model selection python
+                mistral_prompt_injection_secret_to_tool.py multi
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+    function showAllSingleReports() {
+        // Implementation for showing all single reports
+        // This could load more reports via AJAX or expand the grid
+        alert("Feature coming soon: Show all single model reports");
+    }
+
+    function showAllMultiReports() {
+        // Implementation for showing all multi reports
+        alert("Feature coming soon: Show all multi-model reports");
+    }
+
+    // Add some interactivity
+    document.addEventListener("DOMContentLoaded", function () {
+        // Add tooltips for truncated model names
+        document.querySelectorAll("[data-tooltip]").forEach(function (element) {
+            element.addEventListener("mouseenter", function () {
+                const tooltip = document.createElement("div");
+                tooltip.className = "tooltip";
+                tooltip.textContent = this.getAttribute("data-tooltip");
+                document.body.appendChild(tooltip);
+
+                const rect = this.getBoundingClientRect();
+                tooltip.style.position = "absolute";
+                tooltip.style.top = rect.top - 30 + "px";
+                tooltip.style.left = rect.left + "px";
+            });
+        });
+    });
+</script>
+{% endblock %}

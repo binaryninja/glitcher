@@ -1,0 +1,469 @@
+{
+  "model_path": "/home/dyn/models/o/nowllm-0829",
+  "timestamp": 1753112032.7922242,
+  "sample_rate": 0.2,
+  "max_tokens_per_range": 100,
+  "ranges_tested": [
+    {
+      "range_start": 0,
+      "range_end": 1000,
+      "description": "Custom range 0-1000",
+      "tokens_tested": 100,
+      "glitch_tokens_found": 32,
+      "glitch_tokens": [
+        {
+          "token_id": 100,
+          "token_text": "a",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 82,
+          "token_text": "O",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 170,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 220,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 90,
+          "token_text": "W",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 10,
+          "token_text": "\u0007",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 122,
+          "token_text": "w",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 63,
+          "token_text": "<",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 37,
+          "token_text": "\"",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 176,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 126,
+          "token_text": "{",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 74,
+          "token_text": "G",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 142,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 188,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 183,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 106,
+          "token_text": "g",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 7,
+          "token_text": "\u0004",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 237,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 231,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 149,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 28,
+          "token_text": "\u0019",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 107,
+          "token_text": "h",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 241,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 156,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 110,
+          "token_text": "k",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 218,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 58,
+          "token_text": "7",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 111,
+          "token_text": "l",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 2,
+          "token_text": "</s>",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 66,
+          "token_text": "?",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 254,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        },
+        {
+          "token_id": 150,
+          "token_text": "\ufffd",
+          "range": "Custom range 0-1000",
+          "range_start": 0,
+          "range_end": 1000
+        }
+      ]
+    }
+  ],
+  "total_tokens_tested": 100,
+  "total_glitch_tokens": 32,
+  "glitch_tokens": [
+    {
+      "token_id": 100,
+      "token_text": "a",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 82,
+      "token_text": "O",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 170,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 220,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 90,
+      "token_text": "W",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 10,
+      "token_text": "\u0007",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 122,
+      "token_text": "w",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 63,
+      "token_text": "<",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 37,
+      "token_text": "\"",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 176,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 126,
+      "token_text": "{",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 74,
+      "token_text": "G",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 142,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 188,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 183,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 106,
+      "token_text": "g",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 7,
+      "token_text": "\u0004",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 237,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 231,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 149,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 28,
+      "token_text": "\u0019",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 107,
+      "token_text": "h",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 241,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 156,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 110,
+      "token_text": "k",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 218,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 58,
+      "token_text": "7",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 111,
+      "token_text": "l",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 2,
+      "token_text": "</s>",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 66,
+      "token_text": "?",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 254,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    },
+    {
+      "token_id": 150,
+      "token_text": "\ufffd",
+      "range": "Custom range 0-1000",
+      "range_start": 0,
+      "range_end": 1000
+    }
+  ]
+}

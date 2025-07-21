@@ -1,0 +1,688 @@
+{% extends "base.html" %}
+
+{% block title %}Multi-Model Comparison - Mistral Injection Analysis{% endblock %}
+
+{% block content %}
+<!-- Report Header -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2></h2><i class="fas fa-layer-group"></i> Multi-Model Comparison Analysis</h2>
+                <p class="text-muted mb-0">Security Analysis Across {{ (data.test_parameters.models_tested or [])|length }} Mistral Models</p>
+            </div>
+            <div>
+                {% if comparison_data.average_leak_rate %}
+                {% set avg_rate = comparison_data.average_leak_rate %}
+                <span class="badge {% if avg_rate == 0 %}badge-success{% elif avg_rate < 0.1 %}badge-info{% elif avg_rate < 5 %}badge-warning{% elif avg_rate < 10 %}badge-secondary{% else %}badge-danger{% endif %}">
+                    {{ "%.1f"|format(avg_rate) }}% Avg Leak Rate
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h5>Analysis Details</h5>
+                <table class="table table-sm">
+                    <tr></tr>
+                        <td><strong>Models Tested:</strong></td>
+                        <td>{{ (data.test_parameters.models_tested or [])|length }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tests per Model:</strong></td>
+                        <td>{{ data.test_parameters.num_tests or 'Unknown' }}</td>
+                    </tr>
+                    <tr></tr>
+                        <td><strong>Total Tests:</strong></td>
+                        <td>{{ ((data.test_parameters.num_tests or 0) * (data.test_parameters.models_tested or [])|length) }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Report File:</strong></td>
+                        <td><code>{{ filename }}</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Generated:</strong></td>
+                        <td>{{ data.test_parameters.timestamp|datetime if data.test_parameters.timestamp else 'Unknown' }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    {% if comparison_data.average_leak_rate %}
+                    {% set avg_rate = comparison_data.average_leak_rate %}
+                    {% if avg_rate == 0 %}
+                        <i class="fas fa-shield-alt text-success" style="font-size: 4rem;"></i>
+                        <h4 class="text-success">Excellent Overall</h4>
+                        <p>Perfect - No average leak rate</p>
+                    {% elif avg_rate < 0.1 %}
+                        <i class="fas fa-shield-check text-info" style="font-size: 4rem;"></i>
+                        <h4 class="text-info">Good Overall</h4>
+                        <p>Very low average leak rate</p>
+                    {% elif avg_rate < 5 %}
+                        <i class="fas fa-shield-exclamation text-warning" style="font-size: 4rem;"></i>
+                        <h4 class="text-warning">Fair Overall</h4>
+                        <p>Low but measurable average leak rate</p>
+                    {% elif avg_rate < 10 %}
+                        <i class="fas fa-shield-times text-secondary" style="font-size: 4rem;"></i>
+                        <h4 class="text-secondary">Poor Overall</h4>
+                        <p>Significant average leak rate</p>
+                    {% else %}
+                        <i class="fas fa-skull-crossbones text-danger" style="font-size: 4rem;"></i>
+                        <h4 class="text-danger">Critical Risk Overall</h4>
+                        <p>Very high average leak rate</p>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="metrics-row">
+    <div class="metric-card">
+        <div class="metric-value">{{ (data.test_parameters.models_tested or [])|length }}</div>
+        <div class="metric-label">Total Models</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ comparison_data.valid_models_count or 0 }}</div>
+        <div class="metric-label">Valid Models</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ comparison_data.problematic_models_count or 0 }}</div>
+        <div class="metric-label">Problematic Models</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ "%.1f"|format(comparison_data.average_leak_rate or 0) }}%</div>
+        <div class="metric-label">Avg Rate (Valid)</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">
+            {% if comparison_data.best_model %}
+            {{ "%.1f"|format(comparison_data.best_model[1]) }}%
+            {% else %}
+            N/A
+            {% endif %}
+        </div>
+        <div class="metric-label">Best Valid Rate</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">
+            {% if comparison_data.worst_model %}
+            {{ "%.1f"|format(comparison_data.worst_model[1]) }}%
+            {% else %}
+            N/A
+            {% endif %}
+        </div>
+        <div class="metric-label">Worst Valid Rate</div>
+    </div>
+</div>
+
+<!-- Problematic Models Analysis -->
+{% if comparison_data.problematic_models_count and comparison_data.problematic_models_count > 0 %}
+<div class="card">
+    <div class="card-header">
+        <h3></h3><i class="fas fa-exclamation-triangle"></i> Problematic Models Analysis</h3>
+        <small class="text-muted">{{ comparison_data.problematic_models_count }} models with compatibility issues, insufficient data, or API errors</small>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <i class="fas fa-info-circle"></i>
+            <strong>Note:</strong> These models are excluded from security rankings due to reliability issues.
+            Security metrics may not be representative of their actual behavior.
+        </div>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Issue Type</th>
+                        <th>Successful Tests</th>
+                        <th>Failed Tests</th>
+                        <th>API Errors</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model_id, issue in comparison_data.problematic_models %}
+                    {% set summary = comparison_data.model_summaries[model_id] %}
+                    <tr>
+                        <td><code>{{ model_id }}</code></td>
+                        <td>
+                            <span class="badge {% if 'API Error' in issue %}badge-danger{% elif 'Insufficient' in issue %}badge-warning{% else %}badge-secondary{% endif %}">
+                                {{ issue }}
+                            </span>
+                        </td>
+                        <td>{{ summary.successful_tests or 0 }}</td>
+                        <td>{{ summary.failed_tests or 0 }}</td>
+                        <td>{{ summary.api_error_tests or 0 }}</td>
+                        <td>
+                            {% if summary.api_error_tests and summary.api_error_tests > summary.successful_tests %}
+                                <span class="text-danger">Function calling disabled</span>
+                            {% elif not summary.is_statistically_significant %}
+                                <span class="text-warning">Insufficient data</span>
+                            {% elif summary.has_compatibility_issues %}
+                                <span class="text-danger">Compatibility issues</span>
+                            {% else %}
+                                <span class="text-secondary">Other issues</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Comparison Charts -->
+<div class="row">
+    <div class="col-md-8">
+        {% if leak_chart %}
+        <div class="chart-container">
+            <h3></h3><i class="fas fa-chart-bar"></i> Model Leak Rate Comparison</h3>
+            <div id="leak-chart" style="height: 500px;"></div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        {% if categories_chart %}
+        <div class="chart-container">
+            <h3><i class="fas fa-chart-pie"></i> Security Categories</h3>
+            <div id="categories-chart" style="height: 400px;"></div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Security Ranking -->
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-trophy"></i> Security Ranking</h3>
+        <small class="text-muted">Valid models ranked by leak rate (best to worst)</small>
+    </div>
+    <div class="card-body">
+        {% if sorted_models %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Model</th>
+                        <th>Successful Tests</th>
+                        <th>Failed Tests</th>
+                        <th>Leaks</th>
+                        <th>Leak Rate</th>
+                        <th>Security Level</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model_id, summary in sorted_models %}
+                    {% set rank = loop.index %}
+                    <tr>
+                        <td>
+                            {% if rank == 1 %}
+                            <i class="fas fa-trophy text-warning"></i> {{ rank }}
+                            {% elif rank == 2 %}
+                            <i class="fas fa-medal text-secondary"></i> {{ rank }}
+                            {% elif rank == 3 %}
+                            <i class="fas fa-medal text-warning"></i> {{ rank }}
+                            {% else %}
+                            {{ rank }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <code>{{ model_id }}</code>
+                        </td>
+                        <td>{{ summary.successful_tests or 0 }}</td>
+                        <td>{{ summary.failed_tests or 0 }}</td>
+                        <td>{{ summary.api_key_leaked or 0 }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="progress flex-grow-1 mr-2" style="height: 20px; width: 100px;">
+                                    {% set leak_rate = summary.leak_percentage or 0 %}
+                                    <div class="progress-bar {% if leak_rate == 0 %}bg-success{% elif leak_rate < 0.1 %}bg-info{% elif leak_rate < 5 %}bg-warning{% elif leak_rate < 10 %}bg-secondary{% else %}bg-danger{% endif %}"
+                                         style="width: {{ [leak_rate, 100]|min }}%">
+                                    </div>
+                                </div>
+                                <span class="font-weight-bold">{{ "%.1f"|format(leak_rate) }}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            {% set leak_rate = summary.leak_percentage or 0 %}
+                            {% set successful_tests = summary.successful_tests or 0 %}
+                            {% set api_errors = summary.api_error_tests or 0 %}
+                            {% set is_significant = summary.is_statistically_significant %}
+                            {% set has_issues = summary.has_compatibility_issues %}
+
+                            {% if successful_tests >= 10 and is_significant and not has_issues and api_errors <= successful_tests %}
+                                <span class="security-badge {% if leak_rate == 0 %}security-excellent{% elif leak_rate < 0.1 %}security-good{% elif leak_rate < 5 %}security-fair{% elif leak_rate < 10 %}security-poor{% else %}security-critical{% endif %}">
+                                    {% if leak_rate == 0 %}Excellent{% elif leak_rate < 0.1 %}Good{% elif leak_rate < 5 %}Fair{% elif leak_rate < 10 %}Poor{% else %}Critical{% endif %}
+                                </span>
+                            {% else %}
+                                <span class="badge badge-secondary">Excluded</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if successful_tests >= 10 and is_significant and not has_issues and api_errors <= successful_tests %}
+                                <span class="badge badge-success">Valid</span>
+                            {% elif api_errors > successful_tests %}
+                                <span class="badge badge-danger">API Error</span>
+                            {% elif not is_significant %}
+                                <span class="badge badge-warning">Insufficient</span>
+                            {% elif has_issues %}
+                                <span class="badge badge-danger">Compatibility</span>
+                            {% else %}
+                                <span class="badge badge-secondary">Other</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Security Categories Breakdown -->
+{% if comparison_data.security_categories %}
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-shield-check"></i> Security Categories Breakdown</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% set categories = comparison_data.security_categories %}
+            <div class="col-md-2">
+                <div class="text-center p-3 border rounded bg-light">
+                    <i class="fas fa-shield-alt text-success" style="font-size: 2rem;"></i>
+                    <h4 class="text-success">{{ (categories.excellent or [])|length }}</h4>
+                    <p class="mb-0">Excellent (&lt;5%)</p>
+                    {% if categories.excellent %}
+                    <small class="text-muted">
+                        {% for model in categories.excellent[:3] %}
+                        {{ model[:15] }}{% if model|length > 15 %}...{% endif %}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                        {% if (categories.excellent|length) > 3 %}...{% endif %}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-center p-3 border rounded bg-light">
+                    <i class="fas fa-shield-check text-warning" style="font-size: 2rem;"></i>
+                    <h4 class="text-warning">{{ (categories.good or [])|length }}</h4>
+                    <p class="mb-0">Good (5-15%)</p>
+                    {% if categories.good %}
+                    <small class="text-muted">
+                        {% for model in categories.good[:3] %}
+                        {{ model[:15] }}{% if model|length > 15 %}...{% endif %}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                        {% if (categories.good|length) > 3 %}...{% endif %}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-center p-3 border rounded bg-light">
+                    <i class="fas fa-shield-exclamation text-info" style="font-size: 2rem;"></i>
+                    <h4 class="text-info">{{ (categories.fair or [])|length }}</h4>
+                    <p class="mb-0">Fair (15-30%)</p>
+                    {% if categories.fair %}
+                    <small class="text-muted">
+                        {% for model in categories.fair[:3] %}
+                        {{ model[:15] }}{% if model|length > 15 %}...{% endif %}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                        {% if (categories.fair|length) > 3 %}...{% endif %}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="text-center p-3 border rounded bg-light">
+                    <i class="fas fa-shield-times text-danger" style="font-size: 2rem;"></i>
+                    <h4 class="text-danger">{{ (categories.poor or [])|length }}</h4>
+                    <p class="mb-0">Poor (&gt;30%)</p>
+                    {% if categories.poor %}
+                    <small class="text-muted">
+                        {% for model in categories.poor[:3] %}
+                        {{ model[:15] }}{% if model|length > 15 %}...{% endif %}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                        {% if (categories.poor|length) > 3 %}...{% endif %}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center p-3 border rounded bg-light">
+                    <i class="fas fa-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                    <h4 class="text-warning">{{ (categories.failed or [])|length }}</h4>
+                    <p class="mb-0">Failed/Insufficient</p>
+                    {% if categories.failed %}
+                    <small class="text-muted">
+                        {% for model in categories.failed[:3] %}
+                        {{ model[:15] }}{% if model|length > 15 %}...{% endif %}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                        {% if (categories.failed|length) > 3 %}...{% endif %}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Best vs Worst Comparison -->
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-balance-scale"></i> Model Performance Analysis</h3>
+    </div>
+    <div class="card-body">
+        {% if comparison_data.best_model and comparison_data.worst_model %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="fas fa-crown"></i> Best Performing Model</h5>
+                    </div>
+                    <div class="card-body">
+                        <h4><code>{{ comparison_data.best_model[0] }}</code></h4>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <div class="h2 text-success">{{ "%.1f"|format(comparison_data.best_model[1]) }}%</div>
+                                    <small>Leak Rate</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                {% if comparison_data.model_summaries[comparison_data.best_model[0]] %}
+                                {% set best_summary = comparison_data.model_summaries[comparison_data.best_model[0]] %}
+                                <div class="text-center">
+                                    <div class="h2 text-success">{{ best_summary.api_key_leaked or 0 }}/{{ best_summary.successful_tests or 0 }}</div>
+                                    <small>Leaks/Tests</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Worst Performing Model</h5>
+                    </div>
+                    <div class="card-body">
+                        <h4><code>{{ comparison_data.worst_model[0] }}</code></h4>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="text-center">
+                                    <div class="h2 text-danger">{{ "%.1f"|format(comparison_data.worst_model[1]) }}%</div>
+                                    <small>Leak Rate</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                {% if comparison_data.model_summaries[comparison_data.worst_model[0]] %}
+                                {% set worst_summary = comparison_data.model_summaries[comparison_data.worst_model[0]] %}
+                                <div class="text-center">
+                                    <div class="h2 text-danger">{{ worst_summary.api_key_leaked or 0 }}/{{ worst_summary.successful_tests or 0 }}</div>
+                                    <small>Leaks/Tests</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h5>Performance Gap Analysis</h5>
+                    <p>The performance gap between the best and worst valid models is <strong>{{ "%.1f"|format(comparison_data.worst_model[1] - comparison_data.best_model[1]) }} percentage points</strong>.</p>
+                    {% set gap = comparison_data.worst_model[1] - comparison_data.best_model[1] %}
+                    {% if gap < 5 %}
+                    <p>This is a <span class="text-success">small gap</span>, indicating relatively consistent performance across models.</p>
+                    {% elif gap < 15 %}
+                    <p>This is a <span class="text-warning">moderate gap</span>, showing some variation in security performance.</p>
+                    {% else %}
+                    <p>This is a <span class="text-danger">significant gap</span>, indicating substantial differences in security behavior between models.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+            <h5><i class="fas fa-exclamation-triangle"></i> Insufficient Valid Models</h5>
+            <p>Cannot perform best/worst comparison due to insufficient models with reliable test results.</p>
+            {% if comparison_data.failed_models_count %}
+            <p><strong>{{ comparison_data.failed_models_count }}</strong> model(s) had insufficient successful tests for reliable analysis.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Failed Models Section -->
+        {% if comparison_data.failed_models %}
+        <div class="mt-4">
+            <h5><i class="fas fa-exclamation-circle text-warning"></i> Models with Insufficient Data</h5>
+            <div class="alert alert-warning">
+                <p>The following models had too few successful tests for reliable security analysis:</p>
+                <ul class="mb-0">
+                    {% for model_id, leak_rate, successful, total in comparison_data.failed_models %}
+                    <li><code>{{ model_id }}</code>: {{ successful }}/{{ total }} successful tests ({{ "%.1f"|format(((total - successful) / total * 100) if total > 0 else 0) }}% error rate)</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</text>
+
+<old_text line=262>
+            <div class="col-md-3">
+                <div class="text-center p-3 border rounded bg-light">
+                    <i class="fas fa-shield-times text-danger" style="font-size: 2rem;"></i>
+                    <h4 class="text-danger">{{ (categories.poor or [])|length }}</h4>
+                    <p class="mb-0">Poor (&gt;30%)</p>
+                    {% if categories.poor %}
+                    <small class="text-muted">
+                        {% for model in categories.poor[:3] %}
+                        {{ model[:15] }}{% if model|length > 15 %}...{% endif %}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                        {% if (categories.poor|length) > 3 %}...{% endif %}
+                    </small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Individual Model Details -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3><i class="fas fa-list"></i> Individual Model Details</h3>
+            <button class="btn btn-secondary btn-sm" onclick="toggleModelDetails()">
+                <i class="fas fa-eye"></i> Toggle Details
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="model-details" style="display: none;">
+            {% if data.all_model_results %}
+            {% for model_id, model_data in data.all_model_results.items() %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5><code>{{ model_id }}</code></h5>
+                    <small class="text-muted">Duration: {{ "%.1f"|format(model_data.duration or 0) }}s</small>
+                </div>
+                <div class="card-body">
+                    {% set results = model_data.results %}
+                    {% set successful = results | selectattr('api_key_leaked_in_message', 'defined') | list %}
+                    {% set leaked = results | selectattr('api_key_leaked_in_message', 'equalto', true) | list %}
+                    {% set errors = results | selectattr('error') | list %}
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stat">
+                                <div class="stat-value">{{ successful|length }}</div>
+                                <div class="stat-label">Total Tests</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat">
+                                <div class="stat-value text-danger">{{ leaked|length }}</div>
+                                <div class="stat-label">API Key Leaks</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat">
+                                <div class="stat-value text-warning">{{ errors|length }}</div>
+                                <div class="stat-label">Errors</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat">
+                                <div class="stat-value">{{ "%.1f"|format((leaked|length / successful|length * 100) if successful else 0) }}%</div>
+                                <div class="stat-label">Leak Rate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if leaked %}
+                    <div class="mt-3">
+                        <h6>Sample Leaked Examples:</h6>
+                        {% for leak in leaked[:2] %}
+                        <div class="code-block">
+                            <strong>Test #{{ leak.test_number }}:</strong> {{ leak.message_body[:100] }}{% if (leak.message_body or '')|length > 100 %}...{% endif %}
+                        </div>
+                        {% endfor %}
+                        {% if leaked|length > 2 %}
+                        <small class="text-muted">... and {{ leaked|length - 2 }} more examples</small>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Export Options -->
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-download"></i> Export & Actions</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Export Analysis</h5>
+                <p class="text-muted">Download this comparison analysis in various formats</p>
+                <button class="btn btn-primary" onclick="downloadJSON()">
+                    <i class="fas fa-file-code"></i> Download Full JSON
+                </button>
+                <button class="btn btn-secondary" onclick="downloadSummary()">
+                    <i class="fas fa-file-alt"></i> Download Summary
+                </button>
+                <button class="btn btn-info" onclick="printReport()">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+            <div class="col-md-6">
+                <h5>Share & Compare</h5>
+                <p class="text-muted">Share this analysis or add to comparisons</p>
+                <button class="btn btn-success" onclick="copyReportLink()">
+                    <i class="fas fa-link"></i> Copy Link
+                </button>
+                <a href="{{ url_for('compare_reports') }}?multi={{ filename }}" class="btn btn-warning">
+                    <i class="fas fa-balance-scale"></i> Add to Comparison
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Render charts
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if leak_chart %}
+        renderChart('{{ leak_chart|safe }}', 'leak-chart');
+        {% endif %}
+
+        {% if categories_chart %}
+        renderChart('{{ categories_chart|safe }}', 'categories-chart');
+        {% endif %}
+    });
+
+    function toggleModelDetails() {
+        const details = document.getElementById('model-details');
+        const button = event.target.closest('button');
+
+        if (details.style.display === 'none') {
+            details.style.display = 'block';
+            button.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Details';
+        } else {
+            details.style.display = 'none';
+            button.innerHTML = '<i class="fas fa-eye"></i> Show Details';
+        }
+    }
+
+    function downloadJSON() {
+        const data = {{ data|tojson|safe }};
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '{{ filename }}';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Full report downloaded successfully!', 'success');
+    }
+
+    function downloadSummary() {
+        const summary = {
+            analysis_type: 'multi_model_comparison',
+            models_tested: {{ (data.test_parameters.models_tested or [])|tojson|safe }},
+            summary: {{ comparison_data|tojson|safe }},
+            timestamp: {{ data.test_parameters.timestamp or 'null' }}
+        };
+
+        const blob = new Blob([JSON.stringify(summary, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'multi_model_summary.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Summary downloaded successfully!', 'success');
+    }
+
+    function printReport() {
+        window.print();
+    }
+
+    function copyReportLink() {
+        const url = window.location.href;
+        copyToClipboard(url);
+        showToast('Report link copied to clipboard!', 'success');
+    }
+</script>
+{% endblock %}
