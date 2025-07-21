@@ -1134,7 +1134,7 @@ class GlitcherCLI:
     def run_genetic(self):
         """Run genetic algorithm for breeding glitch token combinations."""
         try:
-            print("🧬 Starting genetic algorithm for breeding glitch token combinations...")
+            print("Starting genetic algorithm for breeding glitch token combinations...")
             print(f"Model: {self.args.model_path}")
             print(f"Base text: '{self.args.base_text}'")
             print(f"Population size: {self.args.population_size}")
@@ -1144,23 +1144,23 @@ class GlitcherCLI:
             gui_callback = None
             if self.args.gui:
                 try:
-                    print("🎬 Initializing real-time GUI animation...")
+                    print("Initializing real-time GUI animation...")
                     animator = RealTimeGeneticAnimator(
                         base_text=self.args.base_text,
                         max_generations=self.args.generations
                     )
                     gui_callback = GeneticAnimationCallback(animator)
                 except ImportError as e:
-                    print(f"⚠️  GUI not available: {e}")
+                    print(f"WARNING: GUI not available: {e}")
                     print("Install matplotlib for GUI support: pip install matplotlib")
                     gui_callback = None
                 except Exception as e:
-                    print(f"⚠️  Failed to initialize GUI: {e}")
+                    print(f"WARNING: Failed to initialize GUI: {e}")
                     gui_callback = None
 
             if self.args.batch:
                 # Run batch experiments
-                print("🔬 Running batch experiments...")
+                print("Running batch experiments...")
 
                 # Create batch runner
                 runner = GeneticBatchRunner(self.args.model_path, self.args.token_file)
@@ -1205,7 +1205,7 @@ class GlitcherCLI:
 
             else:
                 # Run single experiment
-                print("🧬 Running single genetic algorithm experiment...")
+                print("Running single genetic algorithm experiment...")
 
                 # Create genetic algorithm instance
                 ga = GeneticProbabilityReducer(
@@ -1266,7 +1266,7 @@ class GlitcherCLI:
                 print(f"\n✅ Results saved to {self.args.output}")
 
                 # Display top results
-                print("\n🏆 Top Results:")
+                print("\nTop Results:")
                 for i, individual in enumerate(final_population[:5], 1):
                     token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
                     reduction_pct = ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
@@ -1277,14 +1277,14 @@ class GlitcherCLI:
 
                 # Keep GUI alive if it was used
                 if gui_callback:
-                    print("🖼️  GUI animation is live. Close the window when done viewing.")
+                    print("GUI animation is live. Close the window when done viewing.")
                     try:
                         gui_callback.keep_alive(duration=None)  # Keep alive until window closed
                     except KeyboardInterrupt:
-                        print("⏹️  GUI closed by user.")
+                        print("GUI closed by user.")
 
         except Exception as e:
-            print(f"❌ Error in genetic algorithm: {e}")
+            print(f"ERROR: Error in genetic algorithm: {e}")
             import traceback
             traceback.print_exc()
             raise

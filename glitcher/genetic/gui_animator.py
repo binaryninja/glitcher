@@ -12,10 +12,12 @@ Date: 2024
 try:
     import matplotlib.pyplot as plt
     import matplotlib.animation as animation
+    import matplotlib.font_manager as fm
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
     plt = None
     animation = None
+    fm = None
     MATPLOTLIB_AVAILABLE = False
 
 import numpy as np
@@ -80,16 +82,53 @@ class RealTimeGeneticAnimator:
         # Setup the plot
         self.setup_plot()
 
+    def setup_font_fallback(self):
+        """Setup font fallback to handle missing Unicode characters."""
+        if not MATPLOTLIB_AVAILABLE or fm is None:
+            return
+
+        try:
+            # Try to find a font that supports Unicode characters
+            available_fonts = fm.findSystemFonts()
+            unicode_fonts = []
+
+            # Common fonts that support Unicode/emoji
+            preferred_fonts = ['DejaVu Sans', 'Liberation Sans', 'Arial Unicode MS', 'Segoe UI', 'Noto Sans']
+
+            for font_name in preferred_fonts:
+                try:
+                    font_prop = fm.FontProperties(family=font_name)
+                    if font_prop.get_name() in [f.name for f in fm.fontManager.ttflist]:
+                        unicode_fonts.append(font_name)
+                        break
+                except:
+                    continue
+
+            # Set font if found
+            if unicode_fonts:
+                plt.rcParams['font.family'] = unicode_fonts[0]
+
+            # Suppress font warnings for missing glyphs
+            import warnings
+            warnings.filterwarnings('ignore', message='Glyph .* missing from font.*')
+
+        except Exception:
+            # If font setup fails, just continue with default
+            pass
+
     def setup_plot(self):
         """Setup the matplotlib figure and subplots for real-time display."""
         # Set up matplotlib backend
         import matplotlib
         matplotlib.use('TkAgg', force=True)  # Use TkAgg backend for better compatibility
 
+        # Setup font fallback
+        self.setup_font_fallback()
+
         plt.ion()  # Turn on interactive mode
 
         self.fig = plt.figure(figsize=(16, 10))
-        self.fig.suptitle('🧬 Genetic Algorithm Evolution: Real-time Token Breeding',
+        self.fig.suptitle('Genetic Algorithm Evolution: Real-time Token Breeding',
                          fontsize=16, fontweight='bold')
 
         # Create subplots with improved layout
@@ -104,7 +143,7 @@ class RealTimeGeneticAnimator:
 
         # Middle left: Fitness evolution chart
         self.ax_fitness = self.fig.add_subplot(gs[1, 0])
-        self.ax_fitness.set_title('🏆 Fitness Evolution Over Generations', fontweight='bold')
+        self.ax_fitness.set_title('Fitness Evolution Over Generations', fontweight='bold')
         self.ax_fitness.set_xlabel('Generation')
         self.ax_fitness.set_ylabel('Fitness Score')
         self.ax_fitness.grid(True, alpha=0.3)
@@ -113,14 +152,14 @@ class RealTimeGeneticAnimator:
 
         # Middle right: Current stats panel
         self.ax_stats = self.fig.add_subplot(gs[1, 1])
-        self.ax_stats.set_title('📊 Current Statistics', fontweight='bold')
+        self.ax_stats.set_title('Current Statistics', fontweight='bold')
         self.ax_stats.set_xlim(0, 1)
         self.ax_stats.set_ylim(0, 1)
         self.ax_stats.axis('off')
 
         # Bottom: Token evolution panel
         self.ax_tokens = self.fig.add_subplot(gs[2, :])
-        self.ax_tokens.set_title('🎯 Current Best Token Combination', fontweight='bold')
+        self.ax_tokens.set_title('Current Best Token Combination', fontweight='bold')
         self.ax_tokens.set_xlim(0, 1)
         self.ax_tokens.set_ylim(0, 1)
         self.ax_tokens.axis('off')
@@ -245,13 +284,13 @@ class RealTimeGeneticAnimator:
 
             stats_text = f"""Generation: {self.current_generation}
 
-🏆 Best Fitness: {self.current_best_fitness:.4f}
-📈 Avg Fitness: {self.current_avg_fitness:.4f}
+Best Fitness: {self.current_best_fitness:.4f}
+Avg Fitness: {self.current_avg_fitness:.4f}
 
-🎯 Current Probability: {self.current_probability:.4f}
-📉 Reduction: {reduction_pct:.1f}%
+Current Probability: {self.current_probability:.4f}
+Reduction: {reduction_pct:.1f}%
 
-⏱️ Progress: {progress_pct:.1f}%"""
+Progress: {progress_pct:.1f}%"""
 
             color = "lightgreen" if self.current_best_fitness > 0.5 else "lightyellow"
 
@@ -283,7 +322,7 @@ class RealTimeGeneticAnimator:
                 tokens_str += f"\nFitness: {self.current_best_fitness:.4f}"
 
             else:
-                tokens_str = "🔄 Initializing population..."
+                tokens_str = "Initializing population..."
 
             # Color based on fitness
             if self.current_best_fitness > 0.7:
@@ -307,7 +346,7 @@ class RealTimeGeneticAnimator:
     def start_animation(self):
         """Start the real-time animation."""
         self.is_running = True
-        self.logger.info("🎬 Starting real-time genetic algorithm animation...")
+        self.logger.info("Starting real-time genetic algorithm animation...")
 
     def stop_animation(self):
         """Stop the animation."""
@@ -320,12 +359,12 @@ class RealTimeGeneticAnimator:
 
         if final_message:
             # Add completion message to the plot
-            self.fig.suptitle(f'🧬 Genetic Algorithm Evolution: COMPLETED\n{final_message}',
+            self.fig.suptitle(f'Genetic Algorithm Evolution: COMPLETED\n{final_message}',
                              fontsize=16, fontweight='bold', color='green')
             plt.draw()
             plt.pause(0.1)
 
-        self.logger.info("✅ Genetic algorithm evolution completed!")
+        self.logger.info("Genetic algorithm evolution completed!")
 
     def save_animation_data(self, filename: str):
         """Save current animation data for later replay."""
@@ -346,7 +385,7 @@ class RealTimeGeneticAnimator:
         with open(filename, 'w') as f:
             json.dump(data, f, indent=2)
 
-        self.logger.info(f"💾 Animation data saved to {filename}")
+        self.logger.info(f"Animation data saved to {filename}")
 
     def keep_alive(self, duration: float = None):
         """
@@ -358,7 +397,7 @@ class RealTimeGeneticAnimator:
         if not hasattr(self, 'fig') or not plt.fignum_exists(self.fig.number):
             return
 
-        self.logger.info("🖼️  Animation window is live. Close the window or press Ctrl+C to exit.")
+        self.logger.info("Animation window is live. Close the window or press Ctrl+C to exit.")
 
         try:
             if duration is None:
@@ -372,7 +411,7 @@ class RealTimeGeneticAnimator:
                     plt.pause(0.1)
 
         except KeyboardInterrupt:
-            self.logger.info("⏹️  Animation stopped by user.")
+            self.logger.info("Animation stopped by user.")
         except Exception as e:
             self.logger.warning(f"Animation error: {e}")
         finally:
