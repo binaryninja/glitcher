@@ -84,6 +84,7 @@ class GeneticProbabilityReducer:
         # Target information
         self.target_token_id: Optional[int] = None
         self.baseline_probability: float = 0.0
+        self.initial_top_tokens: List[Tuple[int, float]] = []  # Store initial top 10 tokens with probabilities
 
         self.setup_logging()
 
@@ -169,6 +170,11 @@ class GeneticProbabilityReducer:
             outputs = self.model(**inputs)
             logits = outputs.logits[0, -1, :]  # Last position logits
             probs = torch.softmax(logits, dim=-1)
+
+        # Capture initial top 10 tokens for comparison
+        top_probs, top_indices = torch.topk(probs, 10)
+        self.initial_top_tokens = [(int(idx.item()), float(prob.item())) for idx, prob in zip(top_indices, top_probs)]
+        self.logger.info(f"Initial top 10 tokens captured: {[(idx, f'{prob:.4f}') for idx, prob in self.initial_top_tokens[:5]]}...")
 
         if self.target_token:
             # Use specified target token
@@ -371,7 +377,9 @@ class GeneticProbabilityReducer:
             self.gui_callback.on_evolution_start(
                 baseline_prob=self.baseline_probability,
                 target_token_id=self.target_token_id,
-                target_token_text=target_text
+                target_token_text=target_text,
+                initial_top_tokens=self.initial_top_tokens,
+                tokenizer=self.tokenizer
             )
 
         # Create initial population

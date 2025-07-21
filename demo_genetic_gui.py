@@ -4,7 +4,8 @@ GUI Demo Script for Genetic Algorithm Animation
 
 This script demonstrates the real-time GUI animation functionality
 for the genetic algorithm without requiring a full model download.
-It uses simulated data to show how the GUI works during evolution.
+It uses simulated data to show how the GUI works during evolution,
+including the new token comparison feature that shows original vs evolved tokens.
 
 Usage:
     python demo_genetic_gui.py
@@ -48,6 +49,20 @@ def simulate_genetic_evolution():
         max_generations = 100
         population_size = 50
 
+        # Simulate initial top 10 tokens (what would normally come from model baseline)
+        initial_top_tokens = [
+            (39935, 0.9487),  # "fox" - most likely
+            (5019, 0.0234),   # "dog"
+            (4106, 0.0156),   # "cat"
+            (15477, 0.0089),  # "rabbit"
+            (23392, 0.0067),  # "horse"
+            (17804, 0.0045),  # "bear"
+            (40842, 0.0034),  # "wolf"
+            (28832, 0.0023),  # "deer"
+            (31651, 0.0019),  # "mouse"
+            (19847, 0.0015)   # "bird"
+        ]
+
         # Create animator
         print("🎬 Initializing real-time animation...")
         animator = RealTimeGeneticAnimator(
@@ -66,7 +81,8 @@ def simulate_genetic_evolution():
         callback.on_evolution_start(
             baseline_prob=baseline_prob,
             target_token_id=target_token_id,
-            target_token_text=target_token_text
+            target_token_text=target_token_text,
+            initial_top_tokens=initial_top_tokens
         )
 
         # Simulate realistic evolution data
@@ -97,12 +113,13 @@ def simulate_genetic_evolution():
             print(f"  Stage {i+1}: Gen {gen_range.start}-{gen_range.stop-1}, "
                   f"Fitness {fit_range[0]:.3f}-{fit_range[1]:.3f}")
 
-        print("\n🎮 Starting animation (close window to stop)...")
+        print("🎮 Starting animation (close window to stop)...")
         print("    Watch the real-time evolution of:")
         print("    - Fitness scores over generations")
         print("    - Current best token combinations")
         print("    - Probability reduction statistics")
         print("    - Progress tracking")
+        print("    - Token comparison: Original Top 10 vs Evolved combinations")
 
         # Run evolution simulation
         current_fitness = 0.0
@@ -172,6 +189,10 @@ def simulate_genetic_evolution():
 
         # Keep GUI alive for viewing
         print("\n🖼️  GUI is now live - you can examine the results!")
+        print("    📊 NEW FEATURE: Check the bottom panel for token evolution comparison!")
+        print("    - Shows original top 10 tokens from baseline prediction")
+        print("    - Displays current evolved token combination")
+        print("    - Includes token IDs, probabilities, and decoded text")
         print("    Close the animation window when done viewing.")
 
         try:
@@ -223,6 +244,7 @@ def run_cli_demo():
     print("   • Probability reduction statistics")
     print("   • Generation progress tracking")
     print("   • Token ID to text decoding")
+    print("   • NEW: Token evolution comparison (Original Top 10 vs Evolved)")
 
 def main():
     """Main demo function."""

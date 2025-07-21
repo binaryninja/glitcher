@@ -60,6 +60,9 @@ class RealTimeGeneticAnimator:
         self.baseline_probability = baseline_probability or 0.0
         self.max_generations = max_generations
 
+        # Store initial top tokens for comparison
+        self.initial_top_tokens = []  # List of (token_id, probability) tuples
+
         # Data storage for real-time updates
         self.generations = deque(maxlen=max_generations * 2)
         self.best_fitness = deque(maxlen=max_generations * 2)
@@ -70,6 +73,9 @@ class RealTimeGeneticAnimator:
         self.current_best_fitness = 0.0
         self.current_avg_fitness = 0.0
         self.current_probability = baseline_probability or 0.0
+
+        # Store tokenizer for decoding tokens
+        self.tokenizer = None
 
         # Animation control
         self.is_running = False
@@ -131,9 +137,9 @@ class RealTimeGeneticAnimator:
         self.fig.suptitle('Genetic Algorithm Evolution: Real-time Token Breeding',
                          fontsize=16, fontweight='bold')
 
-        # Create subplots with improved layout
-        gs = self.fig.add_gridspec(3, 2, height_ratios=[1, 2, 1], width_ratios=[2, 1],
-                                  hspace=0.3, wspace=0.3)
+        # Create subplots with expanded layout for token comparison
+        gs = self.fig.add_gridspec(4, 2, height_ratios=[0.8, 2, 1, 1], width_ratios=[2, 1],
+                                  hspace=0.4, wspace=0.3)
 
         # Top: Basic info panel
         self.ax_info = self.fig.add_subplot(gs[0, :])
@@ -157,12 +163,19 @@ class RealTimeGeneticAnimator:
         self.ax_stats.set_ylim(0, 1)
         self.ax_stats.axis('off')
 
-        # Bottom: Token evolution panel
+        # Bottom left: Current best token combination
         self.ax_tokens = self.fig.add_subplot(gs[2, :])
         self.ax_tokens.set_title('Current Best Token Combination', fontweight='bold')
         self.ax_tokens.set_xlim(0, 1)
         self.ax_tokens.set_ylim(0, 1)
         self.ax_tokens.axis('off')
+
+        # Bottom: Token comparison panel (original vs evolved)
+        self.ax_comparison = self.fig.add_subplot(gs[3, :])
+        self.ax_comparison.set_title('Token Evolution: Original Top 10 vs Current Top 10', fontweight='bold')
+        self.ax_comparison.set_xlim(0, 1)
+        self.ax_comparison.set_ylim(0, 1)
+        self.ax_comparison.axis('off')
 
         # Initialize empty plots
         line_best_result = self.ax_fitness.plot([], [], 'b-', linewidth=3,
@@ -182,7 +195,7 @@ class RealTimeGeneticAnimator:
 
     def update_data(self, generation: int, best_fitness: float, avg_fitness: float,
                    best_tokens: List[int], token_texts: List[str] = None,
-                   current_probability: float = None):
+                   current_probability: float = None, tokenizer=None):
         """
         Update the animator with new data from the genetic algorithm.
 
@@ -214,7 +227,8 @@ class RealTimeGeneticAnimator:
                 self.update_display()
 
     def update_baseline(self, baseline_probability: float, target_token_id: int = None,
-                       target_token_text: str = None):
+                       target_token_text: str = None, initial_top_tokens: list = None,
+                       tokenizer = None):
         """Update baseline information."""
         with self.update_lock:
             self.baseline_probability = baseline_probability
@@ -222,6 +236,10 @@ class RealTimeGeneticAnimator:
                 self.target_token_id = target_token_id
             if target_token_text is not None:
                 self.target_token_text = target_token_text
+            if initial_top_tokens is not None:
+                self.initial_top_tokens = initial_top_tokens.copy()
+            if tokenizer is not None:
+                self.tokenizer = tokenizer
 
     def update_display(self):
         """Update the visual display with current data."""
@@ -336,12 +354,84 @@ Progress: {progress_pct:.1f}%"""
                                fontsize=10, bbox=dict(boxstyle="round,pad=0.5",
                                                      facecolor=token_color, alpha=0.8))
 
+            # Update token comparison panel
+            self.ax_comparison.clear()
+            self.ax_comparison.set_xlim(0, 1)
+            self.ax_comparison.set_ylim(0, 1)
+            self.ax_comparison.axis('off')
+
+            if hasattr(self, 'initial_top_tokens') and self.initial_top_tokens:
+                # Display original vs evolved token comparison
+                comparison_text = self._format_token_comparison()
+
+                self.ax_comparison.text(0.5, 0.5, comparison_text, ha='center', va='center',
+                                       fontsize=9, bbox=dict(boxstyle="round,pad=0.5",
+                                                           facecolor="lightblue", alpha=0.8),
+                                       family='monospace')
+            else:
+                self.ax_comparison.text(0.5, 0.5, "Token comparison will appear once evolution starts...",
+                                       ha='center', va='center', fontsize=10,
+                                       bbox=dict(boxstyle="round,pad=0.5", facecolor="lightgray", alpha=0.8))
+
             # Update display
             plt.draw()
             plt.pause(0.01)  # Small pause to allow GUI updates
 
         except Exception as e:
             self.logger.warning(f"Error updating display: {e}")
+
+    def _format_token_comparison(self):
+        """Format token comparison text for display."""
+        if not hasattr(self, 'initial_top_tokens') or not self.initial_top_tokens:
+            return "No comparison data available"
+
+        lines = []
+        lines.append("TOKEN EVOLUTION COMPARISON")
+        lines.append("=" * 80)
+
+        # Format original top 10 tokens
+        lines.append("ORIGINAL TOP 10 TOKENS (from baseline prediction):")
+        lines.append("-" * 50)
+        for i, (token_id, prob) in enumerate(self.initial_top_tokens[:10]):
+            # Try to decode token text if tokenizer available
+            token_text = "<?>"
+            if self.tokenizer is not None:
+                try:
+                    token_text = repr(self.tokenizer.decode([token_id]))
+                except:
+                    token_text = "<?>"
+
+            lines.append(f"  {i+1:2d}. ID:{token_id:6d} | prob:{prob:.4f} | text:{token_text}")
+
+        lines.append("")
+
+        # Format current evolved tokens
+        lines.append("CURRENT EVOLVED TOKEN COMBINATION:")
+        lines.append("-" * 50)
+        if self.current_best_tokens:
+            for i, token_id in enumerate(self.current_best_tokens):
+                # Try to decode token text if tokenizer available
+                token_text = "<?>"
+                if self.tokenizer is not None:
+                    try:
+                        token_text = repr(self.tokenizer.decode([token_id]))
+                    except:
+                        token_text = "<?>"
+
+                lines.append(f"  {i+1:2d}. ID:{token_id:6d} | text:{token_text}")
+        else:
+            lines.append("  No evolved tokens available yet")
+
+        lines.append("")
+        lines.append("EVOLUTION STATUS:")
+        lines.append("-" * 20)
+        lines.append(f"Generation: {self.current_generation}")
+        lines.append(f"Best Fitness: {self.current_best_fitness:.4f}")
+        if self.baseline_probability > 0 and self.current_probability > 0:
+            reduction = (1 - self.current_probability / self.baseline_probability) * 100
+            lines.append(f"Probability Reduction: {reduction:.1f}%")
+
+        return "\n".join(lines)
 
     def start_animation(self):
         """Start the real-time animation."""
@@ -434,9 +524,10 @@ class GeneticAnimationCallback:
         self.logger = logging.getLogger(__name__)
 
     def on_evolution_start(self, baseline_prob: float, target_token_id: int = None,
-                          target_token_text: str = None):
+                          target_token_text: str = None, initial_top_tokens: list = None,
+                          tokenizer = None):
         """Called when evolution starts."""
-        self.animator.update_baseline(baseline_prob, target_token_id, target_token_text)
+        self.animator.update_baseline(baseline_prob, target_token_id, target_token_text, initial_top_tokens, tokenizer)
         self.animator.start_animation()
 
     def on_generation_complete(self, generation: int, best_individual, avg_fitness: float,
@@ -460,7 +551,8 @@ class GeneticAnimationCallback:
             avg_fitness=avg_fitness,
             best_tokens=best_tokens,
             token_texts=token_texts,
-            current_probability=current_probability
+            current_probability=current_probability,
+            tokenizer=tokenizer
         )
 
     def on_evolution_complete(self, final_population, total_generations: int):
