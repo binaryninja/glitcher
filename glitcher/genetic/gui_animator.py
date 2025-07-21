@@ -195,7 +195,8 @@ class RealTimeGeneticAnimator:
 
     def update_data(self, generation: int, best_fitness: float, avg_fitness: float,
                    best_tokens: List[int], token_texts: List[str] = None,
-                   current_probability: float = None, tokenizer=None):
+                   current_probability: float = None, tokenizer=None,
+                   new_top_tokens: List[Tuple[int, float]] = None):
         """
         Update the animator with new data from the genetic algorithm.
 
@@ -206,6 +207,7 @@ class RealTimeGeneticAnimator:
             best_tokens: List of token IDs in best individual
             token_texts: List of decoded token texts (optional)
             current_probability: Current probability after token insertion
+            new_top_tokens: Top 10 tokens after applying evolved combination
         """
         with self.update_lock:
             self.current_generation = generation
@@ -213,6 +215,7 @@ class RealTimeGeneticAnimator:
             self.current_avg_fitness = avg_fitness
             self.current_best_tokens = best_tokens.copy() if best_tokens else []
             self.current_token_texts = token_texts.copy() if token_texts else []
+            self.current_new_top_tokens = new_top_tokens.copy() if new_top_tokens else []
 
             if current_probability is not None:
                 self.current_probability = current_probability
@@ -423,6 +426,25 @@ Progress: {progress_pct:.1f}%"""
             lines.append("  No evolved tokens available yet")
 
         lines.append("")
+
+        # Format new top 10 tokens after evolution
+        lines.append("NEW TOP 10 TOKENS (after applying evolved combination):")
+        lines.append("-" * 50)
+        if hasattr(self, 'current_new_top_tokens') and self.current_new_top_tokens:
+            for i, (token_id, prob) in enumerate(self.current_new_top_tokens[:10]):
+                # Try to decode token text if tokenizer available
+                token_text = "<?>"
+                if self.tokenizer is not None:
+                    try:
+                        token_text = repr(self.tokenizer.decode([token_id]))
+                    except:
+                        token_text = "<?>"
+
+                lines.append(f"  {i+1:2d}. ID:{token_id:6d} | prob:{prob:.4f} | text:{token_text}")
+        else:
+            lines.append("  New token probabilities not available yet")
+
+        lines.append("")
         lines.append("EVOLUTION STATUS:")
         lines.append("-" * 20)
         lines.append(f"Generation: {self.current_generation}")
@@ -531,7 +553,8 @@ class GeneticAnimationCallback:
         self.animator.start_animation()
 
     def on_generation_complete(self, generation: int, best_individual, avg_fitness: float,
-                              current_probability: float = None, tokenizer=None):
+                              current_probability: float = None, tokenizer=None,
+                              new_top_tokens: List[Tuple[int, float]] = None):
         """Called when a generation completes."""
         # Decode tokens if tokenizer is available
         token_texts = None
@@ -552,7 +575,8 @@ class GeneticAnimationCallback:
             best_tokens=best_tokens,
             token_texts=token_texts,
             current_probability=current_probability,
-            tokenizer=tokenizer
+            tokenizer=tokenizer,
+            new_top_tokens=new_top_tokens
         )
 
     def on_evolution_complete(self, final_population, total_generations: int):

@@ -34,6 +34,7 @@ class Individual:
     fitness: float = 0.0  # Probability reduction achieved
     baseline_prob: float = 0.0  # Original probability
     modified_prob: float = 0.0  # Probability after token insertion
+    new_top_tokens: List[Tuple[int, float]] = None  # Top 10 tokens after applying evolved combination
 
     def __str__(self):
         return f"Individual(tokens={self.tokens}, fitness={self.fitness:.4f})"
@@ -217,6 +218,10 @@ class GeneticProbabilityReducer:
                 probs = torch.softmax(logits, dim=-1)
 
             modified_prob = probs[self.target_token_id].item()
+
+            # Capture new top 10 tokens after applying evolved combination
+            top_probs, top_indices = torch.topk(probs, 10)
+            individual.new_top_tokens = [(int(idx.item()), float(prob.item())) for idx, prob in zip(top_indices, top_probs)]
 
             # Fitness is probability reduction
             fitness = self.baseline_probability - modified_prob
@@ -407,12 +412,17 @@ class GeneticProbabilityReducer:
             if self.gui_callback and fitnesses:
                 best_individual = max(population, key=lambda x: x.fitness)
                 current_prob = self.baseline_probability * (1 - best_individual.fitness) if best_individual.fitness > 0 else self.baseline_probability
+
+                # Get new top tokens if available
+                new_top_tokens = getattr(best_individual, 'new_top_tokens', None)
+
                 self.gui_callback.on_generation_complete(
                     generation=generation,
                     best_individual=best_individual,
                     avg_fitness=avg_fitness,
                     current_probability=current_prob,
-                    tokenizer=self.tokenizer
+                    tokenizer=self.tokenizer,
+                    new_top_tokens=new_top_tokens
                 )
 
             # Log progress
