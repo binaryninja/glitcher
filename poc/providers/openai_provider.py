@@ -9,11 +9,21 @@ class OpenAIProvider(BaseProvider):
     """OpenAI API provider implementation."""
 
     def __init__(self, api_key: Optional[str] = None, **kwargs):
-        """Initialize OpenAI provider."""
+        """
+        Initialize OpenAI provider.
+
+        Args:
+            api_key: OpenAI API key (optional, can use OPENAI_API_KEY env var)
+            **kwargs: Additional provider-specific arguments including:
+                - max_workers: Maximum number of concurrent workers (default: 5)
+        """
         if api_key is None:
             api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OpenAI API key is required. Set OPENAI_API_KEY environment variable or pass api_key parameter.")
+
+        # Extract max_workers from kwargs
+        self.max_workers = kwargs.pop('max_workers', 5)
 
         super().__init__(api_key, **kwargs)
 
@@ -32,6 +42,8 @@ class OpenAIProvider(BaseProvider):
         self.completion_args = {
             #"temperature": 0.7,
             # "max_completion_tokens": 2048,
+            # "logprobs":True,
+            "top_logprobs":3,
             "top_p": 1.0
         }
 
@@ -97,7 +109,7 @@ class OpenAIProvider(BaseProvider):
         print(f"  Other Models: {len(other_models)}")
         print(f"  Total Models: {total_count}")
 
-    def list_models(self) -> Tuple[List[ModelInfo], List[ModelInfo]]:
+    def list_models(self, quiet=False) -> Tuple[List[ModelInfo], List[ModelInfo]]:
         """List available OpenAI models and identify which support function calling."""
         print("🔍 Querying OpenAI models endpoint...")
 
@@ -410,6 +422,7 @@ class OpenAIProvider(BaseProvider):
                 'audio'
             ],
             'default_completion_args': self.completion_args,
+            'max_workers': self.max_workers,
             'available_models': [
                 'gpt-4',
                 'gpt-4-turbo',

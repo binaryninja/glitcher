@@ -262,7 +262,61 @@ def create_security_categories_chart(data):
 def index():
     """Main dashboard showing all reports."""
     reports = load_reports()
-    return render_template('index.html', reports=reports)
+
+    # Create leaderboard from all single model reports
+    # Handle duplicates by keeping only the latest result for each model
+    model_latest_results = {}
+    if reports['single_model']:
+        for report in reports['single_model']:
+            model_id = report.get('model_tested', 'Unknown')
+            file_timestamp = report.get('file_timestamp', 0)
+
+            # Keep only the latest result for each model
+            if model_id not in model_latest_results or file_timestamp > model_latest_results[model_id]['file_timestamp']:
+                model_latest_results[model_id] = {
+                    'model_id': model_id,
+                    'filename': report.get('filename', ''),
+                    'leak_percentage': report.get('leak_percentage', 0),
+                    'successful_tests': report.get('successful_tests', 0),
+                    'failed_tests': report.get('failed_tests', 0),
+                    'api_key_leaked': report.get('api_key_leaked', 0),
+                    'api_error_tests': report.get('api_error_tests', 0),
+                    'is_statistically_significant': report.get('is_statistically_significant', True),
+                    'has_compatibility_issues': report.get('has_compatibility_issues', False),
+                    'formatted_time': report.get('formatted_time', ''),
+                    'file_timestamp': file_timestamp
+                }
+
+    leaderboard_data = list(model_latest_results.values())
+
+    # Process leaderboard data - separate valid and problematic models
+    valid_models = []
+    problematic_models = []
+
+    for model_data in leaderboard_data:
+        successful_tests = model_data['successful_tests']
+        api_errors = model_data['api_error_tests']
+        has_issues = model_data['has_compatibility_issues']
+        is_significant = model_data['is_statistically_significant']
+
+        if successful_tests >= 10 and is_significant and not has_issues and api_errors <= successful_tests:
+            valid_models.append(model_data)
+        else:
+            problematic_models.append(model_data)
+
+    # Sort valid models by leak percentage (ascending - best to worst)
+    # Sort problematic models by successful test count (descending)
+    valid_models.sort(key=lambda x: x['leak_percentage'])
+    problematic_models.sort(key=lambda x: x['successful_tests'], reverse=True)
+
+    # Combine for final leaderboard
+    leaderboard = valid_models + problematic_models
+
+    return render_template('index.html',
+                         reports=reports,
+                         leaderboard=leaderboard,
+                         valid_models=valid_models,
+                         problematic_models=problematic_models)
 
 @app.route('/report/single/<path:filename>')
 def single_report(filename):

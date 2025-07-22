@@ -349,6 +349,150 @@ tr:last-child td {
     color: var(--primary-color);
 }
 
+/* Leaderboard Specific Styles */
+.leaderboard-model-name {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.leaderboard-model-name:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    transform: scale(1.05);
+}
+
+.custom-tooltip {
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.leaderboard-rank-icon {
+    margin-right: 0.5rem;
+}
+
+/* Security badge colors for leaderboard */
+.security-excellent {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.security-good {
+    background: linear-gradient(135deg, #17a2b8, #6f42c1);
+    color: white;
+}
+
+.security-fair {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: white;
+}
+
+.security-poor {
+    background: linear-gradient(135deg, #fd7e14, #dc3545);
+    color: white;
+}
+
+.security-critical {
+    background: linear-gradient(135deg, #dc3545, #6f1e1e);
+    color: white;
+    animation: pulse-critical 2s infinite;
+}
+
+@keyframes pulse-critical {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Leaderboard table enhancements */
+.leaderboard-table th {
+    background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+}
+
+.leaderboard-table tbody tr:nth-child(1) {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
+    border-left: 4px solid #ffd700;
+}
+
+.leaderboard-table tbody tr:nth-child(2) {
+    background: linear-gradient(90deg, rgba(192, 192, 192, 0.1), transparent);
+    border-left: 4px solid #c0c0c0;
+}
+
+.leaderboard-table tbody tr:nth-child(3) {
+    background: linear-gradient(90deg, rgba(205, 127, 50, 0.1), transparent);
+    border-left: 4px solid #cd7f32;
+}
+
+/* Progress bar enhancements */
+.progress {
+    height: 20px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+    border-radius: 10px;
+}
+
+/* Button enhancements for leaderboard */
+.btn-outline-secondary {
+    background: transparent;
+    border: 2px solid var(--medium-gray);
+    color: var(--medium-gray);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background: var(--medium-gray);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Trophy and medal icons */
+.text-warning {
+    color: #ffd700 !important;
+}
+
+.fa-trophy.text-warning {
+    filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
+}
+
+.fa-medal.text-secondary {
+    color: #c0c0c0 !important;
+    filter: drop-shadow(0 0 2px rgba(192, 192, 192, 0.5));
+}
+
+.fa-medal.text-warning {
+    color: #cd7f32 !important;
+    filter: drop-shadow(0 0 2px rgba(205, 127, 50, 0.5));
+}
+
 .metric-label {
     color: var(--medium-gray);
     font-size: 0.9rem;
