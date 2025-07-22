@@ -2,10 +2,10 @@
 Multi-provider API client package for testing prompt injection vulnerabilities.
 
 This package provides a unified interface for testing different AI API providers
-including Mistral, Lambda AI, OpenAI, and others.
+including Mistral, Lambda AI, OpenAI, Anthropic, and local transformers models.
 """
 
-import os
+
 try:
     from dotenv import load_dotenv
     # Try to load .env file from current directory and parent directories
@@ -46,6 +46,20 @@ def _get_available_providers():
     except ImportError:
         pass
 
+    # Try to import and register Anthropic provider
+    try:
+        from .anthropic_provider import AnthropicProvider
+        AVAILABLE_PROVIDERS['anthropic'] = AnthropicProvider
+    except ImportError:
+        pass
+
+    # Try to import and register Transformers provider
+    try:
+        from .transformers_provider import TransformersProvider
+        AVAILABLE_PROVIDERS['transformers'] = TransformersProvider
+    except ImportError:
+        pass
+
     return AVAILABLE_PROVIDERS
 
 
@@ -54,9 +68,9 @@ def get_provider(provider_name: str, api_key: str = None, **kwargs) -> BaseProvi
     Get a provider instance by name.
 
     Args:
-        provider_name: Name of the provider ('mistral', 'lambda', 'openai')
-        api_key: API key for the provider (optional, can use env vars)
-        **kwargs: Additional provider-specific arguments
+        provider_name: Name of the provider ('mistral', 'lambda', 'openai', 'anthropic', 'transformers')
+        api_key: API key for the provider (optional, can use env vars, not needed for transformers)
+        **kwargs: Additional provider-specific arguments (for transformers: model_path, device, quant_type)
 
     Returns:
         Configured provider instance
@@ -72,13 +86,19 @@ def get_provider(provider_name: str, api_key: str = None, **kwargs) -> BaseProvi
         available = ', '.join(available_providers.keys()) if available_providers else 'none'
         if not available_providers:
             raise ValueError(
-                f"No providers available. Install dependencies: "
-                f"'pip install mistralai' for Mistral, 'pip install openai' for Lambda/OpenAI"
+                "No providers available. Install dependencies: "
+                f"'pip install mistralai' for Mistral, 'pip install openai' for Lambda/OpenAI, 'pip install anthropic' for Anthropic, "
+                f"'pip install transformers accelerate' for local transformers models"
             )
         raise ValueError(f"Unsupported provider '{provider_name}'. Available providers: {available}")
 
     provider_class = available_providers[provider_name]
-    return provider_class(api_key=api_key, **kwargs)
+
+    # Handle case where api_key is None (e.g., for local transformers models)
+    if api_key is None and provider_name == 'transformers':
+        return provider_class(**kwargs)
+    else:
+        return provider_class(api_key=api_key, **kwargs)
 
 
 def list_available_providers():

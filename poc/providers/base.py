@@ -42,14 +42,41 @@ class BaseProvider(ABC):
         self.provider_name = self.__class__.__name__.replace('Provider', '').lower()
 
     @abstractmethod
-    def list_models(self) -> Tuple[List[ModelInfo], List[ModelInfo]]:
+    def list_models(self, quiet=False) -> Tuple[List[ModelInfo], List[ModelInfo]]:
         """
         List available models from the provider.
+
+        Args:
+            quiet: If True, suppress verbose output during model listing
 
         Returns:
             Tuple of (function_calling_models, other_models)
         """
         pass
+
+    def validate_model(self, model_id: str) -> Optional[ModelInfo]:
+        """
+        Validate a specific model without listing all models.
+
+        This method provides an efficient way to check if a specific model
+        is available without needing to list all models. Providers can override
+        this for better performance.
+
+        Args:
+            model_id: The specific model to validate
+
+        Returns:
+            ModelInfo if model is valid and available, None otherwise
+        """
+        # Default implementation: fall back to listing all models
+        function_calling_models, other_models = self.list_models(quiet=True)
+        all_models = function_calling_models + other_models
+
+        for model in all_models:
+            if model.id == model_id:
+                return model
+
+        return None
 
     @abstractmethod
     def make_request(

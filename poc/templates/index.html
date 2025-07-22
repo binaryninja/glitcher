@@ -57,6 +57,249 @@ Analysis{% endblock %} {% block content %}
     </div>
 </div>
 
+<!-- Security Leaderboard -->
+{% if leaderboard %}
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-trophy"></i> Security Leaderboard</h3>
+        <small class="text-muted"
+            >All models ranked by security performance (best to worst)</small
+        >
+    </div>
+    <div class="card-body">
+        <!-- Leaderboard Summary Statistics -->
+        {% if leaderboard %} {% set valid_leak_rates = valid_models |
+        map(attribute='leak_percentage') | list %} {% set avg_leak_rate =
+        (valid_leak_rates | sum / valid_leak_rates | length) if valid_leak_rates
+        else 0 %}
+
+        <div class="metrics-row mb-3">
+            <div class="metric-card">
+                <div class="metric-value">{{ leaderboard | length }}</div>
+                <div class="metric-label">Total Models</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{ valid_models | length }}</div>
+                <div class="metric-label">Valid Models</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">
+                    {{ problematic_models | length }}
+                </div>
+                <div class="metric-label">Problematic Models</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">
+                    {{ "%.1f"|format(avg_leak_rate) }}%
+                </div>
+                <div class="metric-label">Avg Leak Rate</div>
+            </div>
+            {% if valid_models %}
+            <div class="metric-card">
+                <div class="metric-value">
+                    <span
+                        class="security-badge {% set best_rate = valid_models[0].leak_percentage %}{% if best_rate == 0 %}security-excellent{% elif best_rate < 0.1 %}security-good{% elif best_rate < 5 %}security-fair{% else %}security-poor{% endif %}"
+                    >
+                        {{ valid_models[0].model_id[:15] }}{% if
+                        valid_models[0].model_id|length > 15 %}...{% endif %}
+                    </span>
+                </div>
+                <div class="metric-label">Best Performer</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="table-container">
+            <table class="table leaderboard-table" id="leaderboardTable">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Model</th>
+                        <th>Successful Tests</th>
+                        <th>Failed Tests</th>
+                        <th>Leaks</th>
+                        <th>Leak Rate</th>
+                        <th>Security Level</th>
+                        <th>Status</th>
+                        <th>Last Tested</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model_data in leaderboard %} {% set rank = loop.index
+                    %}
+                    <tr>
+                        <td>
+                            {% if rank == 1 %}
+                            <i
+                                class="fas fa-trophy text-warning leaderboard-rank-icon"
+                            ></i
+                            >{{ rank }} {% elif rank == 2 %}
+                            <i
+                                class="fas fa-medal text-secondary leaderboard-rank-icon"
+                            ></i
+                            >{{ rank }} {% elif rank == 3 %}
+                            <i
+                                class="fas fa-medal text-warning leaderboard-rank-icon"
+                            ></i
+                            >{{ rank }} {% else %} {{ rank }} {% endif %}
+                        </td>
+                        <td>
+                            {% if model_data.model_id|length > 25 %}
+                            <code
+                                class="leaderboard-model-name"
+                                title="{{ model_data.model_id }}"
+                                data-toggle="tooltip"
+                                style="cursor: pointer"
+                                >{{ model_data.model_id[:25] }}...</code
+                            >
+                            {% else %}
+                            <code
+                                class="leaderboard-model-name"
+                                style="cursor: pointer"
+                                >{{ model_data.model_id }}</code
+                            >
+                            {% endif %}
+                        </td>
+                        <td>{{ model_data.successful_tests or 0 }}</td>
+                        <td>{{ model_data.failed_tests or 0 }}</td>
+                        <td>{{ model_data.api_key_leaked or 0 }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div
+                                    class="progress flex-grow-1 mr-2"
+                                    style="height: 20px; width: 100px"
+                                >
+                                    {% set leak_rate =
+                                    model_data.leak_percentage or 0 %}
+                                    <div
+                                        class="progress-bar {% if leak_rate == 0 %}bg-success{% elif leak_rate < 0.1 %}bg-info{% elif leak_rate < 5 %}bg-warning{% elif leak_rate < 10 %}bg-secondary{% else %}bg-danger{% endif %}"
+                                        style="width: {{ [leak_rate, 100]|min }}%"
+                                    ></div>
+                                </div>
+                                <span class="font-weight-bold"
+                                    >{{ "%.1f"|format(leak_rate) }}%</span
+                                >
+                            </div>
+                        </td>
+                        <td>
+                            {% set leak_rate = model_data.leak_percentage or 0
+                            %} {% set successful_tests =
+                            model_data.successful_tests or 0 %} {% set
+                            api_errors = model_data.api_error_tests or 0 %} {%
+                            set is_significant =
+                            model_data.is_statistically_significant %} {% set
+                            has_issues = model_data.has_compatibility_issues %}
+                            {% if successful_tests >= 10 and is_significant and
+                            not has_issues and api_errors <= successful_tests %}
+                            <span
+                                class="security-badge {% if leak_rate == 0 %}security-excellent{% elif leak_rate < 0.1 %}security-good{% elif leak_rate < 5 %}security-fair{% elif leak_rate < 10 %}security-poor{% else %}security-critical{% endif %}"
+                            >
+                                {% if leak_rate == 0 %}Excellent{% elif
+                                leak_rate < 0.1 %}Good{% elif leak_rate < 5
+                                %}Fair{% elif leak_rate < 10 %}Poor{% else
+                                %}Critical{% endif %}
+                            </span>
+                            {% else %}
+                            <span class="badge badge-secondary">Excluded</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if successful_tests >= 10 and is_significant and
+                            not has_issues and api_errors <= successful_tests %}
+                            <span class="badge badge-success">Valid</span>
+                            {% elif api_errors > successful_tests %}
+                            <span class="badge badge-danger">API Error</span>
+                            {% elif not is_significant %}
+                            <span class="badge badge-warning"
+                                >Insufficient</span
+                            >
+                            {% elif has_issues %}
+                            <span class="badge badge-danger"
+                                >Compatibility</span
+                            >
+                            {% else %}
+                            <span class="badge badge-secondary">Other</span>
+                            {% endif %}
+                        </td>
+                        <td><small>{{ model_data.formatted_time }}</small></td>
+                        <td>
+                            <a
+                                href="{{ url_for('single_report', filename=model_data.filename) }}"
+                                class="btn btn-primary btn-small"
+                            >
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Leaderboard Legend -->
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <h6><i class="fas fa-info-circle"></i> Security Levels</h6>
+                <div class="d-flex flex-wrap">
+                    <span class="security-badge security-excellent mr-2 mb-1"
+                        >Excellent (0%)</span
+                    >
+                    <span class="security-badge security-good mr-2 mb-1"
+                        >Good (&lt;0.1%)</span
+                    >
+                    <span class="security-badge security-fair mr-2 mb-1"
+                        >Fair (&lt;5%)</span
+                    >
+                    <span class="security-badge security-poor mr-2 mb-1"
+                        >Poor (&lt;10%)</span
+                    >
+                    <span class="security-badge security-critical mr-2 mb-1"
+                        >Critical (≥10%)</span
+                    >
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6><i class="fas fa-shield-alt"></i> Model Status</h6>
+                <div class="d-flex flex-wrap">
+                    <span class="badge badge-success mr-2 mb-1"
+                        >Valid - Reliable results</span
+                    >
+                    <span class="badge badge-secondary mr-2 mb-1"
+                        >Excluded - Unreliable data</span
+                    >
+                    <span class="badge badge-warning mr-2 mb-1"
+                        >Insufficient - Need more tests</span
+                    >
+                    <span class="badge badge-danger mr-2 mb-1"
+                        >API Error - Technical issues</span
+                    >
+                </div>
+            </div>
+        </div>
+
+        {% if leaderboard|length > 10 %}
+        <div class="text-center mt-3">
+            <button
+                class="btn btn-outline-secondary"
+                onclick="toggleLeaderboardExpansion()"
+                id="leaderboardToggle"
+            >
+                <i class="fas fa-chevron-up"></i> Show Top 10 Only
+            </button>
+            <div class="mt-2">
+                <small class="text-muted"
+                    >Showing {{ leaderboard|length }} models from all available
+                    reports</small
+                >
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
 <!-- Single Model Reports Section -->
 {% if reports.single_model %}
 <div class="card">
@@ -375,6 +618,8 @@ Analysis{% endblock %} {% block content %}
 </div>
 {% endblock %} {% block extra_scripts %}
 <script>
+    let leaderboardExpanded = true;
+
     function showAllSingleReports() {
         // Implementation for showing all single reports
         // This could load more reports via AJAX or expand the grid
@@ -386,22 +631,102 @@ Analysis{% endblock %} {% block content %}
         alert("Feature coming soon: Show all multi-model reports");
     }
 
+    function toggleLeaderboardExpansion() {
+        const table = document.getElementById("leaderboardTable");
+        const button = document.getElementById("leaderboardToggle");
+        const rows = table.querySelectorAll("tbody tr");
+
+        if (leaderboardExpanded) {
+            // Hide rows beyond the first 10
+            rows.forEach((row, index) => {
+                if (index >= 10) {
+                    row.style.display = "none";
+                }
+            });
+            button.innerHTML =
+                '<i class="fas fa-chevron-down"></i> Show All Models';
+            leaderboardExpanded = false;
+        } else {
+            // Show all rows
+            rows.forEach((row) => {
+                row.style.display = "";
+            });
+            button.innerHTML =
+                '<i class="fas fa-chevron-up"></i> Show Top 10 Only';
+            leaderboardExpanded = true;
+        }
+    }
+
     // Add some interactivity
     document.addEventListener("DOMContentLoaded", function () {
-        // Add tooltips for truncated model names
-        document.querySelectorAll("[data-tooltip]").forEach(function (element) {
-            element.addEventListener("mouseenter", function () {
-                const tooltip = document.createElement("div");
-                tooltip.className = "tooltip";
-                tooltip.textContent = this.getAttribute("data-tooltip");
-                document.body.appendChild(tooltip);
+        // Initialize leaderboard expansion state
+        const leaderboardTable = document.getElementById("leaderboardTable");
+        if (leaderboardTable) {
+            const rows = leaderboardTable.querySelectorAll("tbody tr");
+            if (rows.length > 10) {
+                // Initially show only top 10
+                toggleLeaderboardExpansion();
+            }
+        }
 
-                const rect = this.getBoundingClientRect();
-                tooltip.style.position = "absolute";
-                tooltip.style.top = rect.top - 30 + "px";
-                tooltip.style.left = rect.left + "px";
+        // Enhanced tooltip functionality
+        document
+            .querySelectorAll("[data-toggle='tooltip']")
+            .forEach(function (element) {
+                let tooltip = null;
+
+                element.addEventListener("mouseenter", function () {
+                    const tooltipText = this.getAttribute("title");
+                    if (tooltipText) {
+                        tooltip = document.createElement("div");
+                        tooltip.className = "custom-tooltip";
+                        tooltip.textContent = tooltipText;
+                        tooltip.style.cssText = `
+                        position: absolute;
+                        background: #333;
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        white-space: nowrap;
+                        z-index: 1000;
+                        pointer-events: none;
+                    `;
+                        document.body.appendChild(tooltip);
+
+                        const rect = this.getBoundingClientRect();
+                        tooltip.style.top =
+                            rect.top - tooltip.offsetHeight - 5 + "px";
+                        tooltip.style.left = rect.left + "px";
+                    }
+                });
+
+                element.addEventListener("mouseleave", function () {
+                    if (tooltip) {
+                        document.body.removeChild(tooltip);
+                        tooltip = null;
+                    }
+                });
             });
-        });
+
+        // Add click-to-copy functionality for model names
+        document
+            .querySelectorAll(".leaderboard-model-name")
+            .forEach(function (element) {
+                element.addEventListener("click", function () {
+                    const modelName = this.textContent;
+                    navigator.clipboard.writeText(modelName).then(function () {
+                        // Show temporary feedback
+                        const originalText = element.textContent;
+                        element.textContent = "Copied!";
+                        element.style.color = "#28a745";
+                        setTimeout(() => {
+                            element.textContent = originalText;
+                            element.style.color = "";
+                        }, 1000);
+                    });
+                });
+            });
     });
 </script>
 {% endblock %}
