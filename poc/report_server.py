@@ -572,4 +572,4 @@ if __name__ == '__main__':
     if total_reports == 0:
         print("⚠️  No reports found. Run mistral_prompt_injection_secret_to_tool.py first to generate reports.")
 
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='192.168.86.31', port=8888)
