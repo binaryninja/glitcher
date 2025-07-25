@@ -1,0 +1,198 @@
+{
+  "mining": {
+    "default_model": "meta-llama/Llama-3.2-1B-Instruct",
+    "modes": {
+      "entropy": {
+        "description": "Standard entropy-based glitch token mining",
+        "num_iterations": 50,
+        "batch_size": 8,
+        "k": 32,
+        "enhanced_validation": true,
+        "validation_tokens": 100,
+        "num_attempts": 3,
+        "asr_threshold": 0.5
+      },
+      "range": {
+        "description": "Systematic exploration of specific token ID ranges",
+        "range_start": 0,
+        "range_end": 1000,
+        "sample_rate": 0.1,
+        "max_tokens_per_range": 100,
+        "enhanced_validation": true,
+        "num_attempts": 3,
+        "asr_threshold": 0.5
+      },
+      "unicode": {
+        "description": "Tests tokens across Unicode character ranges",
+        "sample_rate": 0.05,
+        "max_tokens_per_range": 50,
+        "enhanced_validation": true,
+        "num_attempts": 3,
+        "asr_threshold": 0.5
+      },
+      "special": {
+        "description": "Tests tokens in vocabulary ranges likely to contain special tokens",
+        "sample_rate": 0.2,
+        "max_tokens_per_range": 100,
+        "enhanced_validation": true,
+        "num_attempts": 3,
+        "asr_threshold": 0.5
+      }
+    }
+  },
+  "validation": {
+    "enhanced_validation": true,
+    "asr_thresholds": {
+      "strict": 1.0,
+      "high_confidence": 0.8,
+      "balanced": 0.5,
+      "lenient": 0.3,
+      "permissive": 0.0
+    },
+    "validation_attempts": {
+      "quick": 3,
+      "standard": 5,
+      "thorough": 10
+    },
+    "validation_tokens": {
+      "minimal": 50,
+      "standard": 100,
+      "comprehensive": 500
+    }
+  },
+  "genetic": {
+    "default_settings": {
+      "base_text": "The quick brown",
+      "population_size": 50,
+      "generations": 100,
+      "max_tokens": 3,
+      "mutation_rate": 0.1,
+      "crossover_rate": 0.7,
+      "elite_size": 5
+    },
+    "presets": {
+      "quick_exploration": {
+        "generations": 30,
+        "population_size": 20
+      },
+      "thorough_search": {
+        "generations": 100,
+        "population_size": 50
+      },
+      "large_combinations": {
+        "max_tokens": 5,
+        "generations": 75,
+        "population_size": 40
+      },
+      "batch_analysis": {
+        "generations": 50,
+        "population_size": 25,
+        "batch_mode": true
+      }
+    }
+  },
+  "models": {
+    "llama_3_2_1b": {
+      "name": "meta-llama/Llama-3.2-1B-Instruct",
+      "recommended_batch_size": 8,
+      "memory_requirements": "4GB",
+      "quantization": "int4"
+    },
+    "llama_3_2_3b": {
+      "name": "meta-llama/Llama-3.2-3B-Instruct",
+      "recommended_batch_size": 4,
+      "memory_requirements": "8GB",
+      "quantization": "int4"
+    },
+    "mistral_7b": {
+      "name": "mistralai/Mistral-7B-Instruct-v0.3",
+      "recommended_batch_size": 2,
+      "memory_requirements": "16GB",
+      "quantization": "int4"
+    }
+  },
+  "output": {
+    "default_output_file": "glitch_tokens.json",
+    "log_level": "INFO",
+    "save_progress": true,
+    "save_interval": 10
+  },
+  "hardware": {
+    "gpu": {
+      "enabled": true,
+      "memory_fraction": 0.9,
+      "allow_memory_growth": true
+    },
+    "cpu": {
+      "max_workers": 4,
+      "memory_limit": "8GB"
+    }
+  },
+  "experiments": {
+    "batch_mining": {
+      "models": [
+        "meta-llama/Llama-3.2-1B-Instruct",
+        "meta-llama/Llama-3.2-3B-Instruct"
+      ],
+      "modes": ["entropy", "unicode"],
+      "iterations_per_model": 25,
+      "compare_results": true
+    },
+    "asr_threshold_analysis": {
+      "thresholds": [0.3, 0.5, 0.7, 0.8, 1.0],
+      "num_attempts": 10,
+      "validation_tokens": 100,
+      "compare_classifications": true
+    },
+    "range_exploration": {
+      "ranges": [
+        {"start": 0, "end": 1000, "description": "Low token IDs"},
+        {"start": 128000, "end": 128256, "description": "Special tokens"},
+        {"start": 100000, "end": 110000, "description": "High token IDs"}
+      ],
+      "sample_rate": 0.1
+    }
+  },
+  "classification": {
+    "tasks": {
+      "email_extraction": {
+        "enabled": true,
+        "max_tokens": 500,
+        "temperature": 0.1
+      },
+      "code_generation": {
+        "enabled": true,
+        "max_tokens": 300,
+        "temperature": 0.0
+      },
+      "reasoning": {
+        "enabled": true,
+        "max_tokens": 400,
+        "temperature": 0.2
+      },
+      "safety_bypass": {
+        "enabled": false,
+        "max_tokens": 200,
+        "temperature": 0.0
+      }
+    },
+    "output_analysis": {
+      "check_repetition": true,
+      "check_coherence": true,
+      "check_completion": true,
+      "save_full_outputs": true
+    }
+  },
+  "security": {
+    "rate_limiting": {
+      "enabled": true,
+      "requests_per_minute": 60,
+      "burst_limit": 10
+    },
+    "content_filtering": {
+      "enabled": true,
+      "filter_harmful_content": true,
+      "log_filtered_content": true
+    }
+  }
+}

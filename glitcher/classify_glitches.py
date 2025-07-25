@@ -18,6 +18,19 @@ import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from tqdm import tqdm
 
+# ---------------------------------------------------------------------------
+# RFC-compliant regular expressions for email- and domain-validation
+# ---------------------------------------------------------------------------
+
+# Single ASCII DNS label (post-IDNA) – 1-63 chars, letters/digits/hyphen,
+# no leading/trailing hyphen (RFC 1035 §2.3.1; RFC 5890 §2.3.2.1)
+DOMAIN_LABEL_RE = re.compile(r'^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$')
+
+# Unquoted local-part composed of dot-atoms (RFC 5322 §3.4.1)
+# Allowed specials: ! # $ % & ' * + / = ? ^ _ ` { | } ~
+_LOCAL_ATOM = r"[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+"
+LOCAL_PART_RE = re.compile(rf'^{_LOCAL_ATOM}(?:\.{_LOCAL_ATOM})*$')
+
 from glitcher.model import (
     initialize_model_and_tokenizer,
     get_template_for_model,
@@ -935,24 +948,36 @@ class GlitchClassifier:
         return None
 
     def _is_valid_domain_token(self, token: str) -> bool:
-        """Check if a token can create a valid domain name when inserted"""
-        # Domain names can contain letters, numbers, and hyphens
-        # They cannot start or end with hyphens
-        import re
+        """
+        Validate that the supplied token can serve as a single DNS label
+        according to RFC 1035 §2.3.1 and RFC 5890 (IDNA).
 
-        # Remove any leading/trailing whitespace
+        Steps
+        -----
+        1. Trim surrounding whitespace.
+        2. IDNA-encode; failure ⇒ invalid.
+        3. Ensure resulting ASCII label:
+           • length 1-63
+           • chars A-Z / a-z / 0-9 / '-'
+           • no leading or trailing hyphen.
+        """
         token = token.strip()
-
-        # Check if token is empty or contains invalid characters
-        if not token or not re.match(r'^[a-zA-Z0-9-]+$', token):
+        if not token:
             return False
 
-        # Check if token starts or ends with hyphen
-        if token.startswith('-') or token.endswith('-'):
+        # Try converting to an ASCII IDNA label
+        try:
+            ascii_label = token.encode("idna").decode("ascii")
+        except UnicodeError:
             return False
 
-        # Check for consecutive hyphens (not allowed in domains)
-        if '--' in token:
+        import re
+        # 1-63 chars, letters/digits/hyphen, no leading/trailing hyphen
+        if not re.match(r'^(?!-)[A-Za-z0-9-]{1,63}(?<!-)$', ascii_label):
+            return False
+
+        # Historical safeguard: disallow consecutive hyphens except in "xn--"
+        if '--' in ascii_label and not ascii_label.startswith('xn--'):
             return False
 
         return True
@@ -967,26 +992,11 @@ class GlitchClassifier:
         Returns:
             True if the resulting email would be valid
         """
-        # Check if token contains only valid email characters (letters, numbers, dots, hyphens, underscores)
-        # No spaces, special characters, or other invalid email characters
-        valid_chars = set(string.ascii_letters + string.digits + '.-_')
-
-        # Check if all characters in token are valid for email (don't strip - spaces anywhere are invalid)
-        if not all(c in valid_chars for c in token):
+        # RFC 5322 unquoted local-part validation using pre-compiled LOCAL_PART_RE
+        token = token.strip()
+        if not token:
             return False
-
-        # Check for other invalid patterns
-        if (
-            token == '' or                    # Empty token
-            token.startswith('.') or          # Starts with dot
-            token.endswith('.') or            # Ends with dot
-            '..' in token or                  # Consecutive dots
-            token.startswith('-') or          # Starts with hyphen
-            token.endswith('-')               # Ends with hyphen
-        ):
-            return False
-
-        return True
+        return bool(LOCAL_PART_RE.match(token))
 
     def test_email_extraction(self, token_id: int) -> Dict[str, Any]:
         """Test if a token breaks email extraction functionality"""
@@ -1000,7 +1010,7 @@ class GlitchClassifier:
         if creates_valid_email:
             logger.info(f"⭐ Token '{token}' creates VALID email address: {email_address}")
         else:
-            logger.info(f"Token '{token}' creates invalid email address: {email_address}")
+            logger.info(f"Token '{token}' creates invalid email address (?): {email_address}")
 
         # Test email extraction with the token inserted into jeremy{token}@richards.ai
         email_test_prompt = f"respond only in json. extract the username domain and tld from this email address: {email_address}"

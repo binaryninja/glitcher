@@ -10,6 +10,7 @@ import re
 import string
 from typing import Optional, Dict, Any, List, Tuple
 from .logging_utils import get_logger
+from .json_utils import extract_and_parse_json
 
 logger = get_logger(__name__)
 
@@ -24,12 +25,10 @@ def is_valid_email_token(token: str) -> bool:
     Returns:
         True if the resulting email would be valid
     """
-    # Check if token contains only valid email characters (letters, numbers, dots, hyphens, underscores)
-    # No spaces, special characters, or other invalid email characters
-    valid_chars = set(string.ascii_letters + string.digits + '.-_')
-
-    # Check if all characters in token are valid for email (don't strip - spaces anywhere are invalid)
-    if not all(c in valid_chars for c in token):
+    # Basic sanity check: disallow whitespace, control characters or the “@” symbol.
+    # RFC 6532 permits UTF-8 characters in the local-part, so we no longer limit
+    # ourselves to ASCII letters and digits.
+    if re.search(r'[\s@]', token):
         return False
 
     # Check for other invalid patterns

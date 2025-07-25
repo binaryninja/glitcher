@@ -170,7 +170,7 @@ class GlitchScanner:
                 inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.model.device)
 
                 # Generate model response
-                outputs = self.model.generate(**inputs, max_new_tokens=10, do_sample=False,
+                outputs = self.model.generate(**inputs, max_new_tokens=10, do_sample=True,
                                         output_scores=True, return_dict_in_generate=True)
 
                 # Get probability distribution for first generated token

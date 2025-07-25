@@ -1,0 +1,169 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Docker files (don't copy into image)
+Dockerfile
+Dockerfile.*
+docker-compose*.yml
+.dockerignore
+
+# Documentation and examples (copy selectively)
+# Include README.md but exclude other documentation
+README-Docker.md
+CLAUDE.md
+docs/
+DOCS/
+.ropeproject/
+
+# Test files and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Model files (should be mounted as volumes)
+models/
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+
+# Output directories (should be mounted as volumes)
+outputs/
+results/
+logs/
+*.log
+
+# Large data files
+data/
+datasets/
+*.csv
+*.json.gz
+*.parquet
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Package manager files
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# PyCharm
+.idea/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Local configuration files
+local_config.py
+config.local.py
+secrets.py
+
+# Backup files
+*.bak
+*.backup
+
+# Archive files
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# Compiled extensions
+*.dll
+*.dylib
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST

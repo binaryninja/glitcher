@@ -28,16 +28,18 @@ class GeneticBatchRunner:
     批量运行遗传算法实验的多场景运行器。
     """
 
-    def __init__(self, model_name: str, token_file: str):
+    def __init__(self, model_name: str, token_file: str, ascii_only: bool = False):
         """
         Initialize the batch runner.
 
         Args:
             model_name: HuggingFace model identifier
             token_file: Path to glitch tokens JSON file
+            ascii_only: If True, filter to only include tokens with ASCII-only decoded text
         """
         self.model_name = model_name
         self.token_file = token_file
+        self.ascii_only = ascii_only
 
         # Experiment scenarios
         self.scenarios = []
@@ -157,7 +159,7 @@ class GeneticBatchRunner:
         try:
             # Load model and tokens
             analyzer.load_model()
-            analyzer.load_glitch_tokens(self.token_file)
+            analyzer.load_glitch_tokens(self.token_file, ascii_only=self.ascii_only)
 
             # Run evolution
             final_population = analyzer.run_evolution()
@@ -529,11 +531,16 @@ def main():
         default=3,
         help="Maximum tokens per individual combination (default: 3)"
     )
+    parser.add_argument(
+        "--ascii-only",
+        action="store_true",
+        help="Filter tokens to only include those with ASCII-only decoded text"
+    )
 
     args = parser.parse_args()
 
     # Create batch runner
-    runner = GeneticBatchRunner(args.model_name, args.token_file)
+    runner = GeneticBatchRunner(args.model_name, args.token_file, ascii_only=args.ascii_only)
 
     # Add scenarios
     if args.scenarios_file:

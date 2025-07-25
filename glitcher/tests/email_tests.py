@@ -112,7 +112,7 @@ class EmailTester:
         if creates_valid_email:
             self.logger.info(f"⭐ Token '{token}' creates VALID email address: {email_address}")
         else:
-            self.logger.info(f"Token '{token}' creates invalid email address: {email_address}")
+            self.logger.info(f"Token '{token}' creates invalid email address (?): {email_address}")
 
         # Test email extraction with the token inserted into jeremy{token}@richards.ai
         email_test_prompt = f"respond only in json. extract the username domain and tld from this email address: {email_address}"
@@ -131,7 +131,8 @@ class EmailTester:
                     **inputs,
                     max_new_tokens=self.config.max_tokens,
                     do_sample=(self.config.temperature > 0),
-                    temperature=self.config.temperature
+                    temperature=self.config.temperature,
+                    pad_token_id=tokenizer.eos_token_id
                 )
 
             # Debug: Check generated tokens
@@ -237,6 +238,12 @@ class EmailTester:
                 response = full_output[len(formatted_input):].strip()
 
             self.logger.warning(f"Token '{token}' - Could not find assistant marker, using fallback extraction")
+
+        # If extraction produced an empty string but we know the model returned
+        # content, fall back to the full_output so we can inspect it later.
+        if not response and full_output:
+            response = full_output.strip()
+            self.logger.debug(f"Token '{token}' - Response empty after extraction, using full_output as fallback")
 
         return response
 

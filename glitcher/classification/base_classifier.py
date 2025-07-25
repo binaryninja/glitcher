@@ -192,7 +192,8 @@ class BaseClassifier(ABC):
                     **inputs,
                     max_new_tokens=self.config.max_tokens,
                     do_sample=(self.config.temperature > 0),
-                    temperature=self.config.temperature
+                    temperature=self.config.temperature,
+                    pad_token_id=self.tokenizer.eos_token_id
                 )
 
             # Decode response

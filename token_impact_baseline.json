@@ -1,0 +1,904 @@
+{
+  "metadata": {
+    "model_name": "meta-llama/Llama-3.2-1B-Instruct",
+    "base_text": "The quick brown",
+    "target_token_id": 39935,
+    "target_token_text": " fox",
+    "baseline_probability": 0.94873046875,
+    "total_tokens_tested": 99,
+    "positive_impact_tokens": 27
+  },
+  "token_impacts": [
+    {
+      "token_id": 123997,
+      "token_text": "alardan",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.381591796875,
+      "impact": 0.567138671875,
+      "reduction_ratio": 0.5977869274318065,
+      "rank_by_impact": 1
+    },
+    {
+      "token_id": 89472,
+      "token_text": "useRalative",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.66064453125,
+      "impact": 0.2880859375,
+      "reduction_ratio": 0.3036541430777149,
+      "rank_by_impact": 2
+    },
+    {
+      "token_id": 82929,
+      "token_text": "CppMethodIntialized",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.69921875,
+      "impact": 0.24951171875,
+      "reduction_ratio": 0.26299536798764794,
+      "rank_by_impact": 3
+    },
+    {
+      "token_id": 70784,
+      "token_text": "Japgolly",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.7060546875,
+      "impact": 0.24267578125,
+      "reduction_ratio": 0.25579001544004115,
+      "rank_by_impact": 4
+    },
+    {
+      "token_id": 108577,
+      "token_text": "ilmektedir",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.71240234375,
+      "impact": 0.236328125,
+      "reduction_ratio": 0.24909933093154915,
+      "rank_by_impact": 5
+    },
+    {
+      "token_id": 89471,
+      "token_text": "useRal",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.7158203125,
+      "impact": 0.23291015625,
+      "reduction_ratio": 0.24549665465774576,
+      "rank_by_impact": 6
+    },
+    {
+      "token_id": 89473,
+      "token_text": "useRalativeImagePath",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.76953125,
+      "impact": 0.17919921875,
+      "reduction_ratio": 0.18888317035512095,
+      "rank_by_impact": 7
+    },
+    {
+      "token_id": 79826,
+      "token_text": " BCHP",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.77197265625,
+      "impact": 0.1767578125,
+      "reduction_ratio": 0.18630983015954708,
+      "rank_by_impact": 8
+    },
+    {
+      "token_id": 97558,
+      "token_text": "JSGlobalScope",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.7724609375,
+      "impact": 0.17626953125,
+      "reduction_ratio": 0.18579516212043232,
+      "rank_by_impact": 9
+    },
+    {
+      "token_id": 107572,
+      "token_text": "ecektir",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.79833984375,
+      "impact": 0.150390625,
+      "reduction_ratio": 0.15851775604734947,
+      "rank_by_impact": 10
+    },
+    {
+      "token_id": 124393,
+      "token_text": "sahuje",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.80078125,
+      "impact": 0.14794921875,
+      "reduction_ratio": 0.1559444158517756,
+      "rank_by_impact": 11
+    },
+    {
+      "token_id": 71819,
+      "token_text": "numerusform",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.80810546875,
+      "impact": 0.140625,
+      "reduction_ratio": 0.14822439526505404,
+      "rank_by_impact": 12
+    },
+    {
+      "token_id": 80612,
+      "token_text": "MethodBeat",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.83349609375,
+      "impact": 0.115234375,
+      "reduction_ratio": 0.12146165723108594,
+      "rank_by_impact": 13
+    },
+    {
+      "token_id": 67444,
+      "token_text": "CppTypeDefinitionSizes",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.8388671875,
+      "impact": 0.10986328125,
+      "reduction_ratio": 0.11580030880082347,
+      "rank_by_impact": 14
+    },
+    {
+      "token_id": 101673,
+      "token_text": "ektedir",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.87060546875,
+      "impact": 0.078125,
+      "reduction_ratio": 0.08234688625836335,
+      "rank_by_impact": 15
+    },
+    {
+      "token_id": 98797,
+      "token_text": "APolynomial",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.88720703125,
+      "impact": 0.0615234375,
+      "reduction_ratio": 0.06484817292846114,
+      "rank_by_impact": 16
+    },
+    {
+      "token_id": 124454,
+      "token_text": " Uygu",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.89501953125,
+      "impact": 0.0537109375,
+      "reduction_ratio": 0.056613484302624806,
+      "rank_by_impact": 17
+    },
+    {
+      "token_id": 95779,
+      "token_text": " {\r\n\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.8984375,
+      "impact": 0.05029296875,
+      "reduction_ratio": 0.05301080802882141,
+      "rank_by_impact": 18
+    },
+    {
+      "token_id": 97581,
+      "token_text": " JSName",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.900390625,
+      "impact": 0.04833984375,
+      "reduction_ratio": 0.050952135872362324,
+      "rank_by_impact": 19
+    },
+    {
+      "token_id": 104121,
+      "token_text": "iyordu",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9033203125,
+      "impact": 0.04541015625,
+      "reduction_ratio": 0.0478641276376737,
+      "rank_by_impact": 20
+    },
+    {
+      "token_id": 112907,
+      "token_text": "uyordu",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.91259765625,
+      "impact": 0.0361328125,
+      "reduction_ratio": 0.03808543489449305,
+      "rank_by_impact": 21
+    },
+    {
+      "token_id": 90412,
+      "token_text": "selectorMethod",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.91748046875,
+      "impact": 0.03125,
+      "reduction_ratio": 0.032938754503345345,
+      "rank_by_impact": 22
+    },
+    {
+      "token_id": 49453,
+      "token_text": "EDIATEK",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.92236328125,
+      "impact": 0.0263671875,
+      "reduction_ratio": 0.027792074112197633,
+      "rank_by_impact": 23
+    },
+    {
+      "token_id": 114767,
+      "token_text": "iyesi",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.92822265625,
+      "impact": 0.0205078125,
+      "reduction_ratio": 0.02161605764282038,
+      "rank_by_impact": 24
+    },
+    {
+      "token_id": 109046,
+      "token_text": " eoqkrvldkf",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.93310546875,
+      "impact": 0.015625,
+      "reduction_ratio": 0.016469377251672673,
+      "rank_by_impact": 25
+    },
+    {
+      "token_id": 51717,
+      "token_text": " prostituerte",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.93603515625,
+      "impact": 0.0126953125,
+      "reduction_ratio": 0.013381369016984045,
+      "rank_by_impact": 26
+    },
+    {
+      "token_id": 81998,
+      "token_text": "ablytyped",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.943359375,
+      "impact": 0.00537109375,
+      "reduction_ratio": 0.005661348430262481,
+      "rank_by_impact": 27
+    },
+    {
+      "token_id": 80371,
+      "token_text": " ForCanBeConvertedToForeach",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.94970703125,
+      "impact": -0.0009765625,
+      "reduction_ratio": -0.001029336078229542,
+      "rank_by_impact": 28
+    },
+    {
+      "token_id": 87332,
+      "token_text": ";\r\n\r\n\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9501953125,
+      "impact": -0.00146484375,
+      "reduction_ratio": -0.001544004117344313,
+      "rank_by_impact": 29
+    },
+    {
+      "token_id": 106535,
+      "token_text": " uygulam",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.951171875,
+      "impact": -0.00244140625,
+      "reduction_ratio": -0.0025733401955738548,
+      "rank_by_impact": 30
+    },
+    {
+      "token_id": 76371,
+      "token_text": "LANGADM",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.95458984375,
+      "impact": -0.005859375,
+      "reduction_ratio": -0.006176016469377252,
+      "rank_by_impact": 31
+    },
+    {
+      "token_id": 110655,
+      "token_text": " zprac",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.955078125,
+      "impact": -0.00634765625,
+      "reduction_ratio": -0.0066906845084920225,
+      "rank_by_impact": 32
+    },
+    {
+      "token_id": 88542,
+      "token_text": " */\r\n\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.96044921875,
+      "impact": -0.01171875,
+      "reduction_ratio": -0.012352032938754504,
+      "rank_by_impact": 33
+    },
+    {
+      "token_id": 86849,
+      "token_text": "\tRuntimeObject",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.96044921875,
+      "impact": -0.01171875,
+      "reduction_ratio": -0.012352032938754504,
+      "rank_by_impact": 34
+    },
+    {
+      "token_id": 97784,
+      "token_text": " JSBracketAccess",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.962890625,
+      "impact": -0.01416015625,
+      "reduction_ratio": -0.014925373134328358,
+      "rank_by_impact": 35
+    },
+    {
+      "token_id": 109680,
+      "token_text": " byli",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.96337890625,
+      "impact": -0.0146484375,
+      "reduction_ratio": -0.01544004117344313,
+      "rank_by_impact": 36
+    },
+    {
+      "token_id": 89673,
+      "token_text": " //{\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.96484375,
+      "impact": -0.01611328125,
+      "reduction_ratio": -0.016984045290787442,
+      "rank_by_impact": 37
+    },
+    {
+      "token_id": 84676,
+      "token_text": " wannonce",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.96728515625,
+      "impact": -0.0185546875,
+      "reduction_ratio": -0.0195573854863613,
+      "rank_by_impact": 38
+    },
+    {
+      "token_id": 71390,
+      "token_text": " PodsDummy",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.97021484375,
+      "impact": -0.021484375,
+      "reduction_ratio": -0.022645393721049924,
+      "rank_by_impact": 39
+    },
+    {
+      "token_id": 109414,
+      "token_text": " zdravot",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.97119140625,
+      "impact": -0.0224609375,
+      "reduction_ratio": -0.023674729799279464,
+      "rank_by_impact": 40
+    },
+    {
+      "token_id": 58508,
+      "token_text": ":-------------</",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9716796875,
+      "impact": -0.02294921875,
+      "reduction_ratio": -0.024189397838394237,
+      "rank_by_impact": 41
+    },
+    {
+      "token_id": 76271,
+      "token_text": "\tNdrFcShort",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.97216796875,
+      "impact": -0.0234375,
+      "reduction_ratio": -0.024704065877509007,
+      "rank_by_impact": 42
+    },
+    {
+      "token_id": 109045,
+      "token_text": "krvldkf",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.97509765625,
+      "impact": -0.0263671875,
+      "reduction_ratio": -0.027792074112197633,
+      "rank_by_impact": 43
+    },
+    {
+      "token_id": 126445,
+      "token_text": " belirlen",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.97607421875,
+      "impact": -0.02734375,
+      "reduction_ratio": -0.028821410190427176,
+      "rank_by_impact": 44
+    },
+    {
+      "token_id": 91198,
+      "token_text": "externalActionCode",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.978515625,
+      "impact": -0.02978515625,
+      "reduction_ratio": -0.03139475038600103,
+      "rank_by_impact": 45
+    },
+    {
+      "token_id": 99944,
+      "token_text": " davidjl",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.97900390625,
+      "impact": -0.0302734375,
+      "reduction_ratio": -0.0319094184251158,
+      "rank_by_impact": 46
+    },
+    {
+      "token_id": 84576,
+      "token_text": " AppMethodBeat",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9794921875,
+      "impact": -0.03076171875,
+      "reduction_ratio": -0.03242408646423057,
+      "rank_by_impact": 47
+    },
+    {
+      "token_id": 123510,
+      "token_text": " kuchy",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.97998046875,
+      "impact": -0.03125,
+      "reduction_ratio": -0.032938754503345345,
+      "rank_by_impact": 48
+    },
+    {
+      "token_id": 120232,
+      "token_text": " ovliv",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9814453125,
+      "impact": -0.03271484375,
+      "reduction_ratio": -0.034482758620689655,
+      "rank_by_impact": 49
+    },
+    {
+      "token_id": 71664,
+      "token_text": "\tNdrFc",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9814453125,
+      "impact": -0.03271484375,
+      "reduction_ratio": -0.034482758620689655,
+      "rank_by_impact": 50
+    },
+    {
+      "token_id": 84459,
+      "token_text": ":\";\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9814453125,
+      "impact": -0.03271484375,
+      "reduction_ratio": -0.034482758620689655,
+      "rank_by_impact": 51
+    },
+    {
+      "token_id": 73433,
+      "token_text": "'\";\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9814453125,
+      "impact": -0.03271484375,
+      "reduction_ratio": -0.034482758620689655,
+      "rank_by_impact": 52
+    },
+    {
+      "token_id": 89475,
+      "token_text": "elementGuidId",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.982421875,
+      "impact": -0.03369140625,
+      "reduction_ratio": -0.035512094698919194,
+      "rank_by_impact": 53
+    },
+    {
+      "token_id": 94727,
+      "token_text": " //\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.982421875,
+      "impact": -0.03369140625,
+      "reduction_ratio": -0.035512094698919194,
+      "rank_by_impact": 54
+    },
+    {
+      "token_id": 99874,
+      "token_text": " MessageLookup",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.982421875,
+      "impact": -0.03369140625,
+      "reduction_ratio": -0.035512094698919194,
+      "rank_by_impact": 55
+    },
+    {
+      "token_id": 99037,
+      "token_text": "\"};\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9833984375,
+      "impact": -0.03466796875,
+      "reduction_ratio": -0.03654143077714874,
+      "rank_by_impact": 56
+    },
+    {
+      "token_id": 117159,
+      "token_text": " +**************",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98388671875,
+      "impact": -0.03515625,
+      "reduction_ratio": -0.03705609881626351,
+      "rank_by_impact": 57
+    },
+    {
+      "token_id": 73018,
+      "token_text": " StreamLazy",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98486328125,
+      "impact": -0.0361328125,
+      "reduction_ratio": -0.03808543489449305,
+      "rank_by_impact": 58
+    },
+    {
+      "token_id": 79142,
+      "token_text": "\">';\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98486328125,
+      "impact": -0.0361328125,
+      "reduction_ratio": -0.03808543489449305,
+      "rank_by_impact": 59
+    },
+    {
+      "token_id": 64424,
+      "token_text": "\">\r\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9853515625,
+      "impact": -0.03662109375,
+      "reduction_ratio": -0.03860010293360782,
+      "rank_by_impact": 60
+    },
+    {
+      "token_id": 38335,
+      "token_text": "\">\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98583984375,
+      "impact": -0.037109375,
+      "reduction_ratio": -0.0391147709727226,
+      "rank_by_impact": 61
+    },
+    {
+      "token_id": 94497,
+      "token_text": "!\";\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98583984375,
+      "impact": -0.037109375,
+      "reduction_ratio": -0.0391147709727226,
+      "rank_by_impact": 62
+    },
+    {
+      "token_id": 108980,
+      "token_text": " smlou",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.986328125,
+      "impact": -0.03759765625,
+      "reduction_ratio": -0.03962943901183737,
+      "rank_by_impact": 63
+    },
+    {
+      "token_id": 114178,
+      "token_text": " jednodu",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.986328125,
+      "impact": -0.03759765625,
+      "reduction_ratio": -0.03962943901183737,
+      "rank_by_impact": 64
+    },
+    {
+      "token_id": 116815,
+      "token_text": " obvyk",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.986328125,
+      "impact": -0.03759765625,
+      "reduction_ratio": -0.03962943901183737,
+      "rank_by_impact": 65
+    },
+    {
+      "token_id": 51574,
+      "token_text": " {\r\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98681640625,
+      "impact": -0.0380859375,
+      "reduction_ratio": -0.04014410705095214,
+      "rank_by_impact": 66
+    },
+    {
+      "token_id": 42953,
+      "token_text": "--;\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9873046875,
+      "impact": -0.03857421875,
+      "reduction_ratio": -0.040658775090066906,
+      "rank_by_impact": 67
+    },
+    {
+      "token_id": 28288,
+      "token_text": "';\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98779296875,
+      "impact": -0.0390625,
+      "reduction_ratio": -0.041173443129181676,
+      "rank_by_impact": 68
+    },
+    {
+      "token_id": 72740,
+      "token_text": " typingsJapgolly",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98828125,
+      "impact": -0.03955078125,
+      "reduction_ratio": -0.041688111168296446,
+      "rank_by_impact": 69
+    },
+    {
+      "token_id": 73016,
+      "token_text": " EnumerableStream",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98828125,
+      "impact": -0.03955078125,
+      "reduction_ratio": -0.041688111168296446,
+      "rank_by_impact": 70
+    },
+    {
+      "token_id": 53355,
+      "token_text": "igrationBuilder",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98828125,
+      "impact": -0.03955078125,
+      "reduction_ratio": -0.041688111168296446,
+      "rank_by_impact": 71
+    },
+    {
+      "token_id": 60934,
+      "token_text": " typingsSlinky",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98876953125,
+      "impact": -0.0400390625,
+      "reduction_ratio": -0.04220277920741122,
+      "rank_by_impact": 72
+    },
+    {
+      "token_id": 22307,
+      "token_text": "\";\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98876953125,
+      "impact": -0.0400390625,
+      "reduction_ratio": -0.04220277920741122,
+      "rank_by_impact": 73
+    },
+    {
+      "token_id": 72031,
+      "token_text": "?>\">\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98876953125,
+      "impact": -0.0400390625,
+      "reduction_ratio": -0.04220277920741122,
+      "rank_by_impact": 74
+    },
+    {
+      "token_id": 127671,
+      "token_text": " vystav",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9892578125,
+      "impact": -0.04052734375,
+      "reduction_ratio": -0.04271744724652599,
+      "rank_by_impact": 75
+    },
+    {
+      "token_id": 55722,
+      "token_text": " },\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9892578125,
+      "impact": -0.04052734375,
+      "reduction_ratio": -0.04271744724652599,
+      "rank_by_impact": 76
+    },
+    {
+      "token_id": 83706,
+      "token_text": ">\"\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9892578125,
+      "impact": -0.04052734375,
+      "reduction_ratio": -0.04271744724652599,
+      "rank_by_impact": 77
+    },
+    {
+      "token_id": 79740,
+      "token_text": " Hexatrigesimal",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.98974609375,
+      "impact": -0.041015625,
+      "reduction_ratio": -0.04323211528564076,
+      "rank_by_impact": 78
+    },
+    {
+      "token_id": 123745,
+      "token_text": " zahrn",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.990234375,
+      "impact": -0.04150390625,
+      "reduction_ratio": -0.04374678332475553,
+      "rank_by_impact": 79
+    },
+    {
+      "token_id": 79423,
+      "token_text": " thuisontvangst",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.990234375,
+      "impact": -0.04150390625,
+      "reduction_ratio": -0.04374678332475553,
+      "rank_by_impact": 80
+    },
+    {
+      "token_id": 99326,
+      "token_text": " Prostitutas",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.99072265625,
+      "impact": -0.0419921875,
+      "reduction_ratio": -0.0442614513638703,
+      "rank_by_impact": 81
+    },
+    {
+      "token_id": 110024,
+      "token_text": " CLIIIK",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9912109375,
+      "impact": -0.04248046875,
+      "reduction_ratio": -0.04477611940298507,
+      "rank_by_impact": 82
+    },
+    {
+      "token_id": 80370,
+      "token_text": " ForCanBeConvertedToF",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.99169921875,
+      "impact": -0.04296875,
+      "reduction_ratio": -0.04529078744209985,
+      "rank_by_impact": 83
+    },
+    {
+      "token_id": 81259,
+      "token_text": "artisanlib",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.99169921875,
+      "impact": -0.04296875,
+      "reduction_ratio": -0.04529078744209985,
+      "rank_by_impact": 84
+    },
+    {
+      "token_id": 70316,
+      "token_text": "erusform",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.99169921875,
+      "impact": -0.04296875,
+      "reduction_ratio": -0.04529078744209985,
+      "rank_by_impact": 85
+    },
+    {
+      "token_id": 87829,
+      "token_text": " }\r\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9921875,
+      "impact": -0.04345703125,
+      "reduction_ratio": -0.04580545548121462,
+      "rank_by_impact": 86
+    },
+    {
+      "token_id": 31836,
+      "token_text": ">\r\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9921875,
+      "impact": -0.04345703125,
+      "reduction_ratio": -0.04580545548121462,
+      "rank_by_impact": 87
+    },
+    {
+      "token_id": 79883,
+      "token_text": "\tTokenNameIdentifier",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.99267578125,
+      "impact": -0.0439453125,
+      "reduction_ratio": -0.04632012352032939,
+      "rank_by_impact": 88
+    },
+    {
+      "token_id": 85069,
+      "token_text": "PostalCodesNL",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.99267578125,
+      "impact": -0.0439453125,
+      "reduction_ratio": -0.04632012352032939,
+      "rank_by_impact": 89
+    },
+    {
+      "token_id": 47072,
+      "token_text": "webElementX",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.99267578125,
+      "impact": -0.0439453125,
+      "reduction_ratio": -0.04632012352032939,
+      "rank_by_impact": 90
+    },
+    {
+      "token_id": 47073,
+      "token_text": "webElementXpaths",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9931640625,
+      "impact": -0.04443359375,
+      "reduction_ratio": -0.04683479155944416,
+      "rank_by_impact": 91
+    },
+    {
+      "token_id": 110410,
+      "token_text": " seviy",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9931640625,
+      "impact": -0.04443359375,
+      "reduction_ratio": -0.04683479155944416,
+      "rank_by_impact": 92
+    },
+    {
+      "token_id": 79008,
+      "token_text": " \"\";\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9931640625,
+      "impact": -0.04443359375,
+      "reduction_ratio": -0.04683479155944416,
+      "rank_by_impact": 93
+    },
+    {
+      "token_id": 80369,
+      "token_text": " ForCanBeConverted",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.994140625,
+      "impact": -0.04541015625,
+      "reduction_ratio": -0.0478641276376737,
+      "rank_by_impact": 94
+    },
+    {
+      "token_id": 72710,
+      "token_text": " -->\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.994140625,
+      "impact": -0.04541015625,
+      "reduction_ratio": -0.0478641276376737,
+      "rank_by_impact": 95
+    },
+    {
+      "token_id": 64448,
+      "token_text": "?>\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9951171875,
+      "impact": -0.04638671875,
+      "reduction_ratio": -0.048893463715903245,
+      "rank_by_impact": 96
+    },
+    {
+      "token_id": 31960,
+      "token_text": "quotelev",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9951171875,
+      "impact": -0.04638671875,
+      "reduction_ratio": -0.048893463715903245,
+      "rank_by_impact": 97
+    },
+    {
+      "token_id": 55716,
+      "token_text": "?>\r\n\r\n",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9951171875,
+      "impact": -0.04638671875,
+      "reduction_ratio": -0.048893463715903245,
+      "rank_by_impact": 98
+    },
+    {
+      "token_id": 95664,
+      "token_text": "ETweet",
+      "baseline_prob": 0.94873046875,
+      "modified_prob": 0.9951171875,
+      "impact": -0.04638671875,
+      "reduction_ratio": -0.048893463715903245,
+      "rank_by_impact": 99
+    }
+  ]
+}

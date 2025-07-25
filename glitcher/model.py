@@ -240,11 +240,6 @@ def initialize_model_and_tokenizer(
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_path)
 
-    # Fix for Llama 3.2-1B: use float16 instead of bfloat16 to avoid corruption
-    if "llama-3.2-1b" in model_path.lower() and quant_type == "bfloat16":
-        quant_type = "float16"
-        print(f"Warning: Switching to float16 for {model_path} to avoid generation issues")
-
     # Special handling for nowllm-0829 Mixtral fine-tune
     if "nowllm-0829" in model_path:
         print(f"Loading nowllm-0829 Mixtral fine-tune with {quant_type} precision")
@@ -416,20 +411,20 @@ def strictly_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
 
             # Set threshold based on model type - use extremely low threshold
             # Use a much more strict threshold - true glitches have probabilities near zero
-            probability_threshold = 0.00001 if is_llama32 else 0.00005
+            probability_threshold = 0.00005
 
             # Add content-based filtering to avoid certain patterns we know generate false positives
             token_text = token
             # Skip tokens with brackets, common programming symbols, or specific prefixes that tend to be false positives
             should_skip = (
-                ('[' in token_text or ']' in token_text) or
-                ('(' in token_text or ')' in token_text) or
-                ('_' in token_text) or
-                ('arg' in token_text.lower()) or
-                ('prop' in token_text.lower()) or
-                ('char' in token_text.lower()) or
-                (token_text.startswith('.')) or
-                (token_text.startswith('$'))
+                # ('[' in token_text or ']' in token_text) or
+                # ('(' in token_text or ')' in token_text) or
+                # ('_' in token_text) or
+                # ('arg' in token_text.lower()) or
+                # ('prop' in token_text.lower()) or
+                # ('char' in token_text.lower()) or
+                # (token_text.startswith('.')) or
+                (token_text.startswith('XXXXXXXXXXX'))
             )
 
             # Three criteria for a token not being a glitch:
@@ -548,7 +543,7 @@ def chat_token(model_path, token_id, max_size=10, device="auto", quant_type="bfl
 
         generation_kwargs = {
             "max_new_tokens": max_size,
-            "do_sample": False,
+            "do_sample": True,
             "output_scores": True,
             "return_dict_in_generate": True,
             "pad_token_id": tokenizer.eos_token_id,

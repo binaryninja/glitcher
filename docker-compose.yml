@@ -1,0 +1,299 @@
+version: "3.8"
+
+# Glitcher Docker Compose Configuration
+# Supports CUDA 12.8.0 with PyTorch 2.7.1
+# Requires NVIDIA Container Toolkit for GPU acceleration
+
+services:
+  # Development service with all tools and hot-reload
+  glitcher-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: glitcher-dev
+    volumes:
+      - .:/app
+      - glitcher-models:/app/models
+      - glitcher-outputs:/app/outputs
+      - glitcher-data:/app/data
+    environment:
+      - PYTHONPATH=/app
+      - TOKENIZERS_PARALLELISM=false
+      - CUDA_VISIBLE_DEVICES=0
+      - HF_TOKEN=${HF_TOKEN:-}
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        # Requires CUDA 12.8.0 compatible GPU
+
+  # Production service - minimal footprint
+  glitcher-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: glitcher-prod
+    volumes:
+      - glitcher-models:/app/models:ro
+      - glitcher-outputs:/app/outputs
+      - glitcher-data:/app/data:ro
+    environment:
+      - TOKENIZERS_PARALLELISM=false
+      - HF_TOKEN=${HF_TOKEN:-}
+    restart: unless-stopped
+    command: ["glitcher", "--help"]
+
+  # GPU-optimized service for intensive workloads
+  glitcher-gpu:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gpu
+    container_name: glitcher-gpu
+    volumes:
+      - glitcher-models:/app/models
+      - glitcher-outputs:/app/outputs
+      - glitcher-data:/app/data
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - TOKENIZERS_PARALLELISM=false
+      - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+      - HF_TOKEN=${HF_TOKEN:-}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 16G
+        # Optimized for CUDA 12.8.0 and PyTorch 2.7.1
+    restart: unless-stopped
+    command: ["glitcher", "mine", "--help"]
+
+  # CPU-only service for environments without GPU
+  glitcher-cpu:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cpu
+    container_name: glitcher-cpu
+    volumes:
+      - glitcher-models:/app/models
+      - glitcher-outputs:/app/outputs
+      - glitcher-data:/app/data
+    environment:
+      - TOKENIZERS_PARALLELISM=false
+      - CUDA_VISIBLE_DEVICES=""
+      - HF_TOKEN=${HF_TOKEN:-}
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: "4.0"
+    restart: unless-stopped
+    command: ["glitcher", "--help"]
+
+  # Web interface service
+  glitcher-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    container_name: glitcher-web
+    ports:
+      - "5000:5000"
+    volumes:
+      - glitcher-models:/app/models:ro
+      - glitcher-outputs:/app/outputs:ro
+      - glitcher-data:/app/data:ro
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=glitcher.web.app
+      - TOKENIZERS_PARALLELISM=false
+      - HF_TOKEN=${HF_TOKEN:-}
+    restart: unless-stopped
+    command: ["python", "-m", "flask", "run", "--host=0.0.0.0", "--port=5000"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Mining service - specialized for token mining
+  glitcher-miner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gpu
+    container_name: glitcher-miner
+    volumes:
+      - glitcher-models:/app/models
+      - glitcher-outputs:/app/outputs
+      - ./mining-config.json:/app/config.json:ro
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - TOKENIZERS_PARALLELISM=false
+      - HF_TOKEN=${HF_TOKEN:-}
+      - GLITCHER_CONFIG=/app/config.json
+      - HF_TOKEN=${HF_TOKEN:-}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 12G
+    restart: "no"
+    profiles: ["mining"]
+
+  # Classification service - for analyzing glitch tokens
+  glitcher-classifier:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gpu
+    container_name: glitcher-classifier
+    volumes:
+      - glitcher-models:/app/models
+      - glitcher-outputs:/app/outputs
+      - glitcher-data:/app/data
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - TOKENIZERS_PARALLELISM=false
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 10G
+        # CUDA 12.8.0 with enhanced memory management
+    restart: "no"
+    profiles: ["analysis"]
+
+  # Genetic algorithm service - for evolutionary token search
+  glitcher-genetic:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: gpu
+    container_name: glitcher-genetic
+    volumes:
+      - glitcher-models:/app/models
+      - glitcher-outputs:/app/outputs
+      - glitcher-data:/app/data
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - TOKENIZERS_PARALLELISM=false
+      - DISPLAY=${DISPLAY:-:0}
+      - HF_TOKEN=${HF_TOKEN:-}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 8G
+        # PyTorch 2.7.1 with CUDA 12.8.0 acceleration
+    restart: "no"
+    profiles: ["genetic"]
+
+  # Jupyter service for interactive analysis
+  glitcher-jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: glitcher-jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/app
+      - glitcher-models:/app/models
+      - glitcher-outputs:/app/outputs
+      - glitcher-data:/app/data
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - TOKENIZERS_PARALLELISM=false
+      - CUDA_VISIBLE_DEVICES=0
+      - HF_TOKEN=${HF_TOKEN:-}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        # CUDA 12.8.0 runtime with Jupyter Lab support
+    command:
+      [
+        "jupyter",
+        "lab",
+        "--ip=0.0.0.0",
+        "--port=8888",
+        "--no-browser",
+        "--allow-root",
+        "--NotebookApp.token=''",
+      ]
+    profiles: ["jupyter"]
+
+volumes:
+  glitcher-models:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MODELS_PATH:-./models}
+
+  glitcher-outputs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${OUTPUTS_PATH:-./outputs}
+
+  glitcher-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_PATH:-./data}
+
+networks:
+  default:
+    name: glitcher-network
+    driver: bridge
+
+# X11 forwarding for GUI applications (Linux)
+x-x11-forwarding: &x11-forwarding
+  volumes:
+    - /tmp/.X11-unix:/tmp/.X11-unix:rw
+  environment:
+    - DISPLAY=${DISPLAY}
+  network_mode: host
+
+# Common environment variables
+x-common-env: &common-env
+  environment:
+    - TOKENIZERS_PARALLELISM=false
+    - TRANSFORMERS_CACHE=/app/models
+    - HF_HOME=/app/models
+    - GLITCHER_OUTPUTS_DIR=/app/outputs
+    - GLITCHER_DATA_DIR=/app/data
+    - HF_TOKEN=${HF_TOKEN:-}

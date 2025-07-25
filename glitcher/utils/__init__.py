@@ -1,30 +1,24 @@
 #!/usr/bin/env python3
 """
-Utilities module for glitch token classification
+Public convenience re-exports for the `glitcher.utils` namespace.
 
-This module provides common utilities used throughout the glitch classification
-system, including JSON parsing, validation, and logging functionality.
+Keeping this file stable means downstream code can do:
 
-Modules:
-    json_utils: Utilities for extracting and parsing JSON from model responses
-    validation_utils: Utilities for validating email addresses and domain names
-    logging_utils: Logging setup and utilities with tqdm compatibility
+    from glitcher.utils import get_logger, extract_email_parts, ...
 
-Classes:
-    JSONExtractor: Class-based JSON extraction with configurable behavior
-    EmailValidator: Class-based email validation utilities
-    DomainValidator: Class-based domain validation utilities
-    TqdmLoggingHandler: Custom logging handler for tqdm compatibility
-    ProgressLogger: Context manager for progress logging
+without caring about the underlying module layout.
 
-Functions:
-    extract_json_from_response(): Extract JSON from model response text
-    is_valid_email_token(): Check if token creates valid email address
-    is_valid_domain_token(): Check if token creates valid domain name
-    setup_logger(): Set up logger with console and file output
-    get_logger(): Get existing logger or create with defaults
+Only lightweight symbol re-exports live here – the real implementations are
+located in the sibling modules:
+
+* logging_utils.py
+* json_utils.py
+* validation_utils.py
 """
 
+# ---------------------------------------------------------------------
+#  JSON helpers
+# ---------------------------------------------------------------------
 from .json_utils import (
     extract_json_from_response,
     extract_and_parse_json,
@@ -32,25 +26,33 @@ from .json_utils import (
     extract_field_safely,
     validate_json_fields,
     format_json_for_logging,
-    JSONExtractor
+    JSONExtractor,
 )
 
+# ---------------------------------------------------------------------
+#  Validation helpers
+# ---------------------------------------------------------------------
 from .validation_utils import (
+    # RFC-compliant token validators
     is_valid_email_token,
     is_valid_domain_token,
     validate_email_address,
     validate_domain_name,
+    # Back-compat wrappers
     extract_email_parts,
     extract_domain_from_log_entry,
     validate_extracted_email_data,
     validate_extracted_domain_data,
     create_test_email_address,
     create_test_domain_name,
-    analyze_token_impact,
     EmailValidator,
-    DomainValidator
+   analyze_token_impact,
+   DomainValidator,
 )
 
+# ---------------------------------------------------------------------
+#  Logging / progress helpers
+# ---------------------------------------------------------------------
 from .logging_utils import (
     setup_logger,
     get_logger,
@@ -67,65 +69,54 @@ from .logging_utils import (
     log_banner,
     log_section,
     TqdmLoggingHandler,
-    ProgressLogger
+    ProgressLogger,
 )
 
+# ---------------------------------------------------------------------
+#  Public export list
+# ---------------------------------------------------------------------
 __all__ = [
-    # JSON utilities
-    'extract_json_from_response',
-    'extract_and_parse_json',
-    'parse_json_safely',
-    'extract_field_safely',
-    'validate_json_fields',
-    'format_json_for_logging',
-    'JSONExtractor',
-
-    # Validation utilities
-    'is_valid_email_token',
-    'is_valid_domain_token',
-    'validate_email_address',
-    'validate_domain_name',
-    'extract_email_parts',
-    'extract_domain_from_log_entry',
-    'validate_extracted_email_data',
-    'validate_extracted_domain_data',
-    'create_test_email_address',
-    'create_test_domain_name',
-    'analyze_token_impact',
-    'EmailValidator',
-    'DomainValidator',
-
-    # Logging utilities
-    'setup_logger',
-    'get_logger',
-    'get_default_logger',
-    'set_log_level',
-    'enable_debug_logging',
-    'disable_debug_logging',
-    'log_test_start',
-    'log_test_result',
-    'log_classification_summary',
-    'log_error',
-    'log_warning',
-    'log_info',
-    'log_banner',
-    'log_section',
-    'TqdmLoggingHandler',
-    'ProgressLogger'
+    # JSON
+    "extract_json_from_response",
+    "extract_and_parse_json",
+    "parse_json_safely",
+    "extract_field_safely",
+    "validate_json_fields",
+    "format_json_for_logging",
+    "JSONExtractor",
+    # Validation
+    "is_valid_email_token",
+    "is_valid_domain_token",
+    "validate_email_address",
+    "validate_domain_name",
+    "extract_email_parts",
+    "extract_domain_from_log_entry",
+    "validate_extracted_email_data",
+    "validate_extracted_domain_data",
+    "create_test_email_address",
+   "create_test_domain_name",
+   "analyze_token_impact",
+   "EmailValidator",
+   "DomainValidator",
+    # Logging
+    "setup_logger",
+    "get_logger",
+    "get_default_logger",
+    "set_log_level",
+    "enable_debug_logging",
+    "disable_debug_logging",
+    "log_test_start",
+    "log_test_result",
+    "log_classification_summary",
+    "log_error",
+    "log_warning",
+    "log_info",
+    "log_banner",
+    "log_section",
+    "TqdmLoggingHandler",
+    "ProgressLogger",
 ]
 
-# Version info
-__version__ = '1.0.0'
-__author__ = 'Glitcher Development Team'
-
-def get_version():
-    """Get the utils module version"""
-    return __version__
-
-def get_available_utilities():
-    """Get list of available utility categories"""
-    return {
-        'json': 'JSON extraction and parsing utilities',
-        'validation': 'Email and domain validation utilities',
-        'logging': 'Logging setup and progress tracking utilities'
-    }
+# Meta
+__version__ = "1.1.0"
+__author__ = "Glitcher Development Team"
