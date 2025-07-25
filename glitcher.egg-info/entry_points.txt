@@ -1,0 +1,4 @@
+[console_scripts]
+glitch-classify = glitcher.classify_glitches:main
+glitch-scan = glitcher.scan_and_validate:main
+glitcher = glitcher.cli:main

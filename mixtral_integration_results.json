@@ -1,0 +1,17 @@
+{
+  "model_path": "/home/dyn/models/o/nowllm-0829",
+  "test_results": {
+    "model_loading": true,
+    "template_detection": true,
+    "basic_prediction": true,
+    "chat_prediction": true,
+    "token_classification": true,
+    "glitch_verification": true,
+    "memory_efficiency": true
+  },
+  "summary": {
+    "total_tests": 7,
+    "passed_tests": 7,
+    "success_rate": 1.0
+  }
+}

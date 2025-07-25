@@ -1,0 +1,33 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B-Instruct",
+  "glitch_tokens": [
+    "useRalative",
+    "\u040e\u044b\u045fN\u040e\u044b\u045fN",
+    " CLIIIK",
+    "\u0438\u0442\u0438\u0441\u044f",
+    "\u0438\u043b\u0430\u043a\u0442\u0438",
+    "\u0443\u0432\u0430\u0442\u0438\u0441\u044f",
+    "useRalative",
+    "\u040e\u044b\u045fN\u040e\u044b\u045fN",
+    " CLIIIK",
+    "\u0438\u0442\u0438\u0441\u044f",
+    "\u0438\u043b\u0430\u043a\u0442\u0438",
+    "\u0443\u0432\u0430\u0442\u0438\u0441\u044f"
+  ],
+  "glitch_token_ids": [
+    89472,
+    127117,
+    110024,
+    107658,
+    122746,
+    112162,
+    89472,
+    127117,
+    110024,
+    107658,
+    122746,
+    112162
+  ],
+  "total_iterations": 2,
+  "runtime_seconds": 3.499596357345581
+}

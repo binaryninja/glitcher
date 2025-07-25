@@ -1,0 +1,62 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "comparison_results": [
+    {
+      "token_id": 1,
+      "token": "\"",
+      "original_method": false,
+      "enhanced_method": false,
+      "methods_agree": true,
+      "difference": "Methods agree"
+    },
+    {
+      "token_id": 2,
+      "token": "#",
+      "original_method": false,
+      "enhanced_method": false,
+      "methods_agree": true,
+      "difference": "Methods agree"
+    },
+    {
+      "token_id": 3,
+      "token": "$",
+      "original_method": false,
+      "enhanced_method": false,
+      "methods_agree": true,
+      "difference": "Methods agree"
+    },
+    {
+      "token_id": 100,
+      "token": "\ufffd",
+      "original_method": true,
+      "enhanced_method": false,
+      "methods_agree": false,
+      "difference": "Enhanced method is more lenient"
+    },
+    {
+      "token_id": 200,
+      "token": "\f",
+      "original_method": false,
+      "enhanced_method": false,
+      "methods_agree": true,
+      "difference": "Methods agree"
+    },
+    {
+      "token_id": 300,
+      "token": "as",
+      "original_method": false,
+      "enhanced_method": false,
+      "methods_agree": true,
+      "difference": "Methods agree"
+    }
+  ],
+  "summary": {
+    "total_tokens": 6,
+    "agreements": 5,
+    "disagreements": 1,
+    "agreement_rate": 0.8333333333333334
+  },
+  "timestamp": 1752264579.9702034,
+  "log_file": "comparison_log_1752264578.jsonl",
+  "max_tokens": 50
+}

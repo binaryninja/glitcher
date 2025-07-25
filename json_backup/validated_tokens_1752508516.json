@@ -1,0 +1,80 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B-Instruct",
+  "validation_config": {
+    "max_tokens": 100,
+    "device": "cuda",
+    "quant_type": "float16",
+    "sample_size": 5
+  },
+  "results": [
+    {
+      "token_id": 103003,
+      "token": "аракт",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109744,
+      "token": "acaktır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105672,
+      "token": " розвит",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108457,
+      "token": "lardı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114540,
+      "token": " воздейств",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    }
+  ],
+  "confirmed_glitch_tokens": [
+    "аракт",
+    "acaktır",
+    " розвит",
+    "lardı",
+    " воздейств"
+  ],
+  "confirmed_glitch_token_ids": [
+    103003,
+    109744,
+    105672,
+    108457,
+    114540
+  ],
+  "false_positives": [],
+  "false_positive_ids": [],
+  "summary": {
+    "total_tested": 5,
+    "confirmed_glitch": 5,
+    "false_positives": 0,
+    "confirmation_rate": 100.0
+  },
+  "log_file": "token_validation_1752508514.jsonl",
+  "timestamp": 1752508516.0106404
+}

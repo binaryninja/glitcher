@@ -1,0 +1,1679 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B-Instruct",
+  "genetic_tokens": [
+    115614,
+    118508,
+    121267,
+    112063,
+    118508,
+    126357
+  ],
+  "genetic_token_strings": [
+    "uj\u00edc\u00edch",
+    "\u00e1vaj\u00edc\u00ed",
+    " \u043f\u043e\u0437\u0432\u043e\u043b",
+    "\u043a\u0430\u0434\u0435\u043c",
+    "\u00e1vaj\u00edc\u00ed",
+    " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+  ],
+  "test_cases": [
+    {
+      "context": "The quick brown",
+      "target_token": "fox",
+      "target_token_id": 15361,
+      "genetic_tokens": [
+        115614,
+        118508,
+        121267,
+        112063,
+        118508,
+        126357
+      ],
+      "genetic_token_strings": [
+        "uj\u00edc\u00edch",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u043e\u0437\u0432\u043e\u043b",
+        "\u043a\u0430\u0434\u0435\u043c",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+      ],
+      "baseline": {
+        "context_length": 3,
+        "context_tokens": [
+          791,
+          4062,
+          14198
+        ],
+        "target_token": {
+          "id": 15361,
+          "token": "fox",
+          "probability": 1.5079975128173828e-05,
+          "log_probability": -11.1015625,
+          "rank": 7471
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 648,
+            "token": "ie",
+            "probability": 0.07647705078125,
+            "log_probability": -2.5703125
+          },
+          {
+            "rank": 2,
+            "id": 552,
+            "token": "ies",
+            "probability": 0.019500732421875,
+            "log_probability": -3.9375
+          },
+          {
+            "rank": 3,
+            "id": 6548,
+            "token": " eyes",
+            "probability": 0.01654052734375,
+            "log_probability": -4.1015625
+          },
+          {
+            "rank": 4,
+            "id": 11,
+            "token": ",",
+            "probability": 0.0105133056640625,
+            "log_probability": -4.5546875
+          },
+          {
+            "rank": 5,
+            "id": 323,
+            "token": " and",
+            "probability": 0.00787353515625,
+            "log_probability": -4.84375
+          },
+          {
+            "rank": 6,
+            "id": 320,
+            "token": " (",
+            "probability": 0.00580596923828125,
+            "log_probability": -5.1484375
+          },
+          {
+            "rank": 7,
+            "id": 315,
+            "token": " of",
+            "probability": 0.005496978759765625,
+            "log_probability": -5.203125
+          },
+          {
+            "rank": 8,
+            "id": 14198,
+            "token": " brown",
+            "probability": 0.004852294921875,
+            "log_probability": -5.328125
+          },
+          {
+            "rank": 9,
+            "id": 291,
+            "token": "ed",
+            "probability": 0.004451751708984375,
+            "log_probability": -5.4140625
+          },
+          {
+            "rank": 10,
+            "id": 13,
+            "token": ".",
+            "probability": 0.004150390625,
+            "log_probability": -5.484375
+          }
+        ]
+      },
+      "genetic": {
+        "context_length": 9,
+        "context_tokens": [
+          115614,
+          118508,
+          121267,
+          112063,
+          118508,
+          126357,
+          791,
+          4062,
+          14198
+        ],
+        "target_token": {
+          "id": 15361,
+          "token": "fox",
+          "probability": 0.00025177001953125,
+          "log_probability": -8.2890625,
+          "rank": 253
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 648,
+            "token": "ie",
+            "probability": 0.16552734375,
+            "log_probability": -1.798828125
+          },
+          {
+            "rank": 2,
+            "id": 11984,
+            "token": " bear",
+            "probability": 0.1495361328125,
+            "log_probability": -1.900390625
+          },
+          {
+            "rank": 3,
+            "id": 7013,
+            "token": " hair",
+            "probability": 0.052520751953125,
+            "log_probability": -2.947265625
+          },
+          {
+            "rank": 4,
+            "id": 12248,
+            "token": " noise",
+            "probability": 0.0251922607421875,
+            "log_probability": -3.681640625
+          },
+          {
+            "rank": 5,
+            "id": 39935,
+            "token": " fox",
+            "probability": 0.024810791015625,
+            "log_probability": -3.697265625
+          },
+          {
+            "rank": 6,
+            "id": 9462,
+            "token": " sand",
+            "probability": 0.01947021484375,
+            "log_probability": -3.939453125
+          },
+          {
+            "rank": 7,
+            "id": 4617,
+            "token": " thread",
+            "probability": 0.0190887451171875,
+            "log_probability": -3.958984375
+          },
+          {
+            "rank": 8,
+            "id": 18012,
+            "token": " leather",
+            "probability": 0.0140228271484375,
+            "log_probability": -4.265625
+          },
+          {
+            "rank": 9,
+            "id": 6548,
+            "token": " eyes",
+            "probability": 0.013275146484375,
+            "log_probability": -4.3203125
+          },
+          {
+            "rank": 10,
+            "id": 50561,
+            "token": " dwarf",
+            "probability": 0.0128173828125,
+            "log_probability": -4.35546875
+          }
+        ]
+      },
+      "impact": {
+        "probability_change": 0.00023669004440307617,
+        "probability_ratio": 16.695652173913043,
+        "probability_reduction": -15.695652173913043,
+        "rank_change": -7218
+      }
+    },
+    {
+      "context": "The quick brown",
+      "target_token": " fox",
+      "target_token_id": 39935,
+      "genetic_tokens": [
+        115614,
+        118508,
+        121267,
+        112063,
+        118508,
+        126357
+      ],
+      "genetic_token_strings": [
+        "uj\u00edc\u00edch",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u043e\u0437\u0432\u043e\u043b",
+        "\u043a\u0430\u0434\u0435\u043c",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+      ],
+      "baseline": {
+        "context_length": 3,
+        "context_tokens": [
+          791,
+          4062,
+          14198
+        ],
+        "target_token": {
+          "id": 39935,
+          "token": " fox",
+          "probability": 0.0021533966064453125,
+          "log_probability": -6.140625,
+          "rank": 27
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 648,
+            "token": "ie",
+            "probability": 0.07647705078125,
+            "log_probability": -2.5703125
+          },
+          {
+            "rank": 2,
+            "id": 552,
+            "token": "ies",
+            "probability": 0.019500732421875,
+            "log_probability": -3.9375
+          },
+          {
+            "rank": 3,
+            "id": 6548,
+            "token": " eyes",
+            "probability": 0.01654052734375,
+            "log_probability": -4.1015625
+          },
+          {
+            "rank": 4,
+            "id": 11,
+            "token": ",",
+            "probability": 0.0105133056640625,
+            "log_probability": -4.5546875
+          },
+          {
+            "rank": 5,
+            "id": 323,
+            "token": " and",
+            "probability": 0.00787353515625,
+            "log_probability": -4.84375
+          },
+          {
+            "rank": 6,
+            "id": 320,
+            "token": " (",
+            "probability": 0.00580596923828125,
+            "log_probability": -5.1484375
+          },
+          {
+            "rank": 7,
+            "id": 315,
+            "token": " of",
+            "probability": 0.005496978759765625,
+            "log_probability": -5.203125
+          },
+          {
+            "rank": 8,
+            "id": 14198,
+            "token": " brown",
+            "probability": 0.004852294921875,
+            "log_probability": -5.328125
+          },
+          {
+            "rank": 9,
+            "id": 291,
+            "token": "ed",
+            "probability": 0.004451751708984375,
+            "log_probability": -5.4140625
+          },
+          {
+            "rank": 10,
+            "id": 13,
+            "token": ".",
+            "probability": 0.004150390625,
+            "log_probability": -5.484375
+          }
+        ]
+      },
+      "genetic": {
+        "context_length": 9,
+        "context_tokens": [
+          115614,
+          118508,
+          121267,
+          112063,
+          118508,
+          126357,
+          791,
+          4062,
+          14198
+        ],
+        "target_token": {
+          "id": 39935,
+          "token": " fox",
+          "probability": 0.024810791015625,
+          "log_probability": -3.697265625,
+          "rank": 5
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 648,
+            "token": "ie",
+            "probability": 0.16552734375,
+            "log_probability": -1.798828125
+          },
+          {
+            "rank": 2,
+            "id": 11984,
+            "token": " bear",
+            "probability": 0.1495361328125,
+            "log_probability": -1.900390625
+          },
+          {
+            "rank": 3,
+            "id": 7013,
+            "token": " hair",
+            "probability": 0.052520751953125,
+            "log_probability": -2.947265625
+          },
+          {
+            "rank": 4,
+            "id": 12248,
+            "token": " noise",
+            "probability": 0.0251922607421875,
+            "log_probability": -3.681640625
+          },
+          {
+            "rank": 5,
+            "id": 39935,
+            "token": " fox",
+            "probability": 0.024810791015625,
+            "log_probability": -3.697265625
+          },
+          {
+            "rank": 6,
+            "id": 9462,
+            "token": " sand",
+            "probability": 0.01947021484375,
+            "log_probability": -3.939453125
+          },
+          {
+            "rank": 7,
+            "id": 4617,
+            "token": " thread",
+            "probability": 0.0190887451171875,
+            "log_probability": -3.958984375
+          },
+          {
+            "rank": 8,
+            "id": 18012,
+            "token": " leather",
+            "probability": 0.0140228271484375,
+            "log_probability": -4.265625
+          },
+          {
+            "rank": 9,
+            "id": 6548,
+            "token": " eyes",
+            "probability": 0.013275146484375,
+            "log_probability": -4.3203125
+          },
+          {
+            "rank": 10,
+            "id": 50561,
+            "token": " dwarf",
+            "probability": 0.0128173828125,
+            "log_probability": -4.35546875
+          }
+        ]
+      },
+      "impact": {
+        "probability_change": 0.022657394409179688,
+        "probability_ratio": 11.521700620017715,
+        "probability_reduction": -10.521700620017715,
+        "rank_change": -22
+      }
+    },
+    {
+      "context": "Hello",
+      "target_token": " world",
+      "target_token_id": 1917,
+      "genetic_tokens": [
+        115614,
+        118508,
+        121267,
+        112063,
+        118508,
+        126357
+      ],
+      "genetic_token_strings": [
+        "uj\u00edc\u00edch",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u043e\u0437\u0432\u043e\u043b",
+        "\u043a\u0430\u0434\u0435\u043c",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+      ],
+      "baseline": {
+        "context_length": 1,
+        "context_tokens": [
+          9906
+        ],
+        "target_token": {
+          "id": 1917,
+          "token": " world",
+          "probability": 7.128715515136719e-05,
+          "log_probability": -9.546875,
+          "rank": 1389
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 475,
+            "token": "import",
+            "probability": 0.004016876220703125,
+            "log_probability": -5.515625
+          },
+          {
+            "rank": 2,
+            "id": 3936,
+            "token": "Title",
+            "probability": 0.0034503936767578125,
+            "log_probability": -5.66796875
+          },
+          {
+            "rank": 3,
+            "id": 2,
+            "token": "#",
+            "probability": 0.0029621124267578125,
+            "log_probability": -5.8203125
+          },
+          {
+            "rank": 4,
+            "id": 315,
+            "token": " of",
+            "probability": 0.0026340484619140625,
+            "log_probability": -5.9375
+          },
+          {
+            "rank": 5,
+            "id": 755,
+            "token": "def",
+            "probability": 0.0024356842041015625,
+            "log_probability": -6.015625
+          },
+          {
+            "rank": 6,
+            "id": 16309,
+            "token": "Tags",
+            "probability": 0.002166748046875,
+            "log_probability": -6.1328125
+          },
+          {
+            "rank": 7,
+            "id": 499,
+            "token": " you",
+            "probability": 0.0017824172973632812,
+            "log_probability": -6.328125
+          },
+          {
+            "rank": 8,
+            "id": 374,
+            "token": " is",
+            "probability": 0.0016422271728515625,
+            "log_probability": -6.41015625
+          },
+          {
+            "rank": 9,
+            "id": 791,
+            "token": "The",
+            "probability": 0.0014438629150390625,
+            "log_probability": -6.5390625
+          },
+          {
+            "rank": 10,
+            "id": 14924,
+            "token": "Question",
+            "probability": 0.0014324188232421875,
+            "log_probability": -6.546875
+          }
+        ]
+      },
+      "genetic": {
+        "context_length": 7,
+        "context_tokens": [
+          115614,
+          118508,
+          121267,
+          112063,
+          118508,
+          126357,
+          9906
+        ],
+        "target_token": {
+          "id": 1917,
+          "token": " world",
+          "probability": 0.011932373046875,
+          "log_probability": -4.4296875,
+          "rank": 5
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 11,
+            "token": ",",
+            "probability": 0.403076171875,
+            "log_probability": -0.90869140625
+          },
+          {
+            "rank": 2,
+            "id": 4435,
+            "token": " World",
+            "probability": 0.044158935546875,
+            "log_probability": -3.119140625
+          },
+          {
+            "rank": 3,
+            "id": 0,
+            "token": "!",
+            "probability": 0.040863037109375,
+            "log_probability": -3.197265625
+          },
+          {
+            "rank": 4,
+            "id": 13,
+            "token": ".",
+            "probability": 0.0236358642578125,
+            "log_probability": -3.744140625
+          },
+          {
+            "rank": 5,
+            "id": 1917,
+            "token": " world",
+            "probability": 0.011932373046875,
+            "log_probability": -4.4296875
+          },
+          {
+            "rank": 6,
+            "id": 1070,
+            "token": " there",
+            "probability": 0.00943756103515625,
+            "log_probability": -4.6640625
+          },
+          {
+            "rank": 7,
+            "id": 31184,
+            "token": "-world",
+            "probability": 0.006168365478515625,
+            "log_probability": -5.08984375
+          },
+          {
+            "rank": 8,
+            "id": 198,
+            "token": "\n",
+            "probability": 0.005817413330078125,
+            "log_probability": -5.1484375
+          },
+          {
+            "rank": 9,
+            "id": 69885,
+            "token": "\u060c",
+            "probability": 0.005401611328125,
+            "log_probability": -5.22265625
+          },
+          {
+            "rank": 10,
+            "id": 2268,
+            "token": "!\n\n",
+            "probability": 0.00537872314453125,
+            "log_probability": -5.2265625
+          }
+        ]
+      },
+      "impact": {
+        "probability_change": 0.011861085891723633,
+        "probability_ratio": 167.3846153846154,
+        "probability_reduction": -166.3846153846154,
+        "rank_change": -1384
+      }
+    },
+    {
+      "context": "I am a",
+      "target_token": " helpful",
+      "target_token_id": 11190,
+      "genetic_tokens": [
+        115614,
+        118508,
+        121267,
+        112063,
+        118508,
+        126357
+      ],
+      "genetic_token_strings": [
+        "uj\u00edc\u00edch",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u043e\u0437\u0432\u043e\u043b",
+        "\u043a\u0430\u0434\u0435\u043c",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+      ],
+      "baseline": {
+        "context_length": 3,
+        "context_tokens": [
+          40,
+          1097,
+          264
+        ],
+        "target_token": {
+          "id": 11190,
+          "token": " helpful",
+          "probability": 0.00013256072998046875,
+          "log_probability": -8.9296875,
+          "rank": 1265
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 2766,
+            "token": " bit",
+            "probability": 0.01325225830078125,
+            "log_probability": -4.32421875
+          },
+          {
+            "rank": 2,
+            "id": 7491,
+            "token": " master",
+            "probability": 0.010406494140625,
+            "log_probability": -4.56640625
+          },
+          {
+            "rank": 3,
+            "id": 7626,
+            "token": " firm",
+            "probability": 0.00823211669921875,
+            "log_probability": -4.80078125
+          },
+          {
+            "rank": 4,
+            "id": 5333,
+            "token": " woman",
+            "probability": 0.007434844970703125,
+            "log_probability": -4.90234375
+          },
+          {
+            "rank": 5,
+            "id": 4382,
+            "token": " simple",
+            "probability": 0.007320404052734375,
+            "log_probability": -4.91796875
+          },
+          {
+            "rank": 6,
+            "id": 3823,
+            "token": " human",
+            "probability": 0.007038116455078125,
+            "log_probability": -4.95703125
+          },
+          {
+            "rank": 7,
+            "id": 3831,
+            "token": " strong",
+            "probability": 0.006023406982421875,
+            "log_probability": -5.11328125
+          },
+          {
+            "rank": 8,
+            "id": 1695,
+            "token": " good",
+            "probability": 0.00588226318359375,
+            "log_probability": -5.13671875
+          },
+          {
+            "rank": 9,
+            "id": 2294,
+            "token": " great",
+            "probability": 0.00579071044921875,
+            "log_probability": -5.15234375
+          },
+          {
+            "rank": 10,
+            "id": 20985,
+            "token": " slave",
+            "probability": 0.00579071044921875,
+            "log_probability": -5.15234375
+          }
+        ]
+      },
+      "genetic": {
+        "context_length": 9,
+        "context_tokens": [
+          115614,
+          118508,
+          121267,
+          112063,
+          118508,
+          126357,
+          40,
+          1097,
+          264
+        ],
+        "target_token": {
+          "id": 11190,
+          "token": " helpful",
+          "probability": 0.00010782480239868164,
+          "log_probability": -9.1328125,
+          "rank": 943
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 6908,
+            "token": " huge",
+            "probability": 0.056732177734375,
+            "log_probability": -2.869140625
+          },
+          {
+            "rank": 2,
+            "id": 50048,
+            "token": " beginner",
+            "probability": 0.05206298828125,
+            "log_probability": -2.955078125
+          },
+          {
+            "rank": 3,
+            "id": 5575,
+            "token": " student",
+            "probability": 0.039306640625,
+            "log_probability": -3.236328125
+          },
+          {
+            "rank": 4,
+            "id": 2766,
+            "token": " bit",
+            "probability": 0.0328369140625,
+            "log_probability": -3.416015625
+          },
+          {
+            "rank": 5,
+            "id": 3544,
+            "token": " large",
+            "probability": 0.031585693359375,
+            "log_probability": -3.455078125
+          },
+          {
+            "rank": 6,
+            "id": 502,
+            "token": " new",
+            "probability": 0.01885986328125,
+            "log_probability": -3.970703125
+          },
+          {
+            "rank": 7,
+            "id": 3823,
+            "token": " human",
+            "probability": 0.0167694091796875,
+            "log_probability": -4.08984375
+          },
+          {
+            "rank": 8,
+            "id": 2466,
+            "token": " big",
+            "probability": 0.01468658447265625,
+            "log_probability": -4.22265625
+          },
+          {
+            "rank": 9,
+            "id": 11326,
+            "token": " teacher",
+            "probability": 0.01445770263671875,
+            "log_probability": -4.23828125
+          },
+          {
+            "rank": 10,
+            "id": 220,
+            "token": " ",
+            "probability": 0.0142364501953125,
+            "log_probability": -4.25
+          }
+        ]
+      },
+      "impact": {
+        "probability_change": -2.473592758178711e-05,
+        "probability_ratio": 0.8133992805755396,
+        "probability_reduction": 0.18660071942446044,
+        "rank_change": -322
+      }
+    },
+    {
+      "context": "What is the",
+      "target_token": " meaning",
+      "target_token_id": 7438,
+      "genetic_tokens": [
+        115614,
+        118508,
+        121267,
+        112063,
+        118508,
+        126357
+      ],
+      "genetic_token_strings": [
+        "uj\u00edc\u00edch",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u043e\u0437\u0432\u043e\u043b",
+        "\u043a\u0430\u0434\u0435\u043c",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+      ],
+      "baseline": {
+        "context_length": 3,
+        "context_tokens": [
+          3923,
+          374,
+          279
+        ],
+        "target_token": {
+          "id": 7438,
+          "token": " meaning",
+          "probability": 0.01519012451171875,
+          "log_probability": -4.1875,
+          "rank": 9
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 1455,
+            "token": " most",
+            "probability": 0.07025146484375,
+            "log_probability": -2.65625
+          },
+          {
+            "rank": 2,
+            "id": 1888,
+            "token": " best",
+            "probability": 0.05059814453125,
+            "log_probability": -2.984375
+          },
+          {
+            "rank": 3,
+            "id": 1162,
+            "token": " case",
+            "probability": 0.0277252197265625,
+            "log_probability": -3.5859375
+          },
+          {
+            "rank": 4,
+            "id": 836,
+            "token": " name",
+            "probability": 0.0215911865234375,
+            "log_probability": -3.8359375
+          },
+          {
+            "rank": 5,
+            "id": 6811,
+            "token": " difference",
+            "probability": 0.0201263427734375,
+            "log_probability": -3.90625
+          },
+          {
+            "rank": 6,
+            "id": 1401,
+            "token": " key",
+            "probability": 0.0176239013671875,
+            "log_probability": -4.0390625
+          },
+          {
+            "rank": 7,
+            "id": 4495,
+            "token": " correct",
+            "probability": 0.0173492431640625,
+            "log_probability": -4.0546875
+          },
+          {
+            "rank": 8,
+            "id": 26431,
+            "token": " significance",
+            "probability": 0.0160369873046875,
+            "log_probability": -4.1328125
+          },
+          {
+            "rank": 9,
+            "id": 7438,
+            "token": " meaning",
+            "probability": 0.01519012451171875,
+            "log_probability": -4.1875
+          },
+          {
+            "rank": 10,
+            "id": 5353,
+            "token": " cause",
+            "probability": 0.01393890380859375,
+            "log_probability": -4.2734375
+          }
+        ]
+      },
+      "genetic": {
+        "context_length": 9,
+        "context_tokens": [
+          115614,
+          118508,
+          121267,
+          112063,
+          118508,
+          126357,
+          3923,
+          374,
+          279
+        ],
+        "target_token": {
+          "id": 7438,
+          "token": " meaning",
+          "probability": 0.036712646484375,
+          "log_probability": -3.3046875,
+          "rank": 2
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 7580,
+            "token": " purpose",
+            "probability": 0.038482666015625,
+            "log_probability": -3.2578125
+          },
+          {
+            "rank": 2,
+            "id": 7438,
+            "token": " meaning",
+            "probability": 0.036712646484375,
+            "log_probability": -3.3046875
+          },
+          {
+            "rank": 3,
+            "id": 1888,
+            "token": " best",
+            "probability": 0.035858154296875,
+            "log_probability": -3.328125
+          },
+          {
+            "rank": 4,
+            "id": 907,
+            "token": " value",
+            "probability": 0.031402587890625,
+            "log_probability": -3.4609375
+          },
+          {
+            "rank": 5,
+            "id": 836,
+            "token": " name",
+            "probability": 0.0258331298828125,
+            "log_probability": -3.65625
+          },
+          {
+            "rank": 6,
+            "id": 4495,
+            "token": " correct",
+            "probability": 0.0189056396484375,
+            "log_probability": -3.96875
+          },
+          {
+            "rank": 7,
+            "id": 19463,
+            "token": " probability",
+            "probability": 0.013092041015625,
+            "log_probability": -4.3359375
+          },
+          {
+            "rank": 8,
+            "id": 6811,
+            "token": " difference",
+            "probability": 0.01299285888671875,
+            "log_probability": -4.34375
+          },
+          {
+            "rank": 9,
+            "id": 1510,
+            "token": " current",
+            "probability": 0.01268768310546875,
+            "log_probability": -4.3671875
+          },
+          {
+            "rank": 10,
+            "id": 1925,
+            "token": " main",
+            "probability": 0.012298583984375,
+            "log_probability": -4.3984375
+          }
+        ]
+      },
+      "impact": {
+        "probability_change": 0.02152252197265625,
+        "probability_ratio": 2.4168759417378203,
+        "probability_reduction": -1.4168759417378203,
+        "rank_change": -7
+      }
+    },
+    {
+      "context": "Please help",
+      "target_token": " me",
+      "target_token_id": 757,
+      "genetic_tokens": [
+        115614,
+        118508,
+        121267,
+        112063,
+        118508,
+        126357
+      ],
+      "genetic_token_strings": [
+        "uj\u00edc\u00edch",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u043e\u0437\u0432\u043e\u043b",
+        "\u043a\u0430\u0434\u0435\u043c",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+      ],
+      "baseline": {
+        "context_length": 2,
+        "context_tokens": [
+          5618,
+          1520
+        ],
+        "target_token": {
+          "id": 757,
+          "token": " me",
+          "probability": 0.47705078125,
+          "log_probability": -0.740234375,
+          "rank": 1
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 757,
+            "token": " me",
+            "probability": 0.47705078125,
+            "log_probability": -0.740234375
+          },
+          {
+            "rank": 2,
+            "id": 603,
+            "token": " us",
+            "probability": 0.08551025390625,
+            "log_probability": -2.458984375
+          },
+          {
+            "rank": 3,
+            "id": 449,
+            "token": " with",
+            "probability": 0.0645751953125,
+            "log_probability": -2.740234375
+          },
+          {
+            "rank": 4,
+            "id": 279,
+            "token": " the",
+            "probability": 0.0262908935546875,
+            "log_probability": -3.638671875
+          },
+          {
+            "rank": 5,
+            "id": 499,
+            "token": " you",
+            "probability": 0.0201568603515625,
+            "log_probability": -3.904296875
+          },
+          {
+            "rank": 6,
+            "id": 2268,
+            "token": "!\n\n",
+            "probability": 0.01451873779296875,
+            "log_probability": -4.23046875
+          },
+          {
+            "rank": 7,
+            "id": 0,
+            "token": "!",
+            "probability": 0.01418304443359375,
+            "log_probability": -4.25390625
+          },
+          {
+            "rank": 8,
+            "id": 11886,
+            "token": " solve",
+            "probability": 0.0120391845703125,
+            "log_probability": -4.41796875
+          },
+          {
+            "rank": 9,
+            "id": 1980,
+            "token": "?\n\n",
+            "probability": 0.01184844970703125,
+            "log_probability": -4.4375
+          },
+          {
+            "rank": 10,
+            "id": 856,
+            "token": " my",
+            "probability": 0.01148223876953125,
+            "log_probability": -4.46875
+          }
+        ]
+      },
+      "genetic": {
+        "context_length": 8,
+        "context_tokens": [
+          115614,
+          118508,
+          121267,
+          112063,
+          118508,
+          126357,
+          5618,
+          1520
+        ],
+        "target_token": {
+          "id": 757,
+          "token": " me",
+          "probability": 0.615234375,
+          "log_probability": -0.48583984375,
+          "rank": 1
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 757,
+            "token": " me",
+            "probability": 0.615234375,
+            "log_probability": -0.48583984375
+          },
+          {
+            "rank": 2,
+            "id": 449,
+            "token": " with",
+            "probability": 0.0489501953125,
+            "log_probability": -3.017578125
+          },
+          {
+            "rank": 3,
+            "id": 0,
+            "token": "!",
+            "probability": 0.02899169921875,
+            "log_probability": -3.541015625
+          },
+          {
+            "rank": 4,
+            "id": 13,
+            "token": ".",
+            "probability": 0.0240325927734375,
+            "log_probability": -3.728515625
+          },
+          {
+            "rank": 5,
+            "id": 198,
+            "token": "\n",
+            "probability": 0.021881103515625,
+            "log_probability": -3.822265625
+          },
+          {
+            "rank": 6,
+            "id": 4999,
+            "token": "!\n",
+            "probability": 0.01528167724609375,
+            "log_probability": -4.1796875
+          },
+          {
+            "rank": 7,
+            "id": 2727,
+            "token": "me",
+            "probability": 0.01515960693359375,
+            "log_probability": -4.1875
+          },
+          {
+            "rank": 8,
+            "id": 358,
+            "token": " I",
+            "probability": 0.011810302734375,
+            "log_probability": -4.4375
+          },
+          {
+            "rank": 9,
+            "id": 499,
+            "token": " you",
+            "probability": 0.00830841064453125,
+            "log_probability": -4.7890625
+          },
+          {
+            "rank": 10,
+            "id": 603,
+            "token": " us",
+            "probability": 0.00792694091796875,
+            "log_probability": -4.8359375
+          }
+        ]
+      },
+      "impact": {
+        "probability_change": 0.13818359375,
+        "probability_ratio": 1.2896622313203685,
+        "probability_reduction": -0.2896622313203685,
+        "rank_change": 0
+      }
+    },
+    {
+      "context": "The capital of France is",
+      "target_token": " Paris",
+      "target_token_id": 12366,
+      "genetic_tokens": [
+        115614,
+        118508,
+        121267,
+        112063,
+        118508,
+        126357
+      ],
+      "genetic_token_strings": [
+        "uj\u00edc\u00edch",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u043e\u0437\u0432\u043e\u043b",
+        "\u043a\u0430\u0434\u0435\u043c",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+      ],
+      "baseline": {
+        "context_length": 5,
+        "context_tokens": [
+          791,
+          6864,
+          315,
+          9822,
+          374
+        ],
+        "target_token": {
+          "id": 12366,
+          "token": " Paris",
+          "probability": 0.70068359375,
+          "log_probability": -0.355712890625,
+          "rank": 1
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 12366,
+            "token": " Paris",
+            "probability": 0.70068359375,
+            "log_probability": -0.355712890625
+          },
+          {
+            "rank": 2,
+            "id": 539,
+            "token": " not",
+            "probability": 0.0300750732421875,
+            "log_probability": -3.50390625
+          },
+          {
+            "rank": 3,
+            "id": 1131,
+            "token": "...",
+            "probability": 0.0267486572265625,
+            "log_probability": -3.62109375
+          },
+          {
+            "rank": 4,
+            "id": 1101,
+            "token": " also",
+            "probability": 0.0174102783203125,
+            "log_probability": -4.05078125
+          },
+          {
+            "rank": 5,
+            "id": 25,
+            "token": ":",
+            "probability": 0.0162353515625,
+            "log_probability": -4.12109375
+          },
+          {
+            "rank": 6,
+            "id": 3146,
+            "token": " **",
+            "probability": 0.01064300537109375,
+            "log_probability": -4.54296875
+          },
+          {
+            "rank": 7,
+            "id": 279,
+            "token": " the",
+            "probability": 0.00931549072265625,
+            "log_probability": -4.67578125
+          },
+          {
+            "rank": 8,
+            "id": 20437,
+            "token": " Berlin",
+            "probability": 0.0082855224609375,
+            "log_probability": -4.79296875
+          },
+          {
+            "rank": 9,
+            "id": 11,
+            "token": ",",
+            "probability": 0.007663726806640625,
+            "log_probability": -4.87109375
+          },
+          {
+            "rank": 10,
+            "id": 264,
+            "token": " a",
+            "probability": 0.007259368896484375,
+            "log_probability": -4.92578125
+          }
+        ]
+      },
+      "genetic": {
+        "context_length": 11,
+        "context_tokens": [
+          115614,
+          118508,
+          121267,
+          112063,
+          118508,
+          126357,
+          791,
+          6864,
+          315,
+          9822,
+          374
+        ],
+        "target_token": {
+          "id": 12366,
+          "token": " Paris",
+          "probability": 0.75830078125,
+          "log_probability": -0.276611328125,
+          "rank": 1
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 12366,
+            "token": " Paris",
+            "probability": 0.75830078125,
+            "log_probability": -0.276611328125
+          },
+          {
+            "rank": 2,
+            "id": 539,
+            "token": " not",
+            "probability": 0.036590576171875,
+            "log_probability": -3.30859375
+          },
+          {
+            "rank": 3,
+            "id": 3604,
+            "token": " actually",
+            "probability": 0.0305633544921875,
+            "log_probability": -3.48828125
+          },
+          {
+            "rank": 4,
+            "id": 56301,
+            "token": " Lyon",
+            "probability": 0.009033203125,
+            "log_probability": -4.70703125
+          },
+          {
+            "rank": 5,
+            "id": 1101,
+            "token": " also",
+            "probability": 0.0072021484375,
+            "log_probability": -4.93359375
+          },
+          {
+            "rank": 6,
+            "id": 20437,
+            "token": " Berlin",
+            "probability": 0.006259918212890625,
+            "log_probability": -5.07421875
+          },
+          {
+            "rank": 7,
+            "id": 264,
+            "token": " a",
+            "probability": 0.006160736083984375,
+            "log_probability": -5.08984375
+          },
+          {
+            "rank": 8,
+            "id": 44941,
+            "token": " __________________",
+            "probability": 0.003978729248046875,
+            "log_probability": -5.52734375
+          },
+          {
+            "rank": 9,
+            "id": 4366,
+            "token": " Par",
+            "probability": 0.0037364959716796875,
+            "log_probability": -5.58984375
+          },
+          {
+            "rank": 10,
+            "id": 60704,
+            "token": "Paris",
+            "probability": 0.003429412841796875,
+            "log_probability": -5.67578125
+          }
+        ]
+      },
+      "impact": {
+        "probability_change": 0.0576171875,
+        "probability_ratio": 1.0822299651567944,
+        "probability_reduction": -0.08222996515679443,
+        "rank_change": 0
+      }
+    },
+    {
+      "context": "2 + 2 =",
+      "target_token": " 4",
+      "target_token_id": 220,
+      "genetic_tokens": [
+        115614,
+        118508,
+        121267,
+        112063,
+        118508,
+        126357
+      ],
+      "genetic_token_strings": [
+        "uj\u00edc\u00edch",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u043e\u0437\u0432\u043e\u043b",
+        "\u043a\u0430\u0434\u0435\u043c",
+        "\u00e1vaj\u00edc\u00ed",
+        " \u043f\u0440\u0435\u0434\u043d\u0430\u0437\u043d\u0430\u0447"
+      ],
+      "baseline": {
+        "context_length": 5,
+        "context_tokens": [
+          17,
+          489,
+          220,
+          17,
+          284
+        ],
+        "target_token": {
+          "id": 220,
+          "token": " ",
+          "probability": 0.896484375,
+          "log_probability": -0.1092529296875,
+          "rank": 1
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 220,
+            "token": " ",
+            "probability": 0.896484375,
+            "log_probability": -0.1092529296875
+          },
+          {
+            "rank": 2,
+            "id": 1144,
+            "token": " \\",
+            "probability": 0.0166778564453125,
+            "log_probability": -4.09375
+          },
+          {
+            "rank": 3,
+            "id": 482,
+            "token": " -",
+            "probability": 0.01361846923828125,
+            "log_probability": -4.296875
+          },
+          {
+            "rank": 4,
+            "id": 320,
+            "token": " (",
+            "probability": 0.0101165771484375,
+            "log_probability": -4.59375
+          },
+          {
+            "rank": 5,
+            "id": 865,
+            "token": " x",
+            "probability": 0.0063323974609375,
+            "log_probability": -5.0625
+          },
+          {
+            "rank": 6,
+            "id": 489,
+            "token": " +",
+            "probability": 0.005855560302734375,
+            "log_probability": -5.140625
+          },
+          {
+            "rank": 7,
+            "id": 949,
+            "token": "?",
+            "probability": 0.00533294677734375,
+            "log_probability": -5.234375
+          },
+          {
+            "rank": 8,
+            "id": 264,
+            "token": " a",
+            "probability": 0.0033359527587890625,
+            "log_probability": -5.703125
+          },
+          {
+            "rank": 9,
+            "id": 293,
+            "token": " b",
+            "probability": 0.0019159317016601562,
+            "log_probability": -6.2578125
+          },
+          {
+            "rank": 10,
+            "id": 272,
+            "token": " c",
+            "probability": 0.001758575439453125,
+            "log_probability": -6.34375
+          }
+        ]
+      },
+      "genetic": {
+        "context_length": 11,
+        "context_tokens": [
+          115614,
+          118508,
+          121267,
+          112063,
+          118508,
+          126357,
+          17,
+          489,
+          220,
+          17,
+          284
+        ],
+        "target_token": {
+          "id": 220,
+          "token": " ",
+          "probability": 0.74365234375,
+          "log_probability": -0.296142578125,
+          "rank": 1
+        },
+        "top_tokens": [
+          {
+            "rank": 1,
+            "id": 220,
+            "token": " ",
+            "probability": 0.74365234375,
+            "log_probability": -0.296142578125
+          },
+          {
+            "rank": 2,
+            "id": 865,
+            "token": " x",
+            "probability": 0.01335906982421875,
+            "log_probability": -4.31640625
+          },
+          {
+            "rank": 3,
+            "id": 320,
+            "token": " (",
+            "probability": 0.0130462646484375,
+            "log_probability": -4.33984375
+          },
+          {
+            "rank": 4,
+            "id": 330,
+            "token": " \"",
+            "probability": 0.00928497314453125,
+            "log_probability": -4.6796875
+          },
+          {
+            "rank": 5,
+            "id": 264,
+            "token": " a",
+            "probability": 0.007038116455078125,
+            "log_probability": -4.95703125
+          },
+          {
+            "rank": 6,
+            "id": 482,
+            "token": " -",
+            "probability": 0.005588531494140625,
+            "log_probability": -5.1875
+          },
+          {
+            "rank": 7,
+            "id": 272,
+            "token": " c",
+            "probability": 0.004726409912109375,
+            "log_probability": -5.35546875
+          },
+          {
+            "rank": 8,
+            "id": 1134,
+            "token": " <<",
+            "probability": 0.004154205322265625,
+            "log_probability": -5.484375
+          },
+          {
+            "rank": 9,
+            "id": 314,
+            "token": " {",
+            "probability": 0.0037670135498046875,
+            "log_probability": -5.58203125
+          },
+          {
+            "rank": 10,
+            "id": 949,
+            "token": "?",
+            "probability": 0.0034027099609375,
+            "log_probability": -5.68359375
+          }
+        ]
+      },
+      "impact": {
+        "probability_change": -0.15283203125,
+        "probability_ratio": 0.829520697167756,
+        "probability_reduction": 0.170479302832244,
+        "rank_change": 0
+      }
+    }
+  ]
+}

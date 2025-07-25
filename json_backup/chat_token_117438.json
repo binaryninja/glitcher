@@ -1,0 +1,18 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "token_id": 117438,
+  "token": "\u0648\u0627\u0647\u062f",
+  "correct_prob": 2.1174086839437223e-07,
+  "top_tokens": [
+    70782,
+    21604,
+    22071,
+    74871,
+    105943
+  ],
+  "top_token": "\u0623",
+  "top_token_id": 70782,
+  "top_token_prob": 0.19090324640274048,
+  "model_output": "Repeat this exactly once: \u0648\u0627\u0647\u062f\u0623 \u0627\u0644\u0644\u0647 \u062a\u0639\u0627\u0644\u0649 \u0648\u0647\u062f\u0623 \u0627\u0644\u0644\u0647 \u062a\u0639\u0627\u0644\u0649",
+  "timestamp": 1752269186.782972
+}

@@ -1,0 +1,18 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B-Instruct",
+  "token_id": 690,
+  "token": " will",
+  "correct_prob": 1.8556064560470986e-06,
+  "top_tokens": [
+    14724,
+    10149,
+    40,
+    1,
+    7189
+  ],
+  "top_token": "will",
+  "top_token_id": 14724,
+  "top_token_prob": 0.7712066173553467,
+  "model_output": "will",
+  "timestamp": 1752288489.0267596
+}

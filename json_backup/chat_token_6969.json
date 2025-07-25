@@ -1,0 +1,18 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B-Instruct",
+  "token_id": 6969,
+  "token": " CH",
+  "correct_prob": 4.9115042202174664e-05,
+  "top_tokens": [
+    2198,
+    34,
+    1163,
+    791,
+    5158
+  ],
+  "top_token": "CH",
+  "top_token_id": 2198,
+  "top_token_prob": 0.7150464653968811,
+  "model_output": "CH",
+  "timestamp": 1752288525.2235873
+}

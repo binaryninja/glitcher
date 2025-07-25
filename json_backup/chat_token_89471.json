@@ -1,0 +1,18 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "token_id": 89471,
+  "token": "useRal",
+  "correct_prob": 5.9923868320765905e-06,
+  "top_tokens": [
+    2675,
+    791,
+    2028,
+    5618,
+    128001
+  ],
+  "top_token": "You",
+  "top_token_id": 2675,
+  "top_token_prob": 0.05416904017329216,
+  "model_output": "<|begin_of_text|><|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant that repeats strings exactly as requested.<|eot_id|><|start_header_id|>user<|end_header_id|>\n\nPlease repeat the string: \"useRal\"<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\nYou are a helpful assistant that repeats strings exactly as requested. republiceuser republice\n\nPlease repeat the string: \" republice\" republiceassistant\n\nYou are a helpful assistant that repeats strings exactly as requested. republiceuser republice\n\nPlease repeat the string: \" republice\" republiceassistant\n\nYou are a helpful assistant that repeats strings exactly as requested. republiceuser republice\n\nPlease repeat the string: \" republice\" republiceassistant\n\nYou are a helpful assistant that repeats strings exactly as requested. republiceuser republice\n\nPlease repeat the",
+  "timestamp": 1752266036.3354435
+}

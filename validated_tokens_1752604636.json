@@ -1,0 +1,5129 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B-Instruct",
+  "validation_config": {
+    "max_tokens": 1000,
+    "device": "cuda",
+    "quant_type": "float16",
+    "sample_size": null
+  },
+  "results": [
+    {
+      "token_id": 116552,
+      "token": "ujícím",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 89472,
+      "token": "useRalative",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127117,
+      "token": "ЎыџNЎыџN",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107658,
+      "token": "итися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108577,
+      "token": "ilmektedir",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111067,
+      "token": "ıldığı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122032,
+      "token": "áhnout",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127896,
+      "token": "ıldığında",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127367,
+      "token": "ımlı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 103003,
+      "token": "аракт",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110024,
+      "token": " CLIIIK",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120702,
+      "token": " характериз",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120424,
+      "token": "espoň",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106710,
+      "token": "атися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114533,
+      "token": "ーカー",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122746,
+      "token": "илакти",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 102564,
+      "token": "ıldı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110043,
+      "token": "еристи",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108918,
+      "token": "алася",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127748,
+      "token": "ımlar",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113004,
+      "token": " виріш",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118260,
+      "token": "ávací",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112162,
+      "token": "уватися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126545,
+      "token": "ılmaktadır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118805,
+      "token": "дивиду",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126647,
+      "token": "lásil",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115721,
+      "token": "átní",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112063,
+      "token": "кадем",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118508,
+      "token": "ávající",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106216,
+      "token": "ıntı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114860,
+      "token": "ılmıştır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112620,
+      "token": " підтрим",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108653,
+      "token": "átky",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111691,
+      "token": "abancı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126173,
+      "token": "vající",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115105,
+      "token": " 神马收录",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127954,
+      "token": "jícím",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107197,
+      "token": " використов",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125700,
+      "token": "rální",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106951,
+      "token": "글상위",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124393,
+      "token": "sahuje",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 101673,
+      "token": "ektedir",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117857,
+      "token": "ılmaz",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122549,
+      "token": "İTESİ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117011,
+      "token": "ımda",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109744,
+      "token": "acaktır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 80370,
+      "token": " ForCanBeConvertedToF",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115216,
+      "token": "ючись",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127577,
+      "token": "lamaktadır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117691,
+      "token": "lıklar",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124292,
+      "token": "илася",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114091,
+      "token": "üslüman",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125952,
+      "token": "ыџN",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114185,
+      "token": "ımsız",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126634,
+      "token": " přiroz",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126626,
+      "token": " адміністратив",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127877,
+      "token": " Coğraf",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112907,
+      "token": "uyordu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107572,
+      "token": "ecektir",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120959,
+      "token": "jících",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117929,
+      "token": " вихов",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 121475,
+      "token": "ніцип",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127531,
+      "token": " vyrá",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109045,
+      "token": "krvldkf",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119465,
+      "token": " присутств",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122047,
+      "token": " зустрі",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 121671,
+      "token": " düşünc",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123745,
+      "token": " zahrn",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126523,
+      "token": "ЎыџN",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120454,
+      "token": "lıkları",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124593,
+      "token": "назнач",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127438,
+      "token": "▍▍▍▍▍▍▍▍▍▍▍▍▍▍▍▍",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115970,
+      "token": "üyordu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107102,
+      "token": "ıyordu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113234,
+      "token": "uştur",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 89471,
+      "token": "useRal",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127667,
+      "token": " располаг",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115944,
+      "token": " vzdál",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110150,
+      "token": "átku",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 85069,
+      "token": "PostalCodesNL",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117098,
+      "token": " зазнач",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123611,
+      "token": " Českosloven",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125786,
+      "token": " nebezpeč",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118228,
+      "token": " předsed",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 79883,
+      "token": "\tTokenNameIdentifier",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112692,
+      "token": "▍▍▍▍▍▍▍▍",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120048,
+      "token": "重複重複",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124069,
+      "token": " přibliž",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125265,
+      "token": "україн",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106920,
+      "token": "rodní",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 47073,
+      "token": "webElementXpaths",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127024,
+      "token": " профилакти",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127769,
+      "token": " выращи",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126357,
+      "token": " предназнач",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112969,
+      "token": " nhiễ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123107,
+      "token": "maması",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118377,
+      "token": " meziná",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120894,
+      "token": " přítom",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123584,
+      "token": " Každ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113983,
+      "token": "acılık",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124114,
+      "token": " заним",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115614,
+      "token": "ujících",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114836,
+      "token": "ーション",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 116171,
+      "token": "cılık",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115487,
+      "token": " králov",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 104516,
+      "token": "ılmış",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 80369,
+      "token": " ForCanBeConverted",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 89473,
+      "token": "useRalativeImagePath",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 64424,
+      "token": "\">\r\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112206,
+      "token": " otevř",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112054,
+      "token": "těz",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 81259,
+      "token": "artisanlib",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119003,
+      "token": " taşıy",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124971,
+      "token": " ابراه",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114692,
+      "token": "илась",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119000,
+      "token": "пеки",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110410,
+      "token": " seviy",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122315,
+      "token": "müştür",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115129,
+      "token": "lıklı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115108,
+      "token": " 百度流量",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 116452,
+      "token": " söyley",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108980,
+      "token": " smlou",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 64448,
+      "token": "?>\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 70784,
+      "token": "Japgolly",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123510,
+      "token": " kuchy",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113720,
+      "token": " açıklam",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127994,
+      "token": "ватися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126157,
+      "token": " найкра",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 72710,
+      "token": " -->\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 70316,
+      "token": "erusform",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 58508,
+      "token": ":-------------</",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 89475,
+      "token": "elementGuidId",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105435,
+      "token": "алась",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124647,
+      "token": "itelné",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125759,
+      "token": " відріз",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 87829,
+      "token": " }\r\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 31960,
+      "token": "quotelev",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111750,
+      "token": " располож",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114178,
+      "token": " jednodu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120232,
+      "token": " ovliv",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107818,
+      "token": "ární",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125022,
+      "token": "џN",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 55716,
+      "token": "?>\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124703,
+      "token": "ırlar",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126754,
+      "token": "dıkları",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127711,
+      "token": "dıktan",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 103754,
+      "token": " використ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110525,
+      "token": " vzděl",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126257,
+      "token": "џЭ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113774,
+      "token": " považ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120592,
+      "token": "тися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125029,
+      "token": " νεφοκ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114540,
+      "token": " воздейств",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123563,
+      "token": " zvyš",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120325,
+      "token": " дозвол",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 51574,
+      "token": " {\r\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126778,
+      "token": " принадлеж",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107996,
+      "token": " визнач",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117949,
+      "token": "eştir",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113924,
+      "token": " зуст",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123997,
+      "token": "alardan",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119162,
+      "token": " визнача",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114767,
+      "token": "iyesi",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119776,
+      "token": " yaptığ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113050,
+      "token": "muştur",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 38335,
+      "token": "\">\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126169,
+      "token": "ařilo",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117521,
+      "token": "eníze",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 100509,
+      "token": "џџџџџџџџџџџџџџџџ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 87474,
+      "token": "無しさん",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 31836,
+      "token": ">\r\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115977,
+      "token": " огранич",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108457,
+      "token": "lardı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120318,
+      "token": "醴醴",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127865,
+      "token": " ослож",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105787,
+      "token": "▍▍▍▍",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127671,
+      "token": " vystav",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 76371,
+      "token": "LANGADM",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111962,
+      "token": " založ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125654,
+      "token": " uvědom",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 90412,
+      "token": "selectorMethod",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 60934,
+      "token": " typingsSlinky",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117909,
+      "token": " zvlášt",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119709,
+      "token": "kyně",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105672,
+      "token": " розвит",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110655,
+      "token": " zprac",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111949,
+      "token": " характеристи",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106176,
+      "token": " úda",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127719,
+      "token": " розви",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125808,
+      "token": "larındaki",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118751,
+      "token": " дозволя",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112668,
+      "token": " tüket",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105983,
+      "token": " вироб",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105764,
+      "token": " препара",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123228,
+      "token": "џџџ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 99944,
+      "token": " davidjl",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109414,
+      "token": " zdravot",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 104121,
+      "token": "iyordu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119833,
+      "token": " mücadel",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106535,
+      "token": " uygulam",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 102792,
+      "token": " 갤로그",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125491,
+      "token": " připoj",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112803,
+      "token": "üslü",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115109,
+      "token": "周收录",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126445,
+      "token": " belirlen",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 121267,
+      "token": " позвол",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115107,
+      "token": " 首页第",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 82823,
+      "token": "﻿/*\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114456,
+      "token": " руковод",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 47072,
+      "token": "webElementX",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 116286,
+      "token": " vữ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 104912,
+      "token": " практи",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111994,
+      "token": " zvlá",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 55722,
+      "token": " },\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 80612,
+      "token": "MethodBeat",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117698,
+      "token": "cháze",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112210,
+      "token": "lacağ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 72740,
+      "token": " typingsJapgolly",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119407,
+      "token": " çerçev",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 79740,
+      "token": " Hexatrigesimal",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125837,
+      "token": " ।”\n\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 71390,
+      "token": " PodsDummy",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109689,
+      "token": " позволя",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112464,
+      "token": "・━",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 79423,
+      "token": " thuisontvangst",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122451,
+      "token": " издел",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 67444,
+      "token": "CppTypeDefinitionSizes",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 102853,
+      "token": " dư�",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126442,
+      "token": "čemž",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 84576,
+      "token": " AppMethodBeat",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 116815,
+      "token": " obvyk",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117159,
+      "token": " +**************",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 116552,
+      "token": "ujícím",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 89472,
+      "token": "useRalative",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127117,
+      "token": "ЎыџNЎыџN",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107658,
+      "token": "итися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108577,
+      "token": "ilmektedir",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111067,
+      "token": "ıldığı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122032,
+      "token": "áhnout",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127896,
+      "token": "ıldığında",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127367,
+      "token": "ımlı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 103003,
+      "token": "аракт",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110024,
+      "token": " CLIIIK",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120702,
+      "token": " характериз",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120424,
+      "token": "espoň",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106710,
+      "token": "атися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114533,
+      "token": "ーカー",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122746,
+      "token": "илакти",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 102564,
+      "token": "ıldı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110043,
+      "token": "еристи",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108918,
+      "token": "алася",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127748,
+      "token": "ımlar",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113004,
+      "token": " виріш",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118260,
+      "token": "ávací",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112162,
+      "token": "уватися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126545,
+      "token": "ılmaktadır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118805,
+      "token": "дивиду",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126647,
+      "token": "lásil",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115721,
+      "token": "átní",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112063,
+      "token": "кадем",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118508,
+      "token": "ávající",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106216,
+      "token": "ıntı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114860,
+      "token": "ılmıştır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112620,
+      "token": " підтрим",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108653,
+      "token": "átky",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111691,
+      "token": "abancı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126173,
+      "token": "vající",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115105,
+      "token": " 神马收录",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127954,
+      "token": "jícím",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107197,
+      "token": " використов",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125700,
+      "token": "rální",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106951,
+      "token": "글상위",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124393,
+      "token": "sahuje",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 101673,
+      "token": "ektedir",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117857,
+      "token": "ılmaz",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122549,
+      "token": "İTESİ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117011,
+      "token": "ımda",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109744,
+      "token": "acaktır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 80370,
+      "token": " ForCanBeConvertedToF",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115216,
+      "token": "ючись",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127577,
+      "token": "lamaktadır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117691,
+      "token": "lıklar",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124292,
+      "token": "илася",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114091,
+      "token": "üslüman",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125952,
+      "token": "ыџN",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114185,
+      "token": "ımsız",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126634,
+      "token": " přiroz",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126626,
+      "token": " адміністратив",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127877,
+      "token": " Coğraf",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112907,
+      "token": "uyordu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107572,
+      "token": "ecektir",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120959,
+      "token": "jících",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117929,
+      "token": " вихов",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 121475,
+      "token": "ніцип",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127531,
+      "token": " vyrá",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109045,
+      "token": "krvldkf",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119465,
+      "token": " присутств",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122047,
+      "token": " зустрі",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 121671,
+      "token": " düşünc",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123745,
+      "token": " zahrn",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126523,
+      "token": "ЎыџN",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120454,
+      "token": "lıkları",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124593,
+      "token": "назнач",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127438,
+      "token": "▍▍▍▍▍▍▍▍▍▍▍▍▍▍▍▍",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115970,
+      "token": "üyordu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107102,
+      "token": "ıyordu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113234,
+      "token": "uştur",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 89471,
+      "token": "useRal",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127667,
+      "token": " располаг",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115944,
+      "token": " vzdál",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110150,
+      "token": "átku",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 85069,
+      "token": "PostalCodesNL",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117098,
+      "token": " зазнач",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123611,
+      "token": " Českosloven",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125786,
+      "token": " nebezpeč",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118228,
+      "token": " předsed",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 79883,
+      "token": "\tTokenNameIdentifier",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112692,
+      "token": "▍▍▍▍▍▍▍▍",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120048,
+      "token": "重複重複",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124069,
+      "token": " přibliž",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125265,
+      "token": "україн",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106920,
+      "token": "rodní",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 47073,
+      "token": "webElementXpaths",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127024,
+      "token": " профилакти",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127769,
+      "token": " выращи",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126357,
+      "token": " предназнач",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112969,
+      "token": " nhiễ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123107,
+      "token": "maması",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118377,
+      "token": " meziná",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120894,
+      "token": " přítom",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123584,
+      "token": " Každ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113983,
+      "token": "acılık",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124114,
+      "token": " заним",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115614,
+      "token": "ujících",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114836,
+      "token": "ーション",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 116171,
+      "token": "cılık",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115487,
+      "token": " králov",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 104516,
+      "token": "ılmış",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 80369,
+      "token": " ForCanBeConverted",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 89473,
+      "token": "useRalativeImagePath",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 64424,
+      "token": "\">\r\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112206,
+      "token": " otevř",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112054,
+      "token": "těz",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 81259,
+      "token": "artisanlib",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119003,
+      "token": " taşıy",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124971,
+      "token": " ابراه",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114692,
+      "token": "илась",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119000,
+      "token": "пеки",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110410,
+      "token": " seviy",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122315,
+      "token": "müştür",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115129,
+      "token": "lıklı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115108,
+      "token": " 百度流量",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 116452,
+      "token": " söyley",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108980,
+      "token": " smlou",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 64448,
+      "token": "?>\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 70784,
+      "token": "Japgolly",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123510,
+      "token": " kuchy",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113720,
+      "token": " açıklam",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127994,
+      "token": "ватися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126157,
+      "token": " найкра",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 72710,
+      "token": " -->\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 70316,
+      "token": "erusform",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 58508,
+      "token": ":-------------</",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 89475,
+      "token": "elementGuidId",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105435,
+      "token": "алась",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124647,
+      "token": "itelné",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125759,
+      "token": " відріз",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 87829,
+      "token": " }\r\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 31960,
+      "token": "quotelev",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111750,
+      "token": " располож",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114178,
+      "token": " jednodu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120232,
+      "token": " ovliv",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107818,
+      "token": "ární",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125022,
+      "token": "џN",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 55716,
+      "token": "?>\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124703,
+      "token": "ırlar",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126754,
+      "token": "dıkları",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127711,
+      "token": "dıktan",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 103754,
+      "token": " використ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110525,
+      "token": " vzděl",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126257,
+      "token": "џЭ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113774,
+      "token": " považ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120592,
+      "token": "тися",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125029,
+      "token": " νεφοκ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114540,
+      "token": " воздейств",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123563,
+      "token": " zvyš",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120325,
+      "token": " дозвол",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 51574,
+      "token": " {\r\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126778,
+      "token": " принадлеж",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107996,
+      "token": " визнач",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117949,
+      "token": "eştir",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113924,
+      "token": " зуст",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123997,
+      "token": "alardan",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119162,
+      "token": " визнача",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114767,
+      "token": "iyesi",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119776,
+      "token": " yaptığ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 113050,
+      "token": "muştur",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 38335,
+      "token": "\">\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126169,
+      "token": "ařilo",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117521,
+      "token": "eníze",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 100509,
+      "token": "џџџџџџџџџџџџџџџџ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 87474,
+      "token": "無しさん",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 31836,
+      "token": ">\r\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115977,
+      "token": " огранич",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108457,
+      "token": "lardı",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 120318,
+      "token": "醴醴",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127865,
+      "token": " ослож",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105787,
+      "token": "▍▍▍▍",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127671,
+      "token": " vystav",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 76371,
+      "token": "LANGADM",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111962,
+      "token": " založ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125654,
+      "token": " uvědom",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 90412,
+      "token": "selectorMethod",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 60934,
+      "token": " typingsSlinky",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117909,
+      "token": " zvlášt",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119709,
+      "token": "kyně",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105672,
+      "token": " розвит",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 110655,
+      "token": " zprac",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111949,
+      "token": " характеристи",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106176,
+      "token": " úda",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127719,
+      "token": " розви",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125808,
+      "token": "larındaki",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 118751,
+      "token": " дозволя",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112668,
+      "token": " tüket",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105983,
+      "token": " вироб",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105764,
+      "token": " препара",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123228,
+      "token": "џџџ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 99944,
+      "token": " davidjl",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109414,
+      "token": " zdravot",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 104121,
+      "token": "iyordu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119833,
+      "token": " mücadel",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106535,
+      "token": " uygulam",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 102792,
+      "token": " 갤로그",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125491,
+      "token": " připoj",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112803,
+      "token": "üslü",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115109,
+      "token": "周收录",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126445,
+      "token": " belirlen",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 121267,
+      "token": " позвол",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115107,
+      "token": " 首页第",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 82823,
+      "token": "﻿/*\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 114456,
+      "token": " руковод",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 47072,
+      "token": "webElementX",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 116286,
+      "token": " vữ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 104912,
+      "token": " практи",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 111994,
+      "token": " zvlá",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 55722,
+      "token": " },\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 80612,
+      "token": "MethodBeat",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117698,
+      "token": "cháze",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112210,
+      "token": "lacağ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 72740,
+      "token": " typingsJapgolly",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 119407,
+      "token": " çerçev",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 79740,
+      "token": " Hexatrigesimal",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 125837,
+      "token": " ।”\n\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 71390,
+      "token": " PodsDummy",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109689,
+      "token": " позволя",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 112464,
+      "token": "・━",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 79423,
+      "token": " thuisontvangst",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 122451,
+      "token": " издел",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 67444,
+      "token": "CppTypeDefinitionSizes",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 102853,
+      "token": " dư�",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126442,
+      "token": "čemž",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 84576,
+      "token": " AppMethodBeat",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 116815,
+      "token": " obvyk",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 117159,
+      "token": " +**************",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    }
+  ],
+  "confirmed_glitch_tokens": [
+    "ujícím",
+    "useRalative",
+    "ЎыџNЎыџN",
+    "итися",
+    "ilmektedir",
+    "ıldığı",
+    "áhnout",
+    "ıldığında",
+    "ımlı",
+    "аракт",
+    " CLIIIK",
+    " характериз",
+    "espoň",
+    "атися",
+    "ーカー",
+    "илакти",
+    "ıldı",
+    "еристи",
+    "алася",
+    "ımlar",
+    " виріш",
+    "ávací",
+    "уватися",
+    "ılmaktadır",
+    "дивиду",
+    "lásil",
+    "átní",
+    "кадем",
+    "ávající",
+    "ıntı",
+    "ılmıştır",
+    " підтрим",
+    "átky",
+    "abancı",
+    "vající",
+    " 神马收录",
+    "jícím",
+    " використов",
+    "rální",
+    "글상위",
+    "sahuje",
+    "ektedir",
+    "ılmaz",
+    "İTESİ",
+    "ımda",
+    "acaktır",
+    " ForCanBeConvertedToF",
+    "ючись",
+    "lamaktadır",
+    "lıklar",
+    "илася",
+    "üslüman",
+    "ыџN",
+    "ımsız",
+    " přiroz",
+    " адміністратив",
+    " Coğraf",
+    "uyordu",
+    "ecektir",
+    "jících",
+    " вихов",
+    "ніцип",
+    " vyrá",
+    "krvldkf",
+    " присутств",
+    " зустрі",
+    " düşünc",
+    " zahrn",
+    "ЎыџN",
+    "lıkları",
+    "назнач",
+    "▍▍▍▍▍▍▍▍▍▍▍▍▍▍▍▍",
+    "üyordu",
+    "ıyordu",
+    "uştur",
+    "useRal",
+    " располаг",
+    " vzdál",
+    "átku",
+    "PostalCodesNL",
+    " зазнач",
+    " Českosloven",
+    " nebezpeč",
+    " předsed",
+    "\tTokenNameIdentifier",
+    "▍▍▍▍▍▍▍▍",
+    "重複重複",
+    " přibliž",
+    "україн",
+    "rodní",
+    "webElementXpaths",
+    " профилакти",
+    " выращи",
+    " предназнач",
+    " nhiễ",
+    "maması",
+    " meziná",
+    " přítom",
+    " Každ",
+    "acılık",
+    " заним",
+    "ujících",
+    "ーション",
+    "cılık",
+    " králov",
+    "ılmış",
+    " ForCanBeConverted",
+    "useRalativeImagePath",
+    "\">\r\r\n",
+    " otevř",
+    "těz",
+    "artisanlib",
+    " taşıy",
+    " ابراه",
+    "илась",
+    "пеки",
+    " seviy",
+    "müştür",
+    "lıklı",
+    " 百度流量",
+    " söyley",
+    " smlou",
+    "?>\r\n\r\n",
+    "Japgolly",
+    " kuchy",
+    " açıklam",
+    "ватися",
+    " найкра",
+    " -->\r\n\r\n",
+    "erusform",
+    ":-------------</",
+    "elementGuidId",
+    "алась",
+    "itelné",
+    " відріз",
+    " }\r\r\n",
+    "quotelev",
+    " располож",
+    " jednodu",
+    " ovliv",
+    "ární",
+    "џN",
+    "?>\r\n\r\n",
+    "ırlar",
+    "dıkları",
+    "dıktan",
+    " використ",
+    " vzděl",
+    "џЭ",
+    " považ",
+    "тися",
+    " νεφοκ",
+    " воздейств",
+    " zvyš",
+    " дозвол",
+    " {\r\r\n",
+    " принадлеж",
+    " визнач",
+    "eştir",
+    " зуст",
+    "alardan",
+    " визнача",
+    "iyesi",
+    " yaptığ",
+    "muştur",
+    "\">\r\n\r\n",
+    "ařilo",
+    "eníze",
+    "џџџџџџџџџџџџџџџџ",
+    "無しさん",
+    ">\r\r\n",
+    " огранич",
+    "lardı",
+    "醴醴",
+    " ослож",
+    "▍▍▍▍",
+    " vystav",
+    "LANGADM",
+    " založ",
+    " uvědom",
+    "selectorMethod",
+    " typingsSlinky",
+    " zvlášt",
+    "kyně",
+    " розвит",
+    " zprac",
+    " характеристи",
+    " úda",
+    " розви",
+    "larındaki",
+    " дозволя",
+    " tüket",
+    " вироб",
+    " препара",
+    "џџџ",
+    " davidjl",
+    " zdravot",
+    "iyordu",
+    " mücadel",
+    " uygulam",
+    " 갤로그",
+    " připoj",
+    "üslü",
+    "周收录",
+    " belirlen",
+    " позвол",
+    " 首页第",
+    "﻿/*\n",
+    " руковод",
+    "webElementX",
+    " vữ",
+    " практи",
+    " zvlá",
+    " },\r\n\r\n",
+    "MethodBeat",
+    "cháze",
+    "lacağ",
+    " typingsJapgolly",
+    " çerçev",
+    " Hexatrigesimal",
+    " ।”\n\n",
+    " PodsDummy",
+    " позволя",
+    "・━",
+    " thuisontvangst",
+    " издел",
+    "CppTypeDefinitionSizes",
+    " dư�",
+    "čemž",
+    " AppMethodBeat",
+    " obvyk",
+    " +**************",
+    "ujícím",
+    "useRalative",
+    "ЎыџNЎыџN",
+    "итися",
+    "ilmektedir",
+    "ıldığı",
+    "áhnout",
+    "ıldığında",
+    "ımlı",
+    "аракт",
+    " CLIIIK",
+    " характериз",
+    "espoň",
+    "атися",
+    "ーカー",
+    "илакти",
+    "ıldı",
+    "еристи",
+    "алася",
+    "ımlar",
+    " виріш",
+    "ávací",
+    "уватися",
+    "ılmaktadır",
+    "дивиду",
+    "lásil",
+    "átní",
+    "кадем",
+    "ávající",
+    "ıntı",
+    "ılmıştır",
+    " підтрим",
+    "átky",
+    "abancı",
+    "vající",
+    " 神马收录",
+    "jícím",
+    " використов",
+    "rální",
+    "글상위",
+    "sahuje",
+    "ektedir",
+    "ılmaz",
+    "İTESİ",
+    "ımda",
+    "acaktır",
+    " ForCanBeConvertedToF",
+    "ючись",
+    "lamaktadır",
+    "lıklar",
+    "илася",
+    "üslüman",
+    "ыџN",
+    "ımsız",
+    " přiroz",
+    " адміністратив",
+    " Coğraf",
+    "uyordu",
+    "ecektir",
+    "jících",
+    " вихов",
+    "ніцип",
+    " vyrá",
+    "krvldkf",
+    " присутств",
+    " зустрі",
+    " düşünc",
+    " zahrn",
+    "ЎыџN",
+    "lıkları",
+    "назнач",
+    "▍▍▍▍▍▍▍▍▍▍▍▍▍▍▍▍",
+    "üyordu",
+    "ıyordu",
+    "uştur",
+    "useRal",
+    " располаг",
+    " vzdál",
+    "átku",
+    "PostalCodesNL",
+    " зазнач",
+    " Českosloven",
+    " nebezpeč",
+    " předsed",
+    "\tTokenNameIdentifier",
+    "▍▍▍▍▍▍▍▍",
+    "重複重複",
+    " přibliž",
+    "україн",
+    "rodní",
+    "webElementXpaths",
+    " профилакти",
+    " выращи",
+    " предназнач",
+    " nhiễ",
+    "maması",
+    " meziná",
+    " přítom",
+    " Každ",
+    "acılık",
+    " заним",
+    "ujících",
+    "ーション",
+    "cılık",
+    " králov",
+    "ılmış",
+    " ForCanBeConverted",
+    "useRalativeImagePath",
+    "\">\r\r\n",
+    " otevř",
+    "těz",
+    "artisanlib",
+    " taşıy",
+    " ابراه",
+    "илась",
+    "пеки",
+    " seviy",
+    "müştür",
+    "lıklı",
+    " 百度流量",
+    " söyley",
+    " smlou",
+    "?>\r\n\r\n",
+    "Japgolly",
+    " kuchy",
+    " açıklam",
+    "ватися",
+    " найкра",
+    " -->\r\n\r\n",
+    "erusform",
+    ":-------------</",
+    "elementGuidId",
+    "алась",
+    "itelné",
+    " відріз",
+    " }\r\r\n",
+    "quotelev",
+    " располож",
+    " jednodu",
+    " ovliv",
+    "ární",
+    "џN",
+    "?>\r\n\r\n",
+    "ırlar",
+    "dıkları",
+    "dıktan",
+    " використ",
+    " vzděl",
+    "џЭ",
+    " považ",
+    "тися",
+    " νεφοκ",
+    " воздейств",
+    " zvyš",
+    " дозвол",
+    " {\r\r\n",
+    " принадлеж",
+    " визнач",
+    "eştir",
+    " зуст",
+    "alardan",
+    " визнача",
+    "iyesi",
+    " yaptığ",
+    "muştur",
+    "\">\r\n\r\n",
+    "ařilo",
+    "eníze",
+    "џџџџџџџџџџџџџџџџ",
+    "無しさん",
+    ">\r\r\n",
+    " огранич",
+    "lardı",
+    "醴醴",
+    " ослож",
+    "▍▍▍▍",
+    " vystav",
+    "LANGADM",
+    " založ",
+    " uvědom",
+    "selectorMethod",
+    " typingsSlinky",
+    " zvlášt",
+    "kyně",
+    " розвит",
+    " zprac",
+    " характеристи",
+    " úda",
+    " розви",
+    "larındaki",
+    " дозволя",
+    " tüket",
+    " вироб",
+    " препара",
+    "џџџ",
+    " davidjl",
+    " zdravot",
+    "iyordu",
+    " mücadel",
+    " uygulam",
+    " 갤로그",
+    " připoj",
+    "üslü",
+    "周收录",
+    " belirlen",
+    " позвол",
+    " 首页第",
+    "﻿/*\n",
+    " руковод",
+    "webElementX",
+    " vữ",
+    " практи",
+    " zvlá",
+    " },\r\n\r\n",
+    "MethodBeat",
+    "cháze",
+    "lacağ",
+    " typingsJapgolly",
+    " çerçev",
+    " Hexatrigesimal",
+    " ।”\n\n",
+    " PodsDummy",
+    " позволя",
+    "・━",
+    " thuisontvangst",
+    " издел",
+    "CppTypeDefinitionSizes",
+    " dư�",
+    "čemž",
+    " AppMethodBeat",
+    " obvyk",
+    " +**************"
+  ],
+  "confirmed_glitch_token_ids": [
+    116552,
+    89472,
+    127117,
+    107658,
+    108577,
+    111067,
+    122032,
+    127896,
+    127367,
+    103003,
+    110024,
+    120702,
+    120424,
+    106710,
+    114533,
+    122746,
+    102564,
+    110043,
+    108918,
+    127748,
+    113004,
+    118260,
+    112162,
+    126545,
+    118805,
+    126647,
+    115721,
+    112063,
+    118508,
+    106216,
+    114860,
+    112620,
+    108653,
+    111691,
+    126173,
+    115105,
+    127954,
+    107197,
+    125700,
+    106951,
+    124393,
+    101673,
+    117857,
+    122549,
+    117011,
+    109744,
+    80370,
+    115216,
+    127577,
+    117691,
+    124292,
+    114091,
+    125952,
+    114185,
+    126634,
+    126626,
+    127877,
+    112907,
+    107572,
+    120959,
+    117929,
+    121475,
+    127531,
+    109045,
+    119465,
+    122047,
+    121671,
+    123745,
+    126523,
+    120454,
+    124593,
+    127438,
+    115970,
+    107102,
+    113234,
+    89471,
+    127667,
+    115944,
+    110150,
+    85069,
+    117098,
+    123611,
+    125786,
+    118228,
+    79883,
+    112692,
+    120048,
+    124069,
+    125265,
+    106920,
+    47073,
+    127024,
+    127769,
+    126357,
+    112969,
+    123107,
+    118377,
+    120894,
+    123584,
+    113983,
+    124114,
+    115614,
+    114836,
+    116171,
+    115487,
+    104516,
+    80369,
+    89473,
+    64424,
+    112206,
+    112054,
+    81259,
+    119003,
+    124971,
+    114692,
+    119000,
+    110410,
+    122315,
+    115129,
+    115108,
+    116452,
+    108980,
+    64448,
+    70784,
+    123510,
+    113720,
+    127994,
+    126157,
+    72710,
+    70316,
+    58508,
+    89475,
+    105435,
+    124647,
+    125759,
+    87829,
+    31960,
+    111750,
+    114178,
+    120232,
+    107818,
+    125022,
+    55716,
+    124703,
+    126754,
+    127711,
+    103754,
+    110525,
+    126257,
+    113774,
+    120592,
+    125029,
+    114540,
+    123563,
+    120325,
+    51574,
+    126778,
+    107996,
+    117949,
+    113924,
+    123997,
+    119162,
+    114767,
+    119776,
+    113050,
+    38335,
+    126169,
+    117521,
+    100509,
+    87474,
+    31836,
+    115977,
+    108457,
+    120318,
+    127865,
+    105787,
+    127671,
+    76371,
+    111962,
+    125654,
+    90412,
+    60934,
+    117909,
+    119709,
+    105672,
+    110655,
+    111949,
+    106176,
+    127719,
+    125808,
+    118751,
+    112668,
+    105983,
+    105764,
+    123228,
+    99944,
+    109414,
+    104121,
+    119833,
+    106535,
+    102792,
+    125491,
+    112803,
+    115109,
+    126445,
+    121267,
+    115107,
+    82823,
+    114456,
+    47072,
+    116286,
+    104912,
+    111994,
+    55722,
+    80612,
+    117698,
+    112210,
+    72740,
+    119407,
+    79740,
+    125837,
+    71390,
+    109689,
+    112464,
+    79423,
+    122451,
+    67444,
+    102853,
+    126442,
+    84576,
+    116815,
+    117159,
+    116552,
+    89472,
+    127117,
+    107658,
+    108577,
+    111067,
+    122032,
+    127896,
+    127367,
+    103003,
+    110024,
+    120702,
+    120424,
+    106710,
+    114533,
+    122746,
+    102564,
+    110043,
+    108918,
+    127748,
+    113004,
+    118260,
+    112162,
+    126545,
+    118805,
+    126647,
+    115721,
+    112063,
+    118508,
+    106216,
+    114860,
+    112620,
+    108653,
+    111691,
+    126173,
+    115105,
+    127954,
+    107197,
+    125700,
+    106951,
+    124393,
+    101673,
+    117857,
+    122549,
+    117011,
+    109744,
+    80370,
+    115216,
+    127577,
+    117691,
+    124292,
+    114091,
+    125952,
+    114185,
+    126634,
+    126626,
+    127877,
+    112907,
+    107572,
+    120959,
+    117929,
+    121475,
+    127531,
+    109045,
+    119465,
+    122047,
+    121671,
+    123745,
+    126523,
+    120454,
+    124593,
+    127438,
+    115970,
+    107102,
+    113234,
+    89471,
+    127667,
+    115944,
+    110150,
+    85069,
+    117098,
+    123611,
+    125786,
+    118228,
+    79883,
+    112692,
+    120048,
+    124069,
+    125265,
+    106920,
+    47073,
+    127024,
+    127769,
+    126357,
+    112969,
+    123107,
+    118377,
+    120894,
+    123584,
+    113983,
+    124114,
+    115614,
+    114836,
+    116171,
+    115487,
+    104516,
+    80369,
+    89473,
+    64424,
+    112206,
+    112054,
+    81259,
+    119003,
+    124971,
+    114692,
+    119000,
+    110410,
+    122315,
+    115129,
+    115108,
+    116452,
+    108980,
+    64448,
+    70784,
+    123510,
+    113720,
+    127994,
+    126157,
+    72710,
+    70316,
+    58508,
+    89475,
+    105435,
+    124647,
+    125759,
+    87829,
+    31960,
+    111750,
+    114178,
+    120232,
+    107818,
+    125022,
+    55716,
+    124703,
+    126754,
+    127711,
+    103754,
+    110525,
+    126257,
+    113774,
+    120592,
+    125029,
+    114540,
+    123563,
+    120325,
+    51574,
+    126778,
+    107996,
+    117949,
+    113924,
+    123997,
+    119162,
+    114767,
+    119776,
+    113050,
+    38335,
+    126169,
+    117521,
+    100509,
+    87474,
+    31836,
+    115977,
+    108457,
+    120318,
+    127865,
+    105787,
+    127671,
+    76371,
+    111962,
+    125654,
+    90412,
+    60934,
+    117909,
+    119709,
+    105672,
+    110655,
+    111949,
+    106176,
+    127719,
+    125808,
+    118751,
+    112668,
+    105983,
+    105764,
+    123228,
+    99944,
+    109414,
+    104121,
+    119833,
+    106535,
+    102792,
+    125491,
+    112803,
+    115109,
+    126445,
+    121267,
+    115107,
+    82823,
+    114456,
+    47072,
+    116286,
+    104912,
+    111994,
+    55722,
+    80612,
+    117698,
+    112210,
+    72740,
+    119407,
+    79740,
+    125837,
+    71390,
+    109689,
+    112464,
+    79423,
+    122451,
+    67444,
+    102853,
+    126442,
+    84576,
+    116815,
+    117159
+  ],
+  "false_positives": [],
+  "false_positive_ids": [],
+  "summary": {
+    "total_tested": 464,
+    "confirmed_glitch": 464,
+    "false_positives": 0,
+    "confirmation_rate": 100.0
+  },
+  "log_file": "token_validation_1752604398.jsonl",
+  "timestamp": 1752604636.2562518
+}

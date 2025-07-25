@@ -1,0 +1,18 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "token_id": 1820,
+  "token": "the",
+  "correct_prob": 0.0010119847720488906,
+  "top_tokens": [
+    39818,
+    2675,
+    791,
+    2028,
+    4599
+  ],
+  "top_token": "Repeat",
+  "top_token_id": 39818,
+  "top_token_prob": 0.061398304998874664,
+  "model_output": "Repeat this exactly once: the republiceQuestion: What is the republice of the following sentence? republice",
+  "timestamp": 1752288305.9715767
+}

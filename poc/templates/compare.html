@@ -1,0 +1,536 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Reports - Mistral Injection Analysis{% endblock %}
+
+{% block content %}
+<!-- Comparison Header -->
+<div class="card">
+    <div class="card-header">
+        <h2></h2><i class="fas fa-balance-scale"></i> Report Comparison</h2>
+        <p class="text-muted mb-0">Compare multiple injection analysis reports side by side</p>
+    </div>
+    <div class="card-body">
+        {% if not comparison_data.single_reports and not comparison_data.multi_reports %}
+        <div class="alert alert-info">
+            <h4><i class="fas fa-info-circle"></i> Select Reports to Compare</h4>
+            <p>Choose one or more reports from the lists below to begin comparison analysis.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Report Selection -->
+<div class="row">
+    <!-- Single Model Reports Selection -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-robot"></i> Single Model Reports</h4>
+                <small class="text-muted">{{ reports.single_model|length }} available</small>
+            </div>
+            <div class="card-body">
+                {% if reports.single_model %}
+                <form id="single-reports-form">
+                    {% for report in reports.single_model %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="single_reports"
+                               value="{{ report.filename }}" id="single_{{ loop.index }}"
+                               {% if report.filename in request.args.getlist('single') %}checked{% endif %}>
+                        <label class="form-check-label" for="single_{{ loop.index }}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div></div>
+                                    <strong>{{ report.model_tested or 'Unknown Model' }}</strong><br>
+                                    <small class="text-muted">{{ report.formatted_time }}</small>
+                                </div>
+                                <div>
+                                    {% set leak_rate = report.leak_percentage or 0 %}
+                                    <span class="badge {% if leak_rate < 5 %}badge-success{% elif leak_rate < 15 %}badge-warning{% elif leak_rate < 30 %}badge-info{% else %}badge-danger{% endif %}">
+                                        {{ "%.1f"|format(leak_rate) }}%
+                                    </span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </form>
+                {% else %}
+                <p class="text-muted">No single model reports available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Multi-Model Reports Selection -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-layer-group"></i> Multi-Model Reports</h4>
+                <small class="text-muted">{{ reports.multi_model|length }} available</small>
+            </div>
+            <div class="card-body">
+                {% if reports.multi_model %}
+                <form id="multi-reports-form">
+                    {% for report in reports.multi_model %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="multi_reports"
+                               value="{{ report.filename }}" id="multi_{{ loop.index }}"
+                               {% if report.filename in request.args.getlist('multi') %}checked{% endif %}>
+                        <label class="form-check-label" for="multi_{{ loop.index }}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Multi-Model Analysis</strong><br>
+                                    <small class="text-muted">{{ report.formatted_time }} - {{ (report.test_parameters.models_tested or [])|length }} models</small>
+                                </div>
+                                <div>
+                                    {% if report.comparison_analysis and report.comparison_analysis.average_leak_rate %}
+                                    {% set avg_rate = report.comparison_analysis.average_leak_rate %}
+                                    <span class="badge {% if avg_rate < 5 %}badge-success{% elif avg_rate < 15 %}badge-warning{% elif avg_rate < 30 %}badge-info{% else %}badge-danger{% endif %}">
+                                        {{ "%.1f"|format(avg_rate) }}% avg
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </form>
+                {% else %}
+                <p class="text-muted">No multi-model reports available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Comparison Controls -->
+<div class="card mt-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <button class="btn btn-primary" onclick="compareSelected()">
+                    <i class="fas fa-chart-line"></i> Compare Selected Reports
+                </button>
+                <button class="btn btn-secondary" onclick="clearSelection()">
+                    <i class="fas fa-times"></i> Clear Selection
+                </button>
+            </div>
+            <div>
+                <button class="btn btn-info" onclick="selectRecommended()">
+                    <i class="fas fa-star"></i> Select Recent Reports
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Comparison Results -->
+{% if comparison_data.single_reports or comparison_data.multi_reports %}
+<div class="mt-4">
+    <!-- Comparison Summary -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-analytics"></i> Comparison Summary</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="metric-card">
+                        <div class="metric-value">{{ comparison_data.single_reports|length + comparison_data.multi_reports|length }}</div>
+                        <div class="metric-label">Reports Compared</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="metric-card">
+                        <div class="metric-value">
+                            {% set all_models = [] %}
+                            {% for report in comparison_data.single_reports %}
+                                {% if all_models.append(report.model_tested or 'Unknown') %}{% endif %}
+                            {% endfor %}
+                            {% for report in comparison_data.multi_reports %}
+                                {% for model in (report.test_parameters.models_tested or []) %}
+                                    {% if all_models.append(model) %}{% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                            {{ all_models|unique|list|length }}
+                        </div>
+                        <div class="metric-label">Unique Models</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="metric-card">
+                        <div class="metric-value">
+                            {% set leak_rates = [] %}
+                            {% for report in comparison_data.single_reports %}
+                                {% if leak_rates.append(report.leak_percentage or 0) %}{% endif %}
+                            {% endfor %}
+                            {% for report in comparison_data.multi_reports %}
+                                {% if report.comparison_analysis and report.comparison_analysis.average_leak_rate %}
+                                    {% if leak_rates.append(report.comparison_analysis.average_leak_rate) %}{% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if leak_rates %}
+                                {{ "%.1f"|format(leak_rates|sum / leak_rates|length) }}%
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </div>
+                        <div class="metric-label">Average Leak Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side-by-Side Comparison -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h3><i class="fas fa-columns"></i> Side-by-Side Analysis</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Single Model Reports -->
+                {% for report in comparison_data.single_reports %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h6><i class="fas fa-robot"></i> {{ report.model_tested or 'Unknown Model' }}</h6>
+                            <small>{{ report.formatted_time if report.formatted_time else 'Unknown time' }}</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center mb-3">
+                                <div class="col-6">
+                                    <div class="h4">{{ report.successful_tests or 0 }}</div>
+                                    <small class="text-muted">Tests</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="h4 text-danger">{{ report.api_key_leaked or 0 }}</div>
+                                    <small class="text-muted">Leaks</small>
+                                </div>
+                            </div>
+
+                            <div class="text-center mb-3">
+                                {% set leak_rate = report.leak_percentage or 0 %}
+                                <div class="h2 {% if leak_rate < 5 %}text-success{% elif leak_rate < 15 %}text-warning{% elif leak_rate < 30 %}text-info{% else %}text-danger{% endif %}">
+                                    {{ "%.1f"|format(leak_rate) }}%
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar {% if leak_rate < 5 %}bg-success{% elif leak_rate < 15 %}bg-warning{% elif leak_rate < 30 %}bg-info{% else %}bg-danger{% endif %}"
+                                         style="width: {{ [leak_rate, 100]|min }}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <span class="security-badge {% if leak_rate < 5 %}security-excellent{% elif leak_rate < 15 %}security-good{% elif leak_rate < 30 %}security-fair{% else %}security-poor{% endif %}">
+                                    {% if leak_rate < 5 %}Excellent{% elif leak_rate < 15 %}Good{% elif leak_rate < 30 %}Fair{% else %}Poor{% endif %}
+                                </span>
+                            </div>
+
+                            <div class="mt-3">
+                                <a href="{{ url_for('single_report', filename=report.filename) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> View Full Report
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Multi-Model Reports -->
+                {% for report in comparison_data.multi_reports %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-info">
+                        <div class="card-header bg-info text-white">
+                            <h6><i class="fas fa-layer-group"></i> Multi-Model Analysis</h6>
+                            <small>{{ report.formatted_time if report.formatted_time else 'Unknown time' }} - {{ (report.test_parameters.models_tested or [])|length }} models</small>
+                        </div>
+                        <div class="card-body">
+                            {% if report.comparison_analysis %}
+                            {% set analysis = report.comparison_analysis %}
+                            <div class="row text-center mb-3">
+                                <div class="col-6">
+                                    <div class="h4">{{ (report.test_parameters.models_tested or [])|length }}</div>
+                                    <small class="text-muted">Models</small>
+                                </div>
+                                <div class="col-6">
+                                    <div class="h4">{{ report.test_parameters.num_tests or 0 }}</div>
+                                    <small class="text-muted">Tests Each</small>
+                                </div>
+                            </div>
+
+                            <div class="text-center mb-3">
+                                {% if analysis.average_leak_rate %}
+                                {% set avg_rate = analysis.average_leak_rate %}
+                                <div class="h2 {% if avg_rate < 5 %}text-success{% elif avg_rate < 15 %}text-warning{% elif avg_rate < 30 %}text-info{% else %}text-danger{% endif %}">
+                                    {{ "%.1f"|format(avg_rate) }}%
+                                </div>
+                                <small class="text-muted">Average Leak Rate</small>
+                                <div class="progress mt-1">
+                                    <div class="progress-bar {% if avg_rate < 5 %}bg-success{% elif avg_rate < 15 %}bg-warning{% elif avg_rate < 30 %}bg-info{% else %}bg-danger{% endif %}"
+                                         style="width: {{ [avg_rate, 100]|min }}%"></div>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            {% if analysis.best_model and analysis.worst_model %}
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <strong>Best:</strong> {{ analysis.best_model[0][:20] }}{% if analysis.best_model[0]|length > 20 %}...{% endif %} ({{ "%.1f"|format(analysis.best_model[1]) }}%)<br>
+                                    <strong>Worst:</strong> {{ analysis.worst_model[0][:20] }}{% if analysis.worst_model[0]|length > 20 %}...{% endif %} ({{ "%.1f"|format(analysis.worst_model[1]) }}%)
+                                </small>
+                            </div>
+                            {% endif %}
+                            {% endif %}
+
+                            <div class="mt-3">
+                                <a href="{{ url_for('multi_report', filename=report.filename) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-chart-bar"></i> View Full Analysis
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Comparison Table -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h3><i class="fas fa-table"></i> Detailed Metrics Comparison</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Report Type</th>
+                            <th>Model(s)</th>
+                            <th>Tests</th>
+                            <th>Leaks</th>
+                            <th>Leak</th> Rate</th>
+                            <th>Security Level</th>
+                            <th>Generated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in comparison_data.single_reports %}
+                        <tr>
+                            <td><span class="badge badge-primary">Single</span></td>
+                            <td><code>{{ report.model_tested or 'Unknown' }}</code></td>
+                            <td>{{ report.successful_tests or 0 }}</td>
+                            <td>{{ report.api_key_leaked or 0 }}</td>
+                            <td>
+                                {% set leak_rate = report.leak_percentage or 0 %}
+                                <span class="{% if leak_rate < 5 %}text-success{% elif leak_rate < 15 %}text-warning{% elif leak_rate < 30 %}text-info{% else %}text-danger{% endif %}">
+                                    {{ "%.1f"|format(leak_rate) }}%
+                                </span>
+                            </td>
+                            <td>
+                                {% set leak_rate = report.leak_percentage or 0 %}
+                                <span class="security-badge {% if leak_rate < 5 %}security-excellent{% elif leak_rate < 15 %}security-good{% elif leak_rate < 30 %}security-fair{% else %}security-poor{% endif %}">
+                                    {% if leak_rate < 5 %}Excellent{% elif leak_rate < 15 %}Good{% elif leak_rate < 30 %}Fair{% else %}Poor{% endif %}
+                                </span>
+                            </td>
+                            <td>{{ report.formatted_time or 'Unknown' }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% for report in comparison_data.multi_reports %}
+                        <tr>
+                            <td><span class="badge badge-info">Multi</span></td>
+                            <td>{{ (report.test_parameters.models_tested or [])|length }} models</td>
+                            <td>{{ ((report.test_parameters.num_tests or 0) * (report.test_parameters.models_tested or [])|length) }}</td>
+                            <td>
+                                {% if report.comparison_analysis and report.comparison_analysis.model_summaries %}
+                                {{ report.comparison_analysis.model_summaries.values()|sum(attribute='api_key_leaked')|default(0) }}
+                                {% else %}
+                                N/A
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if report.comparison_analysis and report.comparison_analysis.average_leak_rate %}
+                                {% set avg_rate = report.comparison_analysis.average_leak_rate %}
+                                <span class="{% if avg_rate < 5 %}text-success{% elif avg_rate < 15 %}text-warning{% elif avg_rate < 30 %}text-info{% else %}text-danger{% endif %}">
+                                    {{ "%.1f"|format(avg_rate) }}%
+                                </span>
+                                {% else %}
+                                N/A
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if report.comparison_analysis and report.comparison_analysis.average_leak_rate %}
+                                {% set avg_rate = report.comparison_analysis.average_leak_rate %}
+                                <span class="security-badge {% if avg_rate < 5 %}security-excellent{% elif avg_rate < 15 %}security-good{% elif avg_rate < 30 %}security-fair{% else %}security-poor{% endif %}">
+                                    {% if avg_rate < 5 %}Excellent{% elif avg_rate < 15 %}Good{% elif avg_rate < 30 %}Fair{% else %}Poor{% endif %}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>{{ report.formatted_time or 'Unknown' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Comparison -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h3><i class="fas fa-download"></i> Export Comparison</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Export Options</h5</h5>>
+                    <p class="text-muted">Download comparison data in various formats</p>
+                    <button class="btn btn-primary" onclick="exportComparison('json')">
+                        <i class="fas fa-file-code"></i> Export as JSON
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportComparison('csv')">
+                        <i class="fas fa-file-csv"></i> Export as CSV
+                    </button>
+                    <button class="btn btn-info" onclick="printComparison()">
+                        <i class="fas fa-print"></i> Print Comparison
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <h5>Share Results</h5>
+                    <p class="text-muted">Share this comparison with others</p>
+                    <button class="btn btn-success" onclick="copyComparisonLink()">
+                        <i class="fas fa-link"></i> Copy Comparison Link
+                    </button>
+                    <button class="btn btn-warning" onclick="saveComparison()">
+                        <i class="fas fa-bookmark"></i> Save Comparison
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function compareSelected() {
+        const singleReports = Array.from(document.querySelectorAll('input[name="single_reports"]:checked')).map(cb => cb.value);
+        const multiReports = Array.from(document.querySelectorAll('input[name="multi_reports"]:checked')).map(cb => cb.value);
+
+        if (singleReports.length === 0 && multiReports.length === 0) {
+            showToast('Please select at least one report to compare', 'warning');
+            return;
+        }
+
+        const params = new URLSearchParams();
+        singleReports.forEach(report => params.append('single', report));
+        multiReports.forEach(report => params.append('multi', report));
+
+        window.location.href = `{{ url_for('compare_reports') }}?${params.toString()}`;
+    }
+
+    function clearSelection() {
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        showToast('Selection cleared', 'info');
+    }
+
+    function selectRecommended() {
+        // Clear existing selection
+        clearSelection();
+
+        // Select most recent reports (up to 4)
+        const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+        let selected = 0;
+        for (let cb of allCheckboxes) {
+            if (selected < 4) {
+                cb.checked = true;
+                selected++;
+            }
+        }
+
+        showToast(`Selected ${selected} recent reports`, 'success');
+    }
+
+    function exportComparison(format) {
+        const comparisonData = {
+            export_format: format,
+            timestamp: new Date().toISOString(),
+            single_reports: {{ comparison_data.single_reports|tojson|safe }},
+            multi_reports: {{ comparison_data.multi_reports|tojson|safe }}
+        };
+
+        if (format === 'json') {
+            const blob = new Blob([JSON.stringify(comparisonData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mistral_comparison_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('JSON export downloaded!', 'success');
+        } else if (format === 'csv') {
+            // Convert to CSV format
+            let csv = 'Type,Model,Tests,Leaks,LeakRate,SecurityLevel,Generated\n';
+
+            {% for report in comparison_data.single_reports %}
+            csv += `Single,"{{ report.model_tested or 'Unknown' }}",{{ report.successful_tests or 0 }},{{ report.api_key_leaked or 0 }},{{ "%.1f"|format(report.leak_percentage or 0) }},{% set lr = report.leak_percentage or 0 %}{% if lr < 5 %}Excellent{% elif lr < 15 %}Good{% elif lr < 30 %}Fair{% else %}Poor{% endif %},"{{ report.formatted_time or 'Unknown' }}"\n`;
+            {% endfor %}
+
+            {% for report in comparison_data.multi_reports %}
+            csv += `Multi,"{{ (report.test_parameters.models_tested or [])|length }} models",{{ ((report.test_parameters.num_tests or 0) * (report.test_parameters.models_tested or [])|length) }},N/A,{% if report.comparison_analysis and report.comparison_analysis.average_leak_rate %}{{ "%.1f"|format(report.comparison_analysis.average_leak_rate) }}{% else %}N/A{% endif %},{% if report.comparison_analysis and report.comparison_analysis.average_leak_rate %}{% set ar = report.comparison_analysis.average_leak_rate %}{% if ar < 5 %}Excellent{% elif ar < 15 %}Good{% elif ar < 30 %}Fair{% else %}Poor{% endif %}{% else %}N/A{% endif %},"{{ report.formatted_time or 'Unknown' }}"\n`;
+            {% endfor %}
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mistral_comparison_${new Date().getTime()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('CSV export downloaded!', 'success');
+        }
+    }
+
+    function printComparison() {
+        window.print();
+    }
+
+    function copyComparisonLink() {
+        const url = window.location.href;
+        copyToClipboard(url);
+        showToast('Comparison link copied to clipboard!', 'success');
+    }
+
+    function saveComparison() {
+        const comparisonData = {
+            single_reports: {{ comparison_data.single_reports|tojson|safe }},
+            multi_reports: {{ comparison_data.multi_reports|tojson|safe }},
+            saved_at: new Date().toISOString()
+        };
+
+        localStorage.setItem('mistral_comparison_' + Date.now(), JSON.stringify(comparisonData));
+        showToast('Comparison saved locally!', 'success');
+    }
+
+    // Auto-select reports if URL parameters are present
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const singleParams = urlParams.getAll('single');
+        const multiParams = urlParams.getAll('multi');
+
+        singleParams.forEach(filename => {
+            const checkbox = document.querySelector(`input[value="${filename}"]`);
+            if (checkbox) checkbox.checked = true;
+        });
+
+        multiParams.forEach(filename => {
+            const checkbox = document.querySelector(`input[value="${filename}"]`);
+            if (checkbox) checkbox.checked = true;
+        });
+    });
+</script>
+{% endblock %}

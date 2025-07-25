@@ -279,12 +279,31 @@ class RealTimeGeneticAnimator:
             if self.target_token_id is not None:
                 target_display += f" (ID: {self.target_token_id})"
 
-            info_text = f'Base Text: "{self.base_text}"  →  Target: {target_display}\n'
-            info_text += f'Baseline Probability: {self.baseline_probability:.4f}'
+            # Enhanced info showing token positioning and context
+            info_text = f'🎯 PREDICTION TARGET: {target_display}\n'
+
+            # Show how the string is constructed
+            if self.current_token_texts and len(self.current_token_texts) > 0:
+                evolved_prefix = "".join(self.current_token_texts)
+                full_context = evolved_prefix + self.base_text
+
+                # Truncate for display if needed
+                max_context_length = 60
+                if len(full_context) > max_context_length:
+                    display_context = full_context[:max_context_length] + "..."
+                else:
+                    display_context = full_context
+
+                info_text += f'📝 Input Context: "[{evolved_prefix}]{self.base_text}" → {target_display}\n'
+                info_text += f'🔍 Full String: "{display_context}"\n'
+            else:
+                info_text += f'📝 Base Context: "{self.base_text}" → {target_display}\n'
+
+            info_text += f'📊 Baseline Probability: {self.baseline_probability:.4f}'
 
             if self.baseline_probability > 0 and self.current_probability > 0:
                 reduction = (1 - self.current_probability / self.baseline_probability) * 100
-                info_text += f'  |  Current Reduction: {reduction:.1f}%'
+                info_text += f'  |  Current: {self.current_probability:.4f}  |  Reduction: {reduction:.1f}%'
 
             self.ax_info.text(0.5, 0.5, info_text, ha='center', va='center',
                              fontsize=12, bbox=dict(boxstyle="round,pad=0.5",
@@ -325,7 +344,7 @@ Progress: {progress_pct:.1f}%"""
             self.ax_tokens.axis('off')
 
             if self.current_best_tokens:
-                tokens_str = f"Token IDs: {self.current_best_tokens}"
+                tokens_str = f"Token IDs: {self.current_best_tokens}\n"
 
                 if self.current_token_texts:
                     # Format token texts nicely
@@ -335,12 +354,30 @@ Progress: {progress_pct:.1f}%"""
                         clean_text = repr(text) if text else "<?>"
                         texts_display.append(clean_text)
 
-                    tokens_str += f"\nDecoded: {texts_display}"
+                    tokens_str += f"Decoded: {texts_display}\n"
                 else:
-                    tokens_str += "\nDecoded: [Token texts not available]"
+                    tokens_str += "Decoded: [Token texts not available]\n"
+
+                # Show the full constructed string with visual separation
+                if self.current_token_texts and self.base_text:
+                    evolved_tokens_text = "".join(self.current_token_texts)
+                    full_string = evolved_tokens_text + self.base_text
+
+                    # Truncate if too long for display
+                    max_display_length = 80
+                    if len(full_string) > max_display_length:
+                        truncated = full_string[:max_display_length] + "..."
+                        tokens_str += f"\nFull String: [{evolved_tokens_text}] + \"{self.base_text[:50]}...\"\n"
+                        tokens_str += f"Result: \"{truncated}\""
+                    else:
+                        # Use visual markers to show token insertion point
+                        tokens_str += f"\nFull String: [{evolved_tokens_text}] + \"{self.base_text}\"\n"
+                        tokens_str += f"Result: \"{full_string}\""
+                else:
+                    tokens_str += "\nFull String: [Constructing...]"
 
                 # Add fitness info
-                tokens_str += f"\nFitness: {self.current_best_fitness:.4f}"
+                tokens_str += f"\n\nFitness: {self.current_best_fitness:.4f}"
 
             else:
                 tokens_str = "Initializing population..."
@@ -354,8 +391,9 @@ Progress: {progress_pct:.1f}%"""
                 token_color = "lightcoral"
 
             self.ax_tokens.text(0.5, 0.5, tokens_str, ha='center', va='center',
-                               fontsize=10, bbox=dict(boxstyle="round,pad=0.5",
-                                                     facecolor=token_color, alpha=0.8))
+                               fontsize=9, bbox=dict(boxstyle="round,pad=0.5",
+                                                     facecolor=token_color, alpha=0.8),
+                               family='monospace')
 
             # Update token comparison panel
             self.ax_comparison.clear()
@@ -389,62 +427,63 @@ Progress: {progress_pct:.1f}%"""
             return "No comparison data available"
 
         lines = []
-        lines.append("TOKEN EVOLUTION COMPARISON")
-        lines.append("=" * 80)
+        lines.append("🧬 TOKEN EVOLUTION ANALYSIS")
+        lines.append("=" * 60)
 
-        # Format original top 10 tokens
-        lines.append("ORIGINAL TOP 10 TOKENS (from baseline prediction):")
-        lines.append("-" * 50)
-        for i, (token_id, prob) in enumerate(self.initial_top_tokens[:10]):
-            # Try to decode token text if tokenizer available
-            token_text = "<?>"
-            if self.tokenizer is not None:
-                try:
-                    token_text = repr(self.tokenizer.decode([token_id]))
-                except:
-                    token_text = "<?>"
+        # Show full string construction
+        if self.current_token_texts and self.base_text:
+            evolved_prefix = "".join(self.current_token_texts)
+            full_string = evolved_prefix + self.base_text
 
-            lines.append(f"  {i+1:2d}. ID:{token_id:6d} | prob:{prob:.4f} | text:{token_text}")
+            # Truncate if too long for display
+            max_display_length = 50
+            if len(full_string) > max_display_length:
+                display_string = full_string[:max_display_length] + "..."
+            else:
+                display_string = full_string
 
-        lines.append("")
+            lines.append("📝 STRING CONSTRUCTION:")
+            lines.append(f"  Original:  \"{self.base_text}\"")
+            lines.append(f"  Evolved:   [{evolved_prefix}] + \"{self.base_text}\"")
+            lines.append(f"  Result:    \"{display_string}\"")
+            lines.append("")
+
+        # Show probability changes
+        if self.baseline_probability > 0 and self.current_probability > 0:
+            reduction = (1 - self.current_probability / self.baseline_probability) * 100
+            lines.append("📊 PREDICTION IMPACT:")
+            target_display = f'"{self.target_token_text}"'
+            if self.target_token_id is not None:
+                target_display += f" (ID:{self.target_token_id})"
+            lines.append(f"  Target Token: {target_display}")
+            lines.append(f"  Baseline Prob: {self.baseline_probability:.4f}")
+            lines.append(f"  Current Prob:  {self.current_probability:.4f}")
+            lines.append(f"  Reduction:     {reduction:.1f}%")
+            lines.append("")
 
         # Format current evolved tokens
-        lines.append("CURRENT EVOLVED TOKEN COMBINATION:")
-        lines.append("-" * 50)
+        lines.append("🧬 EVOLVED TOKENS:")
         if self.current_best_tokens:
-            for i, token_id in enumerate(self.current_best_tokens):
-                # Try to decode token text if tokenizer available
+            token_display = []
+            for token_id in self.current_best_tokens:
                 token_text = "<?>"
                 if self.tokenizer is not None:
                     try:
-                        token_text = repr(self.tokenizer.decode([token_id]))
+                        token_text = self.tokenizer.decode([token_id])
+                        # Clean up token display
+                        if token_text.strip():
+                            token_text = repr(token_text)
                     except:
-                        token_text = "<?>"
-
-                lines.append(f"  {i+1:2d}. ID:{token_id:6d} | text:{token_text}")
+                        pass
+                token_display.append(f"ID:{token_id}({token_text})")
+            lines.append(f"  {' + '.join(token_display)}")
         else:
-            lines.append("  No evolved tokens available yet")
+            lines.append("  [Initializing...]")
 
         lines.append("")
 
-        # Format new top 10 tokens after evolution
-        lines.append("NEW TOP 10 TOKENS (after applying evolved combination):")
-        lines.append("-" * 50)
-        if hasattr(self, 'current_new_top_tokens') and self.current_new_top_tokens:
-            for i, (token_id, prob) in enumerate(self.current_new_top_tokens[:10]):
-                # Try to decode token text if tokenizer available
-                token_text = "<?>"
-                if self.tokenizer is not None:
-                    try:
-                        token_text = repr(self.tokenizer.decode([token_id]))
-                    except:
-                        token_text = "<?>"
-
-                lines.append(f"  {i+1:2d}. ID:{token_id:6d} | prob:{prob:.4f} | text:{token_text}")
-        else:
-            lines.append("  New token probabilities not available yet")
-
-        lines.append("")
+        # Show fitness score
+        lines.append(f"🎯 FITNESS SCORE: {self.current_best_fitness:.4f}")
         lines.append("EVOLUTION STATUS:")
         lines.append("-" * 20)
         lines.append(f"Generation: {self.current_generation}")

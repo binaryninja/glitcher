@@ -1,0 +1,45 @@
+{
+  "genetic_algorithm_tokens": [
+    {
+      "id": 115614,
+      "token": "'ujících'",
+      "source": "genetic_algorithm_top_result"
+    },
+    {
+      "id": 118508,
+      "token": "'ávající'",
+      "source": "genetic_algorithm_top_result"
+    },
+    {
+      "id": 121267,
+      "token": "' позвол'",
+      "source": "genetic_algorithm_top_result"
+    },
+    {
+      "id": 112063,
+      "token": "'кадем'",
+      "source": "genetic_algorithm_top_result"
+    },
+    {
+      "id": 118508,
+      "token": "'ávající'",
+      "source": "genetic_algorithm_top_result"
+    },
+    {
+      "id": 126357,
+      "token": "' предназнач'",
+      "source": "genetic_algorithm_top_result"
+    }
+  ],
+  "metadata": {
+    "sequence": [115614, 118508, 121267, 112063, 118508, 126357],
+    "fitness_score": 0.9384,
+    "probability_reduction": "98.9%",
+    "original_probability": 0.9487,
+    "final_probability": 0.0103,
+    "generation_found": "multiple_generations",
+    "max_tokens": 6,
+    "generations_run": 1000,
+    "model": "meta-llama/Llama-3.2-1B-Instruct"
+  }
+}

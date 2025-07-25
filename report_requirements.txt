@@ -1,0 +1,6 @@
+# Requirements for Glitcher Domain Extraction Report Generator
+#
+# This file contains the Python dependencies needed to run the
+# standalone HTML report generator for domain extraction results.
+
+click>=8.0.0

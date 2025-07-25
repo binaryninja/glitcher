@@ -1,0 +1,18 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B-Instruct",
+  "token_id": 122269,
+  "token": " \u0431\u0430\u0433\u0430\u0442\u044c",
+  "correct_prob": 0.0007682845462113619,
+  "top_tokens": [
+    28070,
+    59935,
+    47897,
+    3116,
+    28470
+  ],
+  "top_token": "Four",
+  "top_token_id": 28070,
+  "top_token_prob": 0.01304540690034628,
+  "model_output": "Four",
+  "timestamp": 1752288669.539335
+}

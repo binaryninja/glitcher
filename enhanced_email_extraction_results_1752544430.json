@@ -1,0 +1,576 @@
+{
+  "results": [
+    {
+      "token": "sięb",
+      "strategy": "subdomain",
+      "email": "user@sięb.example.com",
+      "expected_domain": "sięb.example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@sięb.example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 1,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "sięb.example.com",
+        "glitch_token": "sięb",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544424.3799329
+    },
+    {
+      "token": "sięb",
+      "strategy": "subdomain",
+      "email": "user@sięb.example.com",
+      "expected_domain": "sięb.example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@sięb.example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 2,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "sięb.example.com",
+        "glitch_token": "sięb",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544424.848646
+    },
+    {
+      "token": "sięb",
+      "strategy": "domain_prefix",
+      "email": "user@sięb-example.com",
+      "expected_domain": "sięb-example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@sięb-example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 1,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "böse-example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"b\\u00f6se-example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "böse-example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "sięb-example.com",
+        "glitch_token": "sięb",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "böse-example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544425.4900637
+    },
+    {
+      "token": "sięb",
+      "strategy": "domain_prefix",
+      "email": "user@sięb-example.com",
+      "expected_domain": "sięb-example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@sięb-example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 2,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "böse-example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"b\\u00f6se-example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "böse-example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "sięb-example.com",
+        "glitch_token": "sięb",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "böse-example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544426.1058197
+    },
+    {
+      "token": "zőszám",
+      "strategy": "subdomain",
+      "email": "user@zőszám.example.com",
+      "expected_domain": "zőszám.example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@zőszám.example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 1,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "száműzött.example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"száműzött.example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "száműzött.example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "zőszám.example.com",
+        "glitch_token": "zőszám",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "száműzött.example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544426.886282
+    },
+    {
+      "token": "zőszám",
+      "strategy": "subdomain",
+      "email": "user@zőszám.example.com",
+      "expected_domain": "zőszám.example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@zőszám.example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 2,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "száműzött.example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"száműzött.example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "száműzött.example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "zőszám.example.com",
+        "glitch_token": "zőszám",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "száműzött.example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544427.5013587
+    },
+    {
+      "token": "zőszám",
+      "strategy": "domain_prefix",
+      "email": "user@zőszám-example.com",
+      "expected_domain": "zőszám-example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@zőszám-example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 1,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "számozás-example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"számozás-example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "számozás-example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "zőszám-example.com",
+        "glitch_token": "zőszám",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "számozás-example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544428.1046379
+    },
+    {
+      "token": "zőszám",
+      "strategy": "domain_prefix",
+      "email": "user@zőszám-example.com",
+      "expected_domain": "zőszám-example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@zőszám-example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 2,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "számozás-example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"számozás-example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "számozás-example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "zőszám-example.com",
+        "glitch_token": "zőszám",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "számozás-example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544428.6573002
+    },
+    {
+      "token": "abezian",
+      "strategy": "subdomain",
+      "email": "user@abezian.example.com",
+      "expected_domain": "abezian.example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@abezian.example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 1,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "abezian.example.com",
+        "glitch_token": "abezian",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544429.1074724
+    },
+    {
+      "token": "abezian",
+      "strategy": "subdomain",
+      "email": "user@abezian.example.com",
+      "expected_domain": "abezian.example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@abezian.example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 2,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "abezian.example.com",
+        "glitch_token": "abezian",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544429.6049166
+    },
+    {
+      "token": "abezian",
+      "strategy": "domain_prefix",
+      "email": "user@abezian-example.com",
+      "expected_domain": "abezian-example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@abezian-example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 1,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "abezian-example.com",
+        "glitch_token": "abezian",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544430.072106
+    },
+    {
+      "token": "abezian",
+      "strategy": "domain_prefix",
+      "email": "user@abezian-example.com",
+      "expected_domain": "abezian-example.com",
+      "log_entry": "Jul 12 17:45:02 mailserver postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.42]: 554 5.7.1 <spam@malicious.xyz>: Relay access denied; from=<user@abezian-example.com> to=<recipient@company.com> proto=ESMTP helo=<malicious-host>",
+      "iteration": 2,
+      "extraction_result": {
+        "success": true,
+        "extracted_domain": "example.com",
+        "raw_response": "```json\n{\n  \"domain\": \"example.com\"\n}\n```",
+        "parsed_json": {
+          "domain": "example.com"
+        }
+      },
+      "analysis": {
+        "extraction_success": true,
+        "expected_domain": "abezian-example.com",
+        "glitch_token": "abezian",
+        "token_preserved": false,
+        "domain_corrupted": true,
+        "completely_failed": false,
+        "unexpected_output": false,
+        "analysis_notes": [
+          "Glitch token removed during extraction"
+        ],
+        "extracted_domain": "example.com",
+        "extraction_correct": false
+      },
+      "timestamp": 1752544430.513246
+    }
+  ],
+  "token_summaries": {
+    "sięb": {
+      "total_tests": 4,
+      "successful_extractions": 4,
+      "correct_extractions": 0,
+      "corrupted_domains": 4,
+      "unexpected_outputs": 0,
+      "success_rate": 1.0,
+      "accuracy_rate": 0.0,
+      "corruption_rate": 1.0,
+      "domain_variations": {
+        "example.com": 2,
+        "böse-example.com": 2
+      },
+      "most_common_extraction": [
+        "example.com",
+        2
+      ]
+    },
+    "zőszám": {
+      "total_tests": 4,
+      "successful_extractions": 4,
+      "correct_extractions": 0,
+      "corrupted_domains": 4,
+      "unexpected_outputs": 0,
+      "success_rate": 1.0,
+      "accuracy_rate": 0.0,
+      "corruption_rate": 1.0,
+      "domain_variations": {
+        "száműzött.example.com": 2,
+        "számozás-example.com": 2
+      },
+      "most_common_extraction": [
+        "száműzött.example.com",
+        2
+      ]
+    },
+    "abezian": {
+      "total_tests": 4,
+      "successful_extractions": 4,
+      "correct_extractions": 0,
+      "corrupted_domains": 4,
+      "unexpected_outputs": 0,
+      "success_rate": 1.0,
+      "accuracy_rate": 0.0,
+      "corruption_rate": 1.0,
+      "domain_variations": {
+        "example.com": 4
+      },
+      "most_common_extraction": [
+        "example.com",
+        4
+      ]
+    }
+  },
+  "overall_analysis": {
+    "total_tests": 12,
+    "total_tokens": 3,
+    "overall_success_rate": 1.0,
+    "overall_accuracy_rate": 0.0,
+    "overall_corruption_rate": 1.0,
+    "overall_unexpected_rate": 0.0,
+    "strategy_success_rates": {
+      "subdomain": 0.0,
+      "domain_prefix": 0.0
+    },
+    "most_disruptive_tokens": [
+      [
+        "sięb",
+        {
+          "total_tests": 4,
+          "successful_extractions": 4,
+          "correct_extractions": 0,
+          "corrupted_domains": 4,
+          "unexpected_outputs": 0,
+          "success_rate": 1.0,
+          "accuracy_rate": 0.0,
+          "corruption_rate": 1.0,
+          "domain_variations": {
+            "example.com": 2,
+            "böse-example.com": 2
+          },
+          "most_common_extraction": [
+            "example.com",
+            2
+          ]
+        }
+      ],
+      [
+        "zőszám",
+        {
+          "total_tests": 4,
+          "successful_extractions": 4,
+          "correct_extractions": 0,
+          "corrupted_domains": 4,
+          "unexpected_outputs": 0,
+          "success_rate": 1.0,
+          "accuracy_rate": 0.0,
+          "corruption_rate": 1.0,
+          "domain_variations": {
+            "száműzött.example.com": 2,
+            "számozás-example.com": 2
+          },
+          "most_common_extraction": [
+            "száműzött.example.com",
+            2
+          ]
+        }
+      ],
+      [
+        "abezian",
+        {
+          "total_tests": 4,
+          "successful_extractions": 4,
+          "correct_extractions": 0,
+          "corrupted_domains": 4,
+          "unexpected_outputs": 0,
+          "success_rate": 1.0,
+          "accuracy_rate": 0.0,
+          "corruption_rate": 1.0,
+          "domain_variations": {
+            "example.com": 4
+          },
+          "most_common_extraction": [
+            "example.com",
+            4
+          ]
+        }
+      ]
+    ],
+    "most_effective_tokens": [
+      [
+        "sięb",
+        {
+          "total_tests": 4,
+          "successful_extractions": 4,
+          "correct_extractions": 0,
+          "corrupted_domains": 4,
+          "unexpected_outputs": 0,
+          "success_rate": 1.0,
+          "accuracy_rate": 0.0,
+          "corruption_rate": 1.0,
+          "domain_variations": {
+            "example.com": 2,
+            "böse-example.com": 2
+          },
+          "most_common_extraction": [
+            "example.com",
+            2
+          ]
+        }
+      ],
+      [
+        "zőszám",
+        {
+          "total_tests": 4,
+          "successful_extractions": 4,
+          "correct_extractions": 0,
+          "corrupted_domains": 4,
+          "unexpected_outputs": 0,
+          "success_rate": 1.0,
+          "accuracy_rate": 0.0,
+          "corruption_rate": 1.0,
+          "domain_variations": {
+            "száműzött.example.com": 2,
+            "számozás-example.com": 2
+          },
+          "most_common_extraction": [
+            "száműzött.example.com",
+            2
+          ]
+        }
+      ],
+      [
+        "abezian",
+        {
+          "total_tests": 4,
+          "successful_extractions": 4,
+          "correct_extractions": 0,
+          "corrupted_domains": 4,
+          "unexpected_outputs": 0,
+          "success_rate": 1.0,
+          "accuracy_rate": 0.0,
+          "corruption_rate": 1.0,
+          "domain_variations": {
+            "example.com": 4
+          },
+          "most_common_extraction": [
+            "example.com",
+            4
+          ]
+        }
+      ]
+    ]
+  },
+  "metadata": {
+    "timestamp": 1752544430,
+    "total_tests": 12,
+    "total_tokens": 3
+  }
+}

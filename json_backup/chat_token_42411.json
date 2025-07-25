@@ -1,0 +1,18 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B",
+  "token_id": 42411,
+  "token": "-video",
+  "correct_prob": 3.10558571072761e-05,
+  "top_tokens": [
+    39818,
+    2675,
+    2028,
+    791,
+    128001
+  ],
+  "top_token": "Repeat",
+  "top_token_id": 39818,
+  "top_token_prob": 0.09149765968322754,
+  "model_output": "Repeat this exactly once: -video republice#repeat#video#assistant#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#repeat#user#",
+  "timestamp": 1752288431.5088375
+}

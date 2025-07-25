@@ -1,0 +1,245 @@
+{
+  "model_path": "meta-llama/Llama-3.2-1B-Instruct",
+  "validation_config": {
+    "max_tokens": 50,
+    "device": "cuda",
+    "quant_type": "float16",
+    "sample_size": 20
+  },
+  "results": [
+    {
+      "token_id": 109744,
+      "token": "acaktır",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 109702,
+      "token": " chtě",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115977,
+      "token": " огранич",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115216,
+      "token": "ючись",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115108,
+      "token": " 百度流量",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 57261,
+      "token": " ;;^",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 105046,
+      "token": "larından",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 101056,
+      "token": "џџџџџџџџџџџџџџџџџџџџџџџџџџџџџџџџ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115487,
+      "token": " králov",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 108918,
+      "token": "алася",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 123745,
+      "token": " zahrn",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 127748,
+      "token": "ımlar",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 71390,
+      "token": " PodsDummy",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 126257,
+      "token": "џЭ",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 106535,
+      "token": " uygulam",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 115970,
+      "token": "üyordu",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 107395,
+      "token": " otev",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 87829,
+      "token": " }\r\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 77047,
+      "token": " }\r\n\r\n\r\n\r\n",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    },
+    {
+      "token_id": 124393,
+      "token": "sahuje",
+      "is_glitch": [
+        true,
+        1.0
+      ],
+      "validation_method": "enhanced"
+    }
+  ],
+  "confirmed_glitch_tokens": [
+    "acaktır",
+    " chtě",
+    " огранич",
+    "ючись",
+    " 百度流量",
+    " ;;^",
+    "larından",
+    "џџџџџџџџџџџџџџџџџџџџџџџџџџџџџџџџ",
+    " králov",
+    "алася",
+    " zahrn",
+    "ımlar",
+    " PodsDummy",
+    "џЭ",
+    " uygulam",
+    "üyordu",
+    " otev",
+    " }\r\r\n",
+    " }\r\n\r\n\r\n\r\n",
+    "sahuje"
+  ],
+  "confirmed_glitch_token_ids": [
+    109744,
+    109702,
+    115977,
+    115216,
+    115108,
+    57261,
+    105046,
+    101056,
+    115487,
+    108918,
+    123745,
+    127748,
+    71390,
+    126257,
+    106535,
+    115970,
+    107395,
+    87829,
+    77047,
+    124393
+  ],
+  "false_positives": [],
+  "false_positive_ids": [],
+  "summary": {
+    "total_tested": 20,
+    "confirmed_glitch": 20,
+    "false_positives": 0,
+    "confirmation_rate": 100.0
+  },
+  "log_file": "token_validation_1752515575.jsonl",
+  "timestamp": 1752515581.1563234
+}

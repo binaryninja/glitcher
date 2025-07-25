@@ -1,0 +1,487 @@
+{
+  "function_calling_models": [
+    {
+      "id": "mistral-medium-2505",
+      "name": "mistral-medium-2505",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-medium-latest",
+      "name": "mistral-medium-2505",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-medium",
+      "name": "mistral-medium-2505",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "ministral-3b-2410",
+      "name": "ministral-3b-2410",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "ministral-3b-latest",
+      "name": "ministral-3b-2410",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "ministral-8b-2410",
+      "name": "ministral-8b-2410",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "ministral-8b-latest",
+      "name": "ministral-8b-2410",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "open-mistral-7b",
+      "name": "open-mistral-7b",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-tiny",
+      "name": "open-mistral-7b",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-tiny-2312",
+      "name": "open-mistral-7b",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "open-mistral-nemo",
+      "name": "open-mistral-nemo",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "open-mistral-nemo-2407",
+      "name": "open-mistral-nemo",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-tiny-2407",
+      "name": "open-mistral-nemo",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-tiny-latest",
+      "name": "open-mistral-nemo",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "open-mixtral-8x7b",
+      "name": "open-mixtral-8x7b",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-small",
+      "name": "open-mixtral-8x7b",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-small-2312",
+      "name": "open-mixtral-8x7b",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "open-mixtral-8x22b",
+      "name": "open-mixtral-8x22b",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "open-mixtral-8x22b-2404",
+      "name": "open-mixtral-8x22b",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-small-2409",
+      "name": "mistral-small-2409",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-large-2407",
+      "name": "mistral-large-2407",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-large-2411",
+      "name": "mistral-large-2411",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-large-latest",
+      "name": "mistral-large-2411",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=True vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "pixtral-large-2411",
+      "name": "pixtral-large-2411",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "pixtral-large-latest",
+      "name": "pixtral-large-2411",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-large-pixtral-2411",
+      "name": "pixtral-large-2411",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "codestral-2501",
+      "name": "codestral-2501",
+      "capabilities": [
+        "completion_chat=True completion_fim=True function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "codestral-latest",
+      "name": "codestral-2501",
+      "capabilities": [
+        "completion_chat=True completion_fim=True function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "codestral-2412",
+      "name": "codestral-2501",
+      "capabilities": [
+        "completion_chat=True completion_fim=True function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "codestral-2411-rc5",
+      "name": "codestral-2501",
+      "capabilities": [
+        "completion_chat=True completion_fim=True function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "devstral-small-2505",
+      "name": "devstral-small-2505",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "devstral-small-2507",
+      "name": "devstral-small-2507",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "devstral-small-latest",
+      "name": "devstral-small-2507",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "devstral-medium-2507",
+      "name": "devstral-medium-2507",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "devstral-medium-latest",
+      "name": "devstral-medium-2507",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "pixtral-12b-2409",
+      "name": "pixtral-12b-2409",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "pixtral-12b",
+      "name": "pixtral-12b-2409",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "pixtral-12b-latest",
+      "name": "pixtral-12b-2409",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-small-2501",
+      "name": "mistral-small-2501",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-small-2503",
+      "name": "mistral-small-2503",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-small-2506",
+      "name": "mistral-small-2506",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-small-latest",
+      "name": "mistral-small-2506",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=True classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-saba-2502",
+      "name": "mistral-saba-2502",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "mistral-saba-latest",
+      "name": "mistral-saba-2502",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "magistral-medium-2506",
+      "name": "magistral-medium-2506",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "magistral-medium-latest",
+      "name": "magistral-medium-2506",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "magistral-small-2506",
+      "name": "magistral-small-2506",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "magistral-small-latest",
+      "name": "magistral-small-2506",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "voxtral-mini-2507",
+      "name": "voxtral-mini-2507",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "voxtral-mini-latest",
+      "name": "voxtral-mini-2507",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "voxtral-small-2507",
+      "name": "voxtral-small-2507",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    },
+    {
+      "id": "voxtral-small-latest",
+      "name": "voxtral-small-2507",
+      "capabilities": [
+        "completion_chat=True completion_fim=False function_calling=True fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": true
+    }
+  ],
+  "other_models": [
+    {
+      "id": "mistral-embed",
+      "name": "mistral-embed",
+      "capabilities": [
+        "completion_chat=False completion_fim=False function_calling=False fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": false
+    },
+    {
+      "id": "codestral-embed",
+      "name": "codestral-embed",
+      "capabilities": [
+        "completion_chat=False completion_fim=False function_calling=False fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": false
+    },
+    {
+      "id": "codestral-embed-2505",
+      "name": "codestral-embed",
+      "capabilities": [
+        "completion_chat=False completion_fim=False function_calling=False fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": false
+    },
+    {
+      "id": "mistral-moderation-2411",
+      "name": "mistral-moderation-2411",
+      "capabilities": [
+        "completion_chat=False completion_fim=False function_calling=False fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": false
+    },
+    {
+      "id": "mistral-moderation-latest",
+      "name": "mistral-moderation-2411",
+      "capabilities": [
+        "completion_chat=False completion_fim=False function_calling=False fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": false
+    },
+    {
+      "id": "mistral-ocr-2503",
+      "name": "mistral-ocr-2503",
+      "capabilities": [
+        "completion_chat=False completion_fim=False function_calling=False fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": false
+    },
+    {
+      "id": "mistral-ocr-2505",
+      "name": "mistral-ocr-2505",
+      "capabilities": [
+        "completion_chat=False completion_fim=False function_calling=False fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": false
+    },
+    {
+      "id": "mistral-ocr-latest",
+      "name": "mistral-ocr-2505",
+      "capabilities": [
+        "completion_chat=False completion_fim=False function_calling=False fine_tuning=False vision=False classification=False"
+      ],
+      "supports_function_calling": false
+    }
+  ],
+  "timestamp": 1753124774.7726166
+}
