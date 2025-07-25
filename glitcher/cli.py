@@ -403,6 +403,10 @@ class GlitcherCLI:
             help="Maximum tokens per individual combination (default: 3)"
         )
         genetic_parser.add_argument(
+            "--early-stopping-threshold", type=float, default=0.999,
+            help="Early stopping threshold for probability reduction (0.0-1.0, default: 0.999)"
+        )
+        genetic_parser.add_argument(
             "--output", type=str, default="genetic_results.json",
             help="Output file for results (default: genetic_results.json)"
         )
@@ -422,6 +426,50 @@ class GlitcherCLI:
         genetic_parser.add_argument(
             "--gui", action="store_true",
             help="Show real-time GUI animation of genetic algorithm evolution"
+        )
+        genetic_parser.add_argument(
+            "--ascii-only", action="store_true",
+            help="Filter tokens to only include those with ASCII-only decoded text"
+        )
+        genetic_parser.add_argument(
+            "--adaptive-mutation", action="store_true",
+            help="Use adaptive mutation rate that starts high (0.8) and decreases to low (0.1) over generations"
+        )
+        genetic_parser.add_argument(
+            "--initial-mutation-rate", type=float, default=0.8,
+            help="Initial mutation rate for adaptive mutation (default: 0.8)"
+        )
+        genetic_parser.add_argument(
+            "--final-mutation-rate", type=float, default=0.1,
+            help="Final mutation rate for adaptive mutation (default: 0.1)"
+        )
+        genetic_parser.add_argument(
+            "--baseline-only", action="store_true",
+            help="Only run token impact baseline analysis without genetic algorithm evolution"
+        )
+        genetic_parser.add_argument(
+            "--skip-baseline", action="store_true",
+            help="Skip token impact baseline analysis and go straight to genetic algorithm"
+        )
+        genetic_parser.add_argument(
+            "--baseline-output", type=str, default="token_impact_baseline.json",
+            help="Output file for token impact baseline results (default: token_impact_baseline.json)"
+        )
+        genetic_parser.add_argument(
+            "--baseline-top-n", type=int, default=10,
+            help="Number of top tokens to display in baseline results (default: 10)"
+        )
+        genetic_parser.add_argument(
+            "--baseline-seeding", action="store_true", default=True,
+            help="Use baseline results to intelligently seed initial population (default: enabled)"
+        )
+        genetic_parser.add_argument(
+            "--no-baseline-seeding", action="store_true",
+            help="Disable baseline-guided population seeding, use random initialization only"
+        )
+        genetic_parser.add_argument(
+            "--baseline-seeding-ratio", type=float, default=0.7,
+            help="Fraction of population to seed with baseline guidance (0.0-1.0, default: 0.7)"
         )
 
         return parser
@@ -1163,7 +1211,7 @@ class GlitcherCLI:
                 print("Running batch experiments...")
 
                 # Create batch runner
-                runner = GeneticBatchRunner(self.args.model_path, self.args.token_file)
+                runner = GeneticBatchRunner(self.args.model_path, self.args.token_file, ascii_only=self.args.ascii_only)
 
                 # Set up scenarios (you can customize these)
                 scenarios = [
@@ -1174,7 +1222,8 @@ class GlitcherCLI:
                         'ga_params': {
                             'population_size': self.args.population_size,
                             'max_generations': self.args.generations,
-                            'max_tokens_per_individual': self.args.max_tokens
+                            'max_tokens_per_individual': self.args.max_tokens,
+                            'early_stopping_threshold': self.args.early_stopping_threshold
                         }
                     },
                     {
@@ -1184,7 +1233,8 @@ class GlitcherCLI:
                         'ga_params': {
                             'population_size': self.args.population_size,
                             'max_generations': self.args.generations,
-                            'max_tokens_per_individual': self.args.max_tokens
+                            'max_tokens_per_individual': self.args.max_tokens,
+                            'early_stopping_threshold': self.args.early_stopping_threshold
                         }
                     }
                 ]
@@ -1204,9 +1254,6 @@ class GlitcherCLI:
                 print(runner.generate_report())
 
             else:
-                # Run single experiment
-                print("Running single genetic algorithm experiment...")
-
                 # Create genetic algorithm instance
                 ga = GeneticProbabilityReducer(
                     model_name=self.args.model_path,
@@ -1222,66 +1269,111 @@ class GlitcherCLI:
                 ga.crossover_rate = self.args.crossover_rate
                 ga.elite_size = self.args.elite_size
                 ga.max_tokens_per_individual = self.args.max_tokens
+                ga.early_stopping_threshold = self.args.early_stopping_threshold
+
+                # Configure adaptive mutation
+                ga.adaptive_mutation = self.args.adaptive_mutation
+                ga.initial_mutation_rate = self.args.initial_mutation_rate
+                ga.final_mutation_rate = self.args.final_mutation_rate
+                if self.args.adaptive_mutation:
+                    ga.current_mutation_rate = self.args.initial_mutation_rate
+
+                # Configure baseline seeding
+                if self.args.no_baseline_seeding:
+                    ga.use_baseline_seeding = False
+                else:
+                    ga.use_baseline_seeding = self.args.baseline_seeding
+                ga.baseline_seeding_ratio = max(0.0, min(1.0, self.args.baseline_seeding_ratio))
 
                 # Load model and tokens
                 ga.load_model()
-                ga.load_glitch_tokens(self.args.token_file)
+                ga.load_glitch_tokens(self.args.token_file, ascii_only=self.args.ascii_only)
 
-                # Run evolution
-                final_population = ga.run_evolution()
+                if self.args.baseline_only:
+                    # Only run token impact baseline analysis
+                    print("Running token impact baseline analysis only...")
+                    print(f"Model: {self.args.model_path}")
+                    print(f"Base text: '{self.args.base_text}'")
 
-                # Prepare results
-                results = {
-                    'model_name': self.args.model_path,
-                    'base_text': self.args.base_text,
-                    'target_token_id': ga.target_token_id,
-                    'target_token_text': ga.tokenizer.decode([ga.target_token_id]) if ga.target_token_id else None,
-                    'baseline_probability': ga.baseline_probability,
-                    'ga_parameters': {
-                        'population_size': ga.population_size,
-                        'max_generations': ga.max_generations,
-                        'mutation_rate': ga.mutation_rate,
-                        'crossover_rate': ga.crossover_rate,
-                        'max_tokens_per_individual': ga.max_tokens_per_individual
-                    },
-                    'results': []
-                }
+                    ga.target_token_id, ga.baseline_probability = ga.get_baseline_probability()
+                    ga.baseline_token_impacts()
+                    ga.display_token_impact_results(top_n=self.args.baseline_top_n)
+                    ga.save_token_impact_results(self.args.baseline_output)
 
-                # Add top results
-                for individual in final_population[:10]:  # Top 10 results
-                    token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
-                    results['results'].append({
-                        'tokens': individual.tokens,
-                        'token_texts': token_texts,
-                        'fitness': individual.fitness,
-                        'baseline_prob': individual.baseline_prob,
-                        'modified_prob': individual.modified_prob,
-                        'reduction_percentage': ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
-                    })
+                    print(f"\n✅ Token impact baseline results saved to {self.args.baseline_output}")
+                else:
+                    # Run genetic algorithm evolution
+                    print("Running genetic algorithm evolution...")
+                    print(f"Model: {self.args.model_path}")
+                    print(f"Base text: '{self.args.base_text}'")
+                    print(f"Population size: {self.args.population_size}")
+                    print(f"Generations: {self.args.generations}")
 
-                # Save results
-                with open(self.args.output, 'w', encoding='utf-8') as f:
-                    json.dump(results, f, indent=2, ensure_ascii=False)
+                    if self.args.skip_baseline:
+                        print("Skipping token impact baseline analysis...")
+                        # Temporarily disable baseline in run_evolution by modifying the method
+                        original_baseline_method = ga.baseline_token_impacts
+                        ga.baseline_token_impacts = lambda: None  # No-op function
+                        final_population = ga.run_evolution()
+                        ga.baseline_token_impacts = original_baseline_method  # Restore original
+                    else:
+                        print("Including token impact baseline analysis...")
+                        final_population = ga.run_evolution()
+                        ga.save_token_impact_results(self.args.baseline_output)
+                        print(f"✅ Token impact baseline results saved to {self.args.baseline_output}")
 
-                print(f"\n✅ Results saved to {self.args.output}")
+                    # Prepare results
+                    results = {
+                        'model_name': self.args.model_path,
+                        'base_text': self.args.base_text,
+                        'target_token_id': ga.target_token_id,
+                        'target_token_text': ga.tokenizer.decode([ga.target_token_id]) if ga.target_token_id else None,
+                        'baseline_probability': ga.baseline_probability,
+                        'ga_parameters': {
+                            'population_size': ga.population_size,
+                            'max_generations': ga.max_generations,
+                            'mutation_rate': ga.mutation_rate,
+                            'crossover_rate': ga.crossover_rate,
+                            'max_tokens_per_individual': ga.max_tokens_per_individual
+                        },
+                        'results': []
+                    }
 
-                # Display top results
-                print("\nTop Results:")
-                for i, individual in enumerate(final_population[:5], 1):
-                    token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
-                    reduction_pct = ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
-                    print(f"{i}. Tokens: {individual.tokens} ({token_texts})")
-                    print(f"   Fitness: {individual.fitness:.6f}")
-                    print(f"   Probability reduction: {reduction_pct:.2f}%")
-                    print()
+                    # Add top results
+                    for individual in final_population[:10]:  # Top 10 results
+                        token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
+                        results['results'].append({
+                            'tokens': individual.tokens,
+                            'token_texts': token_texts,
+                            'fitness': individual.fitness,
+                            'baseline_prob': individual.baseline_prob,
+                            'modified_prob': individual.modified_prob,
+                            'reduction_percentage': ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
+                        })
 
-                # Keep GUI alive if it was used
-                if gui_callback:
-                    print("GUI animation is live. Close the window when done viewing.")
-                    try:
-                        gui_callback.keep_alive(duration=None)  # Keep alive until window closed
-                    except KeyboardInterrupt:
-                        print("GUI closed by user.")
+                    # Save results
+                    with open(self.args.output, 'w', encoding='utf-8') as f:
+                        json.dump(results, f, indent=2, ensure_ascii=False)
+
+                    print(f"\n✅ Genetic algorithm results saved to {self.args.output}")
+
+                    # Display top results
+                    print("\nTop Results:")
+                    for i, individual in enumerate(final_population[:5], 1):
+                        token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
+                        reduction_pct = ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
+                        print(f"{i}. Tokens: {individual.tokens} ({token_texts})")
+                        print(f"   Fitness: {individual.fitness:.6f}")
+                        print(f"   Probability reduction: {reduction_pct:.2f}%")
+                        print()
+
+                    # Keep GUI alive if it was used
+                    if gui_callback:
+                        print("GUI animation is live. Close the window when done viewing.")
+                        try:
+                            gui_callback.keep_alive(duration=None)  # Keep alive until window closed
+                        except KeyboardInterrupt:
+                            print("GUI closed by user.")
 
         except Exception as e:
             print(f"ERROR: Error in genetic algorithm: {e}")

@@ -62,6 +62,30 @@ glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" 
 # Genetic algorithm targeting specific token
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --target-token "fox" --generations 50
 
+# Genetic algorithm with early stopping at 99.9% reduction (default)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --generations 500 --early-stopping-threshold 0.999
+
+# Genetic algorithm with early stopping at 100% reduction (perfect reduction)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --generations 1000 --early-stopping-threshold 1.0
+
+# Genetic algorithm with early stopping at 95% reduction (faster completion)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --generations 200 --early-stopping-threshold 0.95
+
+# Genetic algorithm with early stopping and GUI monitoring
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --gui --base-text "The quick brown" --generations 500 --early-stopping-threshold 0.999
+
+# Genetic algorithm with ASCII-only token filtering (excludes Unicode and special characters)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --ascii-only --base-text "The quick brown" --generations 50
+
+# ASCII-only filtering with custom parameters
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --ascii-only --base-text "Hello world" --generations 100 --population-size 50
+
+# ASCII-only filtering with batch experiments
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --ascii-only --batch --token-file glitch_tokens.json --generations 30
+
+# ASCII-only filtering with GUI animation
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --ascii-only --gui --base-text "The quick brown" --generations 50
+
 # Genetic batch experiments across multiple scenarios
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --batch --token-file glitch_tokens.json --generations 30 --population-size 25
 
@@ -76,6 +100,42 @@ glitcher genetic meta-llama/Llama-3.2-1B-Instruct --gui --batch --generations 30
 
 # GUI showing enhanced string visualization with token positioning
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --gui --base-text "Hello world, this is a test of" --generations 40 --population-size 30
+
+# Token Impact Baseline Analysis - Map individual token effects on target probability
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --baseline-only --base-text "The quick brown"
+
+# Token impact baseline with custom parameters
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --baseline-only --base-text "Hello world" --baseline-top-n 20
+
+# Token impact baseline with ASCII-only filtering
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --baseline-only --ascii-only --base-text "The quick brown"
+
+# Token impact baseline with custom output file
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --baseline-only --baseline-output custom_baseline.json
+
+# Genetic algorithm with token impact baseline (default behavior)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --generations 50
+
+# Genetic algorithm without token impact baseline (faster startup)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --skip-baseline --base-text "The quick brown" --generations 50
+
+# Combined: baseline analysis + genetic evolution with custom baseline output
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --baseline-output detailed_baseline.json --generations 50
+
+# Baseline-guided population seeding (default behavior)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --generations 50
+
+# Enhanced baseline seeding with high seeding ratio (90% guided, 10% random)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --baseline-seeding-ratio 0.9 --generations 50
+
+# Conservative baseline seeding (50% guided, 50% random for more diversity)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --baseline-seeding-ratio 0.5 --generations 50
+
+# Disable baseline seeding for pure random initialization
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --no-baseline-seeding --base-text "The quick brown" --generations 50
+
+# Baseline seeding with ASCII filtering and GUI
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --ascii-only --baseline-seeding-ratio 0.8 --gui --generations 50
 
 # Test specific token IDs
 glitcher test meta-llama/Llama-3.2-1B-Instruct --token-ids 89472,127438,85069
@@ -232,7 +292,7 @@ When using standard validation (`--disable-enhanced-validation`):
 - **asr: 50.00%**: Token exhibits glitch behavior in 50% of attempts (e.g., 1/2)
 - **asr: 33.33%**: Token exhibits glitch behavior in 33% of attempts (e.g., 1/3)
 
-## Genetic Algorithm Parameters
+### Genetic Algorithm Parameters
 
 ### Basic Parameters
 - `--base-text`: Base text to test probability reduction on (default: "The quick brown")
@@ -241,14 +301,25 @@ When using standard validation (`--disable-enhanced-validation`):
 - `--population-size`: Population size for genetic algorithm (default: 50)
 - `--generations`: Maximum number of generations (default: 100)
 - `--max-tokens`: Maximum tokens per individual combination (default: 3)
+- `--ascii-only`: Filter tokens to only include those with ASCII-only decoded text
 
 ### Advanced Parameters
 - `--mutation-rate`: Mutation rate (0.0-1.0, default: 0.1)
 - `--crossover-rate`: Crossover rate (0.0-1.0, default: 0.7)
 - `--elite-size`: Elite size for genetic algorithm (default: 5)
+- `--early-stopping-threshold`: Stop evolution when probability reduction reaches threshold (0.0-1.0, default: 0.999)
 - `--batch`: Run batch experiments across multiple scenarios
 - `--output`: Output file for results (default: genetic_results.json)
 - `--gui`: Show real-time GUI animation of genetic algorithm evolution
+
+### Token Impact Baseline Parameters
+- `--baseline-only`: Only run token impact baseline analysis without genetic algorithm evolution
+- `--skip-baseline`: Skip token impact baseline analysis and go straight to genetic algorithm
+- `--baseline-output`: Output file for token impact baseline results (default: token_impact_baseline.json)
+- `--baseline-top-n`: Number of top tokens to display in baseline results (default: 10)
+- `--baseline-seeding`: Use baseline results to intelligently seed initial population (default: enabled)
+- `--no-baseline-seeding`: Disable baseline-guided population seeding, use random initialization only
+- `--baseline-seeding-ratio`: Fraction of population to seed with baseline guidance (0.0-1.0, default: 0.7)
 
 ### GUI Animation Parameters
 - `--gui`: Enable real-time visualization of genetic algorithm evolution
@@ -270,12 +341,134 @@ When using genetic algorithm, results include evolved token combinations:
    Probability reduction: 82.35%
 ```
 
+### Token Impact Baseline Output Format
+When using token impact baseline analysis, results show individual token effectiveness:
+
+```
+🏆 Top 10 Most Effective Tokens:
+  1. Token  12345 'SomeToken                     ' Impact:  0.8564 ( 85.6%) Prob: 0.9876 → 0.1312
+  2. Token  67890 'AnotherToken                  ' Impact:  0.7234 ( 72.3%) Prob: 0.9876 → 0.2642
+  3. Token  11111 'ThirdToken                    ' Impact:  0.6543 ( 65.4%) Prob: 0.9876 → 0.3333
+```
+
 ### Recommended Genetic Algorithm Settings
 - **Quick Exploration**: `--generations 30 --population-size 20` (faster results)
 - **Thorough Search**: `--generations 100 --population-size 50` (better results)
 - **Large Combinations**: `--max-tokens 5 --generations 75` (complex token combinations)
+- **Perfect Reduction Search**: `--generations 1000 --early-stopping-threshold 1.0` (stop at 100% reduction)
+- **Fast Convergence**: `--generations 200 --early-stopping-threshold 0.95` (stop at 95% reduction)
 - **Batch Analysis**: `--batch --generations 50` (multiple scenario testing)
 - **Visual Monitoring**: `--gui --generations 50` (real-time progress visualization)
+- **ASCII-Only Filtering**: `--ascii-only` (exclude Unicode and special characters for cleaner results)
+- **ASCII + Quick**: `--ascii-only --generations 30` (fast ASCII-only exploration)
+- **ASCII + Batch**: `--ascii-only --batch` (comprehensive ASCII-only testing)
+
+## Token Impact Baseline Usage Patterns
+
+### When to Use Baseline-Only Analysis
+- **Token Discovery**: Identify most effective individual tokens before breeding combinations
+- **Research Analysis**: Study token-level effects on model predictions systematically
+- **Performance Optimization**: Skip genetic evolution when only individual impacts are needed
+- **Preprocessing**: Generate baseline data for informed genetic algorithm initialization
+
+### Best Practices for Baseline Analysis
+- **Start with Baseline**: Always run baseline analysis before genetic evolution for insights
+- **ASCII Filtering**: Use `--ascii-only` for cleaner, more interpretable results
+- **Large Token Sets**: Increase `--baseline-top-n` for comprehensive token ranking
+- **Custom Output**: Use `--baseline-output` to preserve baseline data for later analysis
+
+### Integration with Genetic Algorithm
+- **Default Behavior**: Genetic algorithm includes baseline analysis automatically
+- **Skip for Speed**: Use `--skip-baseline` when baseline data already exists
+- **Combined Analysis**: Run both baseline and evolution for complete token impact study
+- **Data Correlation**: Compare individual token impacts with evolved combination performance
+
+### Recommended Baseline Settings
+- **Quick Analysis**: `--baseline-only --baseline-top-n 20` (fast individual token ranking)
+- **Comprehensive Study**: `--baseline-only --baseline-top-n 50 --ascii-only` (thorough analysis)
+- **Research Grade**: `--baseline-only --baseline-output detailed_baseline.json` (full documentation)
+- **Performance Focus**: `--skip-baseline` (when baseline data pre-exists)
+
+### Baseline Output Interpretation
+- **Impact Score**: Absolute probability reduction (higher = more effective)
+- **Reduction Ratio**: Percentage reduction (easier comparison across scenarios)
+- **Rank by Impact**: Ordered effectiveness ranking for token selection
+- **Probability Transformation**: Before/after probabilities showing token effect
+
+## Baseline-Guided Population Seeding
+
+### Overview
+The genetic algorithm now uses token impact baseline results to intelligently seed the initial population, dramatically improving convergence speed and final results quality.
+
+### Seeding Strategies
+The algorithm employs multiple seeding strategies (when `--baseline-seeding` is enabled):
+
+1. **Elite Singles (15% of seeded population)**: Best individual tokens
+2. **Elite Pairs (20% of seeded population)**: Best token pairs
+3. **Elite Combinations (25% of seeded population)**: Best token combinations
+4. **Baseline-Guided Weighted (40% of seeded population)**: Weighted random selection favoring high-impact tokens
+5. **Random Diversity (remaining population)**: Pure random for genetic diversity
+
+### Baseline Seeding Benefits
+- **Faster Convergence**: Algorithm starts with high-quality individuals
+- **Better Final Results**: Superior fitness scores compared to random initialization
+- **Intelligent Exploration**: Focuses search on promising regions of solution space
+- **Maintained Diversity**: Random individuals prevent premature convergence
+
+### Baseline Seeding Parameters Control
+- **Default Behavior**: 70% baseline-guided, 30% random (optimal balance)
+- **High Performance**: Use `--baseline-seeding-ratio 0.9` for maximum guidance
+- **High Diversity**: Use `--baseline-seeding-ratio 0.5` for more exploration
+- **Pure Random**: Use `--no-baseline-seeding` to disable (for comparison studies)
+
+### Seeding Output Example
+```
+✓ Seeding population with 27 top-performing tokens using multiple strategies
+✓ Population seeded with: 5 elite singles, 10 elite pairs, 12 elite combinations, 8 baseline-guided, 15 random individuals (baseline ratio: 70.0%)
+```
+
+### Best Practices for Baseline Seeding
+- **Start with Default**: Use default 70% seeding ratio for most cases
+- **High-Impact Scenarios**: Increase to 80-90% when you have strong baseline signals
+- **Exploration Focus**: Decrease to 50-60% when diversity is more important
+- **ASCII Filtering**: Combine with `--ascii-only` for cleaner seeded populations
+- **Performance Comparison**: Test with `--no-baseline-seeding` to measure improvement
+
+### Recommended Seeding Settings
+- **Optimal Performance**: `--baseline-seeding-ratio 0.8` (80% guided, 20% random)
+- **Balanced Approach**: `--baseline-seeding-ratio 0.7` (default, 70% guided)
+- **Diversity Focus**: `--baseline-seeding-ratio 0.5` (50% guided, 50% random)
+- **Research Comparison**: `--no-baseline-seeding` (pure random baseline)
+
+## ASCII Token Filtering
+
+### Overview
+The `--ascii-only` flag filters glitch tokens to only include those whose decoded text contains exclusively ASCII characters (0-127). This excludes:
+
+- **Unicode Characters**: Non-ASCII characters like ñ, 中, ü, emoji, etc.
+- **Special Tokens**: Model-specific tokens with special encoding
+- **Binary/Control Sequences**: Tokens containing non-printable characters
+
+### Benefits of ASCII Filtering
+- **Cleaner Results**: Focus on tokens with readable, standard text
+- **Reduced Complexity**: Avoid encoding issues and special character complications
+- **Better Compatibility**: ASCII tokens work consistently across different systems
+- **Targeted Analysis**: Concentrate on conventional text manipulation patterns
+
+### ASCII Filtering Output
+When using ASCII filtering, the system provides detailed statistics:
+
+```
+✓ Loading glitch tokens from: glitch_tokens.json
+✓ Loaded 1250 glitch tokens
+✓ ASCII filtering: 1250 -> 892 tokens (358 non-ASCII tokens removed)
+```
+
+### ASCII vs Non-ASCII Examples
+- **ASCII Token**: `"hello"` (ID: 12345) ✓ Included
+- **Unicode Token**: `"café"` (ID: 67890) ✗ Filtered out
+- **Special Token**: `"<|endoftext|>"` (ID: 50256) ✗ Filtered out
+- **Mixed Token**: `"test\x00"` (ID: 11111) ✗ Filtered out (contains control character)
 
 ## GUI Animation Features
 
