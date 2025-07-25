@@ -97,6 +97,13 @@ class GeneticProbabilityReducer:
         self.use_baseline_seeding: bool = True  # Enable baseline-guided population seeding by default
         self.baseline_seeding_ratio: float = 0.7  # Fraction of population to seed with baseline guidance
 
+        # Token count configuration
+        self.use_exact_token_count: bool = True  # Use exact max_tokens_per_individual (True) or variable 1-N (False)
+
+        # Sequence-aware diversity configuration
+        self.use_sequence_aware_diversity: bool = True  # Enable sequence-aware diversity injection
+        self.sequence_diversity_ratio: float = 0.6  # Fraction of diversity injection to use sequence-aware strategies
+
         self.setup_logging()
 
     def setup_logging(self):
@@ -406,8 +413,11 @@ class GeneticProbabilityReducer:
             return -1.0
 
     def create_random_individual(self) -> Individual:
-        """Create a random individual with 1-N tokens (N = max_tokens_per_individual)."""
-        num_tokens = random.randint(1, self.max_tokens_per_individual)
+        """Create a random individual with exact or variable token count based on configuration."""
+        if self.use_exact_token_count:
+            num_tokens = self.max_tokens_per_individual
+        else:
+            num_tokens = random.randint(1, self.max_tokens_per_individual)
         tokens = random.sample(self.glitch_tokens, num_tokens)
         return Individual(tokens=tokens)
 
@@ -421,7 +431,10 @@ class GeneticProbabilityReducer:
         Returns:
             Individual with tokens selected based on impact weights
         """
-        num_tokens = random.randint(1, self.max_tokens_per_individual)
+        if self.use_exact_token_count:
+            num_tokens = self.max_tokens_per_individual
+        else:
+            num_tokens = random.randint(1, self.max_tokens_per_individual)
 
         # Create weighted selection based on impact scores
         # Use exponential decay to favor top tokens while maintaining some diversity
@@ -479,26 +492,36 @@ class GeneticProbabilityReducer:
             return self.create_random_individual()
 
         if strategy == "top_singles":
-            # Use single top-performing token
-            num_tokens = min(1, len(top_tokens))
+            if self.use_exact_token_count:
+                num_tokens = min(self.max_tokens_per_individual, len(top_tokens))
+            else:
+                num_tokens = min(1, len(top_tokens))
             selected_tokens = top_tokens[:num_tokens]
 
         elif strategy == "top_pairs":
-            # Use pairs of top-performing tokens
-            num_tokens = min(2, len(top_tokens))
+            if self.use_exact_token_count:
+                num_tokens = min(self.max_tokens_per_individual, len(top_tokens))
+            else:
+                num_tokens = min(2, len(top_tokens))
             selected_tokens = top_tokens[:num_tokens]
 
         elif strategy == "top_combinations":
-            # Use combinations of 2-4 top tokens
-            max_tokens = min(self.max_tokens_per_individual, len(top_tokens), 4)
-            num_tokens = random.randint(2, max_tokens)
+            if self.use_exact_token_count:
+                num_tokens = min(self.max_tokens_per_individual, len(top_tokens))
+            else:
+                max_tokens = min(self.max_tokens_per_individual, len(top_tokens), 4)
+                num_tokens = random.randint(2, max_tokens)
             selected_tokens = top_tokens[:num_tokens]
 
         else:
-            # Default to random selection from top tokens
-            max_tokens = min(self.max_tokens_per_individual, len(top_tokens))
-            num_tokens = random.randint(1, max_tokens)
-            selected_tokens = random.sample(top_tokens[:10], num_tokens)
+            # Default behavior based on exact count setting
+            if self.use_exact_token_count:
+                num_tokens = min(self.max_tokens_per_individual, len(top_tokens))
+                selected_tokens = top_tokens[:num_tokens] if num_tokens <= len(top_tokens) else random.sample(top_tokens, num_tokens)
+            else:
+                max_tokens = min(self.max_tokens_per_individual, len(top_tokens))
+                num_tokens = random.randint(1, max_tokens)
+                selected_tokens = random.sample(top_tokens[:10], num_tokens)
 
         return Individual(tokens=selected_tokens)
 
@@ -594,62 +617,148 @@ class GeneticProbabilityReducer:
 
     def crossover(self, parent1: Individual, parent2: Individual) -> Tuple[Individual, Individual]:
         """
-        Create offspring through improved crossover with true genetic recombination.
+        Create offspring through improved crossover with exact token count maintenance.
 
         Args:
             parent1: First parent
             parent2: Second parent
 
         Returns:
-            Two offspring individuals
+            Two offspring individuals with exactly max_tokens_per_individual tokens
         """
         if random.random() > self.crossover_rate:
-            # No crossover, return copies of parents
+            # No crossover, return copies of parents (already have exact count)
             return Individual(tokens=parent1.tokens.copy()), Individual(tokens=parent2.tokens.copy())
 
-        # Try different crossover strategies based on parent lengths
-        if len(parent1.tokens) > 1 and len(parent2.tokens) > 1:
-            # Single-point crossover for meaningful recombination
-            cut1 = random.randint(1, len(parent1.tokens))
-            cut2 = random.randint(1, len(parent2.tokens))
+        # Single-point crossover for meaningful recombination
+        cut1 = random.randint(1, len(parent1.tokens))
+        cut2 = random.randint(1, len(parent2.tokens))
 
-            child1_tokens = parent1.tokens[:cut1] + parent2.tokens[cut2:]
-            child2_tokens = parent2.tokens[:cut2] + parent1.tokens[cut1:]
+        child1_tokens = parent1.tokens[:cut1] + parent2.tokens[cut2:]
+        child2_tokens = parent2.tokens[:cut2] + parent1.tokens[cut1:]
 
-            # Trim to max length and remove duplicates within each child
-            child1_tokens = list(dict.fromkeys(child1_tokens))[:self.max_tokens_per_individual]
-            child2_tokens = list(dict.fromkeys(child2_tokens))[:self.max_tokens_per_individual]
+        # Remove duplicates within each child
+        child1_tokens = list(dict.fromkeys(child1_tokens))
+        child2_tokens = list(dict.fromkeys(child2_tokens))
 
-            return Individual(tokens=child1_tokens), Individual(tokens=child2_tokens)
-
-        elif len(parent1.tokens) == 1 or len(parent2.tokens) == 1:
-            # Uniform crossover for single-token parents
-            all_tokens = list(set(parent1.tokens + parent2.tokens))  # Remove duplicates
-
-            if len(all_tokens) <= self.max_tokens_per_individual:
-                # Use all unique tokens
-                child1_tokens = all_tokens.copy()
-                child2_tokens = all_tokens.copy()
-            else:
-                # Random selection ensuring different children
-                child1_tokens = random.sample(all_tokens, self.max_tokens_per_individual)
-                remaining_tokens = [t for t in all_tokens if t not in child1_tokens]
-                if remaining_tokens:
-                    child2_tokens = random.sample(all_tokens, self.max_tokens_per_individual)
-                else:
-                    child2_tokens = child1_tokens.copy()
-
-            return Individual(tokens=child1_tokens), Individual(tokens=child2_tokens)
-
+        # Ensure proper token count based on configuration
+        if self.use_exact_token_count:
+            child1_tokens = self._ensure_exact_token_count(child1_tokens)
+            child2_tokens = self._ensure_exact_token_count(child2_tokens)
         else:
-            # Fallback: combine and sample
-            all_tokens = list(set(parent1.tokens + parent2.tokens))
-            max_len = min(len(all_tokens), self.max_tokens_per_individual)
+            # For variable count, just ensure we don't exceed max
+            child1_tokens = child1_tokens[:self.max_tokens_per_individual]
+            child2_tokens = child2_tokens[:self.max_tokens_per_individual]
 
-            child1_tokens = random.sample(all_tokens, max_len)
-            child2_tokens = random.sample(all_tokens, max_len)
+        return Individual(tokens=child1_tokens), Individual(tokens=child2_tokens)
 
-            return Individual(tokens=child1_tokens), Individual(tokens=child2_tokens)
+    def _ensure_exact_token_count(self, tokens: List[int]) -> List[int]:
+        """
+        Ensure a token list has exactly max_tokens_per_individual tokens.
+
+        Args:
+            tokens: Input token list
+
+        Returns:
+            Token list with exact count
+        """
+        if len(tokens) == self.max_tokens_per_individual:
+            return tokens
+        elif len(tokens) > self.max_tokens_per_individual:
+            # Trim to exact count
+            return tokens[:self.max_tokens_per_individual]
+        else:
+            # Pad to exact count with random tokens
+            result = tokens.copy()
+            available_tokens = [t for t in self.glitch_tokens if t not in result]
+
+            while len(result) < self.max_tokens_per_individual and available_tokens:
+                new_token = random.choice(available_tokens)
+                result.append(new_token)
+                available_tokens.remove(new_token)
+
+            # If we still need more tokens and no unique ones available, allow duplicates
+            while len(result) < self.max_tokens_per_individual:
+                result.append(random.choice(self.glitch_tokens))
+
+            return result
+
+    def create_sequence_variations(self, individual: Individual, num_variations: int = 3) -> List[Individual]:
+        """
+        Create sequence variations of an individual by permuting token order.
+
+        Args:
+            individual: Source individual to create variations from
+            num_variations: Number of sequence variations to generate
+
+        Returns:
+            List of individuals with different token sequences
+        """
+        if not individual.tokens or len(individual.tokens) <= 1:
+            return [Individual(tokens=individual.tokens.copy())]
+
+        import itertools
+        variations = []
+
+        # Generate all possible permutations
+        all_perms = list(itertools.permutations(individual.tokens))
+
+        # If we have fewer permutations than requested, use all
+        if len(all_perms) <= num_variations:
+            for perm in all_perms:
+                variations.append(Individual(tokens=list(perm)))
+        else:
+            # Sample random permutations
+            selected_perms = random.sample(all_perms, num_variations)
+            for perm in selected_perms:
+                variations.append(Individual(tokens=list(perm)))
+
+        return variations
+
+    def create_sequence_aware_individual(self, top_performers: List[Individual]) -> Individual:
+        """
+        Create a new individual by combining and reordering tokens from top performers.
+
+        Args:
+            top_performers: List of high-fitness individuals to sample from
+
+        Returns:
+            Individual with reordered token combination
+        """
+        if not top_performers:
+            return self.create_random_individual()
+
+        # Strategy 1: Take tokens from multiple top performers and reorder
+        if len(top_performers) >= 2 and random.random() < 0.6:
+            # Collect unique tokens from top performers
+            all_tokens = []
+            for performer in top_performers[:3]:  # Use top 3
+                all_tokens.extend(performer.tokens)
+
+            # Remove duplicates while preserving some order preference
+            unique_tokens = []
+            seen = set()
+            for token in all_tokens:
+                if token not in seen:
+                    unique_tokens.append(token)
+                    seen.add(token)
+
+            # Select tokens up to max count
+            if len(unique_tokens) >= self.max_tokens_per_individual:
+                selected_tokens = unique_tokens[:self.max_tokens_per_individual]
+                # Shuffle to create new sequence
+                random.shuffle(selected_tokens)
+            else:
+                selected_tokens = self._ensure_exact_token_count(unique_tokens)
+                random.shuffle(selected_tokens)
+
+            return Individual(tokens=selected_tokens)
+
+        # Strategy 2: Take one top performer and create sequence variation
+        else:
+            source = random.choice(top_performers)
+            variations = self.create_sequence_variations(source, num_variations=1)
+            return variations[0] if variations else self.create_random_individual()
 
     def maintain_diversity(self, population: List[Individual]) -> List[Individual]:
         """
@@ -767,13 +876,29 @@ class GeneticProbabilityReducer:
             if random.random() > effective_rate:  # Each mutation has independent chance
                 continue
 
-            # Choose mutation strategy with different probabilities
-            if len(individual.tokens) == 0:
-                mutation_type = 'add'
-            elif len(individual.tokens) >= self.max_tokens_per_individual:
-                mutation_type = random.choices(['replace', 'remove', 'swap'], weights=[0.6, 0.3, 0.1])[0]
+            # Choose mutation strategy based on exact token count setting
+            if self.use_exact_token_count:
+                # Maintain exact token count - only replace and swap
+                if len(individual.tokens) == 0:
+                    # Should not happen with exact token count, but fallback to adding tokens
+                    mutation_type = 'add'
+                elif len(individual.tokens) < self.max_tokens_per_individual:
+                    # Need to add tokens to reach exact count
+                    mutation_type = 'add'
+                elif len(individual.tokens) > self.max_tokens_per_individual:
+                    # Need to remove tokens to reach exact count
+                    mutation_type = 'remove'
+                else:
+                    # At exact count, only replace, swap, or shuffle to maintain count
+                    mutation_type = random.choices(['replace', 'swap', 'shuffle'], weights=[0.6, 0.2, 0.2])[0]
             else:
-                mutation_type = random.choices(['replace', 'add', 'remove', 'swap'], weights=[0.4, 0.3, 0.2, 0.1])[0]
+                # Variable token count - allow all mutation types
+                if len(individual.tokens) == 0:
+                    mutation_type = 'add'
+                elif len(individual.tokens) >= self.max_tokens_per_individual:
+                    mutation_type = random.choices(['replace', 'remove', 'swap', 'shuffle'], weights=[0.5, 0.2, 0.1, 0.2])[0]
+                else:
+                    mutation_type = random.choices(['replace', 'add', 'remove', 'swap', 'shuffle'], weights=[0.3, 0.2, 0.2, 0.1, 0.2])[0]
 
             if mutation_type == 'replace' and individual.tokens:
                 # Replace random token with emphasis on diversity
@@ -793,17 +918,17 @@ class GeneticProbabilityReducer:
                     individual.tokens[idx] = random.choice(self.glitch_tokens)
 
             elif mutation_type == 'add' and len(individual.tokens) < self.max_tokens_per_individual:
-                # Add random token with duplicate avoidance
+                # Add random token with duplicate avoidance to reach exact count
                 attempts = 0
-                while attempts < 10:
+                while attempts < 10 and len(individual.tokens) < self.max_tokens_per_individual:
                     new_token = random.choice(self.glitch_tokens)
                     if new_token not in individual.tokens:
                         individual.tokens.append(new_token)
                         break
                     attempts += 1
 
-            elif mutation_type == 'remove' and len(individual.tokens) > 1:
-                # Remove random token
+            elif mutation_type == 'remove' and len(individual.tokens) > (1 if not self.use_exact_token_count else self.max_tokens_per_individual):
+                # Remove random token (respect minimum of 1 for variable count)
                 idx = random.randint(0, len(individual.tokens) - 1)
                 individual.tokens.pop(idx)
 
@@ -811,6 +936,10 @@ class GeneticProbabilityReducer:
                 # Swap positions of two tokens (order mutation)
                 idx1, idx2 = random.sample(range(len(individual.tokens)), 2)
                 individual.tokens[idx1], individual.tokens[idx2] = individual.tokens[idx2], individual.tokens[idx1]
+
+            elif mutation_type == 'shuffle' and len(individual.tokens) >= 2:
+                # Shuffle all tokens to explore different sequences
+                random.shuffle(individual.tokens)
 
     def evolve_generation(self, population: List[Individual], generation: int = 0) -> List[Individual]:
         """
@@ -970,69 +1099,92 @@ class GeneticProbabilityReducer:
 
                     num_to_replace = max(2, int(len(population) * injection_rate))
 
-                    # Create diverse new individuals
+                    # Create diverse new individuals with sequence-aware strategies
                     new_individuals = []
 
-                    # Extract tokens from top performers for strategy 2
+                    # Extract top performers for sequence-aware strategies
                     top_performers = sorted([ind for ind in population if ind.fitness > 0],
-                                          key=lambda x: x.fitness, reverse=True)[:3]
+                                          key=lambda x: x.fitness, reverse=True)[:5]
                     proven_tokens = set()
                     for performer in top_performers:
                         proven_tokens.update(performer.tokens)
 
-                    # Get existing token combinations to avoid duplicates
+                    # Get existing token combinations (both sorted and exact sequences)
                     existing_combinations = set()
+                    existing_sequences = set()
                     for ind in population:
                         existing_combinations.add(tuple(sorted(ind.tokens)))
+                        existing_sequences.add(tuple(ind.tokens))
 
-                    for _ in range(num_to_replace):
+                    for i in range(num_to_replace):
                         max_attempts = 20  # Prevent infinite loops
                         attempt = 0
                         new_ind = None
 
                         while attempt < max_attempts:
-                            # Create individuals with different strategies
-                            if len(new_individuals) % 3 == 0:
-                                # Strategy 1: Completely random
-                                candidate = self.create_random_individual()
-                            elif len(new_individuals) % 3 == 1:
-                                # Strategy 2: Single token from proven performers
-                                if proven_tokens:
-                                    # Try different proven tokens until we find a unique one
-                                    available_tokens = [t for t in proven_tokens
-                                                      if tuple(sorted([t])) not in existing_combinations]
-                                    if available_tokens:
-                                        token = random.choice(available_tokens)
-                                        candidate = Individual(tokens=[token])
+                            # Choose strategy based on sequence diversity configuration
+                            if self.use_sequence_aware_diversity and random.random() < self.sequence_diversity_ratio:
+                                # Use sequence-aware strategies
+                                strategy = i % 4  # 4 sequence-aware strategies
+
+                                if strategy == 0:
+                                    # Strategy 1: Sequence variations of top performers
+                                    if top_performers:
+                                        source = random.choice(top_performers[:3])
+                                        variations = self.create_sequence_variations(source, num_variations=3)
+                                        candidate = random.choice(variations)
+                                    else:
+                                        candidate = self.create_random_individual()
+                                elif strategy == 1:
+                                    # Strategy 2: Sequence-aware combination from multiple top performers
+                                    if len(top_performers) >= 2:
+                                        candidate = self.create_sequence_aware_individual(top_performers)
+                                    else:
+                                        candidate = self.create_random_individual()
+                                elif strategy == 2:
+                                    # Strategy 3: Reverse sequence of best performer
+                                    if top_performers:
+                                        best = top_performers[0]
+                                        reversed_tokens = best.tokens.copy()
+                                        reversed_tokens.reverse()
+                                        candidate = Individual(tokens=reversed_tokens)
                                     else:
                                         candidate = self.create_random_individual()
                                 else:
-                                    candidate = self.create_random_individual()
-                            else:
-                                # Strategy 3: Mutated version of current best
-                                if population:
-                                    best_current = max(population, key=lambda x: x.fitness)
-                                    new_tokens = best_current.tokens.copy()
-                                    # Heavy mutation
-                                    for _ in range(random.randint(1, 3)):
-                                        if new_tokens and random.random() < 0.7:
-                                            # Replace random token
-                                            idx = random.randint(0, len(new_tokens) - 1)
-                                            new_tokens[idx] = random.choice(self.glitch_tokens)
-                                        if len(new_tokens) < self.max_tokens_per_individual and random.random() < 0.5:
-                                            # Add token
-                                            new_token = random.choice(self.glitch_tokens)
-                                            if new_token not in new_tokens:
-                                                new_tokens.append(new_token)
-                                    candidate = Individual(tokens=new_tokens)
-                                else:
-                                    candidate = self.create_random_individual()
+                                    # Strategy 4: Heavy mutation with sequence focus
+                                    if population:
+                                        best_current = max(population, key=lambda x: x.fitness)
+                                        new_tokens = best_current.tokens.copy()
 
-                            # Check if this combination is unique
-                            candidate_signature = tuple(sorted(candidate.tokens))
-                            if candidate_signature not in existing_combinations:
+                                        # Apply mutations while maintaining token count
+                                        num_mutations = random.randint(1, min(3, len(new_tokens)))
+                                        for _ in range(num_mutations):
+                                            if random.random() < 0.8:
+                                                # Replace random token
+                                                idx = random.randint(0, len(new_tokens) - 1)
+                                                new_token = random.choice(self.glitch_tokens)
+                                                if new_token not in new_tokens:
+                                                    new_tokens[idx] = new_token
+
+                                        # Always shuffle for sequence diversity
+                                        random.shuffle(new_tokens)
+                                        candidate = Individual(tokens=new_tokens)
+                                    else:
+                                        candidate = self.create_random_individual()
+                            else:
+                                # Use traditional diversity strategies
+                                candidate = self.create_random_individual()
+
+                            # Check if this sequence is unique (prioritize sequence diversity over just token set diversity)
+                            candidate_sequence = tuple(candidate.tokens)
+                            candidate_combination = tuple(sorted(candidate.tokens))
+
+                            # Accept if sequence is unique, or if token combination is unique
+                            if (candidate_sequence not in existing_sequences or
+                                candidate_combination not in existing_combinations):
                                 new_ind = candidate
-                                existing_combinations.add(candidate_signature)
+                                existing_combinations.add(candidate_combination)
+                                existing_sequences.add(candidate_sequence)
                                 break
 
                             attempt += 1
@@ -1434,6 +1586,34 @@ def main():
         default=0.7,
         help="Fraction of population to seed with baseline guidance (0.0-1.0, default: 0.7)"
     )
+    parser.add_argument(
+        "--exact-token-count",
+        action="store_true",
+        default=True,
+        help="Use exact max_tokens count for all individuals (default: enabled)"
+    )
+    parser.add_argument(
+        "--variable-token-count",
+        action="store_true",
+        help="Allow variable token count (1 to max_tokens) for individuals"
+    )
+    parser.add_argument(
+        "--sequence-aware-diversity",
+        action="store_true",
+        default=True,
+        help="Enable sequence-aware diversity injection (default: enabled)"
+    )
+    parser.add_argument(
+        "--no-sequence-diversity",
+        action="store_true",
+        help="Disable sequence-aware diversity injection, use traditional diversity only"
+    )
+    parser.add_argument(
+        "--sequence-diversity-ratio",
+        type=float,
+        default=0.6,
+        help="Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.6)"
+    )
 
     args = parser.parse_args()
 
@@ -1465,6 +1645,19 @@ def main():
     else:
         analyzer.use_baseline_seeding = args.baseline_seeding
     analyzer.baseline_seeding_ratio = max(0.0, min(1.0, args.baseline_seeding_ratio))
+
+    # Set token count behavior
+    if args.variable_token_count:
+        analyzer.use_exact_token_count = False
+    else:
+        analyzer.use_exact_token_count = args.exact_token_count
+
+    # Set sequence-aware diversity behavior
+    if args.no_sequence_diversity:
+        analyzer.use_sequence_aware_diversity = False
+    else:
+        analyzer.use_sequence_aware_diversity = args.sequence_aware_diversity
+    analyzer.sequence_diversity_ratio = max(0.0, min(1.0, args.sequence_diversity_ratio))
 
     try:
         # Load model and tokenizer

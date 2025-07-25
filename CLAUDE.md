@@ -137,6 +137,27 @@ glitcher genetic meta-llama/Llama-3.2-1B-Instruct --no-baseline-seeding --base-t
 # Baseline seeding with ASCII filtering and GUI
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --ascii-only --baseline-seeding-ratio 0.8 --gui --generations 50
 
+# Exact token count mode (default) - all individuals use exactly 4 tokens
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --max-tokens 4 --exact-token-count --generations 50
+
+# Variable token count mode - individuals can have 1-4 tokens
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --max-tokens 4 --variable-token-count --generations 50
+
+# Sequence-aware diversity injection (default) - explores different token orderings
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --generations 50
+
+# High sequence diversity ratio (80% sequence-aware strategies)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --sequence-diversity-ratio 0.8 --generations 50
+
+# Conservative sequence diversity (40% sequence-aware strategies)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --sequence-diversity-ratio 0.4 --generations 50
+
+# Disable sequence-aware diversity for traditional behavior
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --no-sequence-diversity --base-text "The quick brown" --generations 50
+
+# Sequence-aware diversity with exact token count and baseline seeding
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --max-tokens 4 --sequence-diversity-ratio 0.7 --baseline-seeding-ratio 0.8 --generations 50
+
 # Test specific token IDs
 glitcher test meta-llama/Llama-3.2-1B-Instruct --token-ids 89472,127438,85069
 
@@ -320,6 +341,11 @@ When using standard validation (`--disable-enhanced-validation`):
 - `--baseline-seeding`: Use baseline results to intelligently seed initial population (default: enabled)
 - `--no-baseline-seeding`: Disable baseline-guided population seeding, use random initialization only
 - `--baseline-seeding-ratio`: Fraction of population to seed with baseline guidance (0.0-1.0, default: 0.7)
+- `--exact-token-count`: Use exact max_tokens count for all individuals (default: enabled)
+- `--variable-token-count`: Allow variable token count (1 to max_tokens) for individuals
+- `--sequence-aware-diversity`: Enable sequence-aware diversity injection (default: enabled)
+- `--no-sequence-diversity`: Disable sequence-aware diversity injection, use traditional diversity only
+- `--sequence-diversity-ratio`: Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.6)
 
 ### GUI Animation Parameters
 - `--gui`: Enable real-time visualization of genetic algorithm evolution
@@ -439,6 +465,73 @@ The algorithm employs multiple seeding strategies (when `--baseline-seeding` is 
 - **Balanced Approach**: `--baseline-seeding-ratio 0.7` (default, 70% guided)
 - **Diversity Focus**: `--baseline-seeding-ratio 0.5` (50% guided, 50% random)
 - **Research Comparison**: `--no-baseline-seeding` (pure random baseline)
+
+## Token Count Configuration
+
+### Exact vs Variable Token Count
+- **Exact Token Count (default)**: All individuals use exactly `max_tokens` tokens
+- **Variable Token Count**: Individuals can have 1 to `max_tokens` tokens
+
+### When to Use Each Mode
+- **Exact Count**: When you want focused search with specific token combination sizes
+- **Variable Count**: When exploring different combination sizes or comparing token count effects
+
+### Token Count Benefits
+- **Exact Mode**: Faster convergence, focused search space, consistent comparison
+- **Variable Mode**: Broader exploration, discovers optimal combination sizes, traditional GA behavior
+
+### Token Count Examples
+```bash
+# Focus search on exactly 4-token combinations
+glitcher genetic model --max-tokens 4 --exact-token-count
+
+# Explore combinations from 1 to 4 tokens
+glitcher genetic model --max-tokens 4 --variable-token-count
+```
+
+## Sequence-Aware Diversity Injection
+
+### Overview
+The genetic algorithm now includes sequence-aware diversity injection that recognizes token order matters in language models. When stagnation occurs, the algorithm explores different orderings of successful token combinations.
+
+### Sequence-Aware Strategies
+When diversity injection is triggered, the algorithm uses multiple sequence-focused strategies:
+
+1. **Sequence Variations (25%)**: Creates permutations of top-performing token combinations
+2. **Cross-Combination Reordering (25%)**: Combines tokens from multiple top performers and shuffles order
+3. **Reverse Sequences (25%)**: Tests reverse order of best combinations  
+4. **Mutation + Shuffle (25%)**: Applies mutations then shuffles for new sequences
+
+### Sequence Diversity Benefits
+- **Order Exploration**: Systematically tests different token arrangements
+- **Context Sensitivity**: Exploits language model sensitivity to token position
+- **Stagnation Breaking**: Discovers new effective sequences from known good tokens
+- **Preserved Quality**: Maintains high-quality tokens while exploring arrangements
+
+### Sequence Diversity Parameters Control
+- **Default Behavior**: 60% sequence-aware, 40% traditional diversity injection
+- **High Sequence Focus**: Use `--sequence-diversity-ratio 0.8` for maximum sequence exploration
+- **Balanced Approach**: Use `--sequence-diversity-ratio 0.5` for equal sequence/traditional mix
+- **Traditional Only**: Use `--no-sequence-diversity` to disable sequence-aware strategies
+
+### Sequence Diversity Output Example
+```
+⚠️  Population stagnated for 20 generations - aggressive diversity injection!
+💧 MILD stagnation (20gen) - replacing 25% of population
+✅ Diversity injection complete - 12 individuals replaced with sequence-aware strategies, stagnation counter reset
+```
+
+### Best Practices for Sequence Diversity
+- **Start with Default**: Use default 60% sequence ratio for most cases
+- **High-Impact Tokens**: Increase to 70-80% when you have strong token combinations
+- **Order-Sensitive Tasks**: Use higher ratios for tasks where token order is critical
+- **Performance Comparison**: Test with `--no-sequence-diversity` to measure sequence impact
+
+### Recommended Sequence Diversity Settings
+- **Optimal Exploration**: `--sequence-diversity-ratio 0.7` (70% sequence-aware)
+- **Balanced Approach**: `--sequence-diversity-ratio 0.6` (default, 60% sequence-aware)
+- **Conservative Mix**: `--sequence-diversity-ratio 0.4` (40% sequence-aware)
+- **Traditional Baseline**: `--no-sequence-diversity` (pure traditional diversity)
 
 ## ASCII Token Filtering
 

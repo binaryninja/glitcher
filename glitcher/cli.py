@@ -471,6 +471,26 @@ class GlitcherCLI:
             "--baseline-seeding-ratio", type=float, default=0.7,
             help="Fraction of population to seed with baseline guidance (0.0-1.0, default: 0.7)"
         )
+        genetic_parser.add_argument(
+            "--exact-token-count", action="store_true", default=True,
+            help="Use exact max_tokens count for all individuals (default: enabled)"
+        )
+        genetic_parser.add_argument(
+            "--variable-token-count", action="store_true",
+            help="Allow variable token count (1 to max_tokens) for individuals"
+        )
+        genetic_parser.add_argument(
+            "--sequence-aware-diversity", action="store_true", default=True,
+            help="Enable sequence-aware diversity injection (default: enabled)"
+        )
+        genetic_parser.add_argument(
+            "--no-sequence-diversity", action="store_true",
+            help="Disable sequence-aware diversity injection, use traditional diversity only"
+        )
+        genetic_parser.add_argument(
+            "--sequence-diversity-ratio", type=float, default=0.6,
+            help="Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.6)"
+        )
 
         return parser
 
@@ -1284,6 +1304,19 @@ class GlitcherCLI:
                 else:
                     ga.use_baseline_seeding = self.args.baseline_seeding
                 ga.baseline_seeding_ratio = max(0.0, min(1.0, self.args.baseline_seeding_ratio))
+
+                # Configure token count behavior
+                if self.args.variable_token_count:
+                    ga.use_exact_token_count = False
+                else:
+                    ga.use_exact_token_count = self.args.exact_token_count
+
+                # Configure sequence-aware diversity
+                if self.args.no_sequence_diversity:
+                    ga.use_sequence_aware_diversity = False
+                else:
+                    ga.use_sequence_aware_diversity = self.args.sequence_aware_diversity
+                ga.sequence_diversity_ratio = max(0.0, min(1.0, self.args.sequence_diversity_ratio))
 
                 # Load model and tokens
                 ga.load_model()
