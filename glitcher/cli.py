@@ -488,8 +488,16 @@ class GlitcherCLI:
             help="Disable sequence-aware diversity injection, use traditional diversity only"
         )
         genetic_parser.add_argument(
-            "--sequence-diversity-ratio", type=float, default=0.6,
-            help="Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.6)"
+            "--sequence-diversity-ratio", type=float, default=0.3,
+            help="Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.3)"
+        )
+        genetic_parser.add_argument(
+            "--enable-shuffle-mutation", action="store_true",
+            help="Enable shuffle mutation (disabled by default to preserve token combinations)"
+        )
+        genetic_parser.add_argument(
+            "--disable-shuffle-mutation", action="store_true", default=True,
+            help="Disable shuffle mutation to preserve token combinations (default behavior)"
         )
 
         return parser
@@ -1317,6 +1325,9 @@ class GlitcherCLI:
                 else:
                     ga.use_sequence_aware_diversity = self.args.sequence_aware_diversity
                 ga.sequence_diversity_ratio = max(0.0, min(1.0, self.args.sequence_diversity_ratio))
+
+                # Configure shuffle mutation
+                ga.enable_shuffle_mutation = self.args.enable_shuffle_mutation
 
                 # Load model and tokens
                 ga.load_model()

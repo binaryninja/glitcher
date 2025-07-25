@@ -146,11 +146,11 @@ glitcher genetic meta-llama/Llama-3.2-1B-Instruct --max-tokens 4 --variable-toke
 # Sequence-aware diversity injection (default) - explores different token orderings
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --generations 50
 
-# High sequence diversity ratio (80% sequence-aware strategies)
-glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --sequence-diversity-ratio 0.8 --generations 50
+# Moderate sequence diversity (50% sequence-aware strategies)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --sequence-diversity-ratio 0.5 --generations 50
 
-# Conservative sequence diversity (40% sequence-aware strategies)
-glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --sequence-diversity-ratio 0.4 --generations 50
+# High sequence diversity with shuffle mutation enabled
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --base-text "The quick brown" --sequence-diversity-ratio 0.7 --enable-shuffle-mutation --generations 50
 
 # Disable sequence-aware diversity for traditional behavior
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --no-sequence-diversity --base-text "The quick brown" --generations 50
@@ -345,7 +345,9 @@ When using standard validation (`--disable-enhanced-validation`):
 - `--variable-token-count`: Allow variable token count (1 to max_tokens) for individuals
 - `--sequence-aware-diversity`: Enable sequence-aware diversity injection (default: enabled)
 - `--no-sequence-diversity`: Disable sequence-aware diversity injection, use traditional diversity only
-- `--sequence-diversity-ratio`: Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.6)
+- `--sequence-diversity-ratio`: Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.3)
+- `--enable-shuffle-mutation`: Enable shuffle mutation (disabled by default to preserve token combinations)
+- `--disable-shuffle-mutation`: Disable shuffle mutation to preserve token combinations (default behavior)
 
 ### GUI Animation Parameters
 - `--gui`: Enable real-time visualization of genetic algorithm evolution
@@ -509,9 +511,9 @@ When diversity injection is triggered, the algorithm uses multiple sequence-focu
 - **Preserved Quality**: Maintains high-quality tokens while exploring arrangements
 
 ### Sequence Diversity Parameters Control
-- **Default Behavior**: 60% sequence-aware, 40% traditional diversity injection
+- **Default Behavior**: 30% sequence-aware, 70% traditional diversity injection (conservative)
+- **Moderate Sequence Focus**: Use `--sequence-diversity-ratio 0.5` for balanced sequence exploration
 - **High Sequence Focus**: Use `--sequence-diversity-ratio 0.8` for maximum sequence exploration
-- **Balanced Approach**: Use `--sequence-diversity-ratio 0.5` for equal sequence/traditional mix
 - **Traditional Only**: Use `--no-sequence-diversity` to disable sequence-aware strategies
 
 ### Sequence Diversity Output Example
@@ -522,16 +524,19 @@ When diversity injection is triggered, the algorithm uses multiple sequence-focu
 ```
 
 ### Best Practices for Sequence Diversity
-- **Start with Default**: Use default 60% sequence ratio for most cases
-- **High-Impact Tokens**: Increase to 70-80% when you have strong token combinations
+- **Start with Default**: Use default 30% sequence ratio for most cases (preserves normal evolution)
+- **Moderate Exploration**: Increase to 50-60% when you want more sequence exploration
+- **High-Impact Tokens**: Use 70-80% when you have strong token combinations that need reordering
 - **Order-Sensitive Tasks**: Use higher ratios for tasks where token order is critical
 - **Performance Comparison**: Test with `--no-sequence-diversity` to measure sequence impact
+- **Shuffle Control**: Use `--enable-shuffle-mutation` only if you want aggressive sequence exploration
 
 ### Recommended Sequence Diversity Settings
-- **Optimal Exploration**: `--sequence-diversity-ratio 0.7` (70% sequence-aware)
-- **Balanced Approach**: `--sequence-diversity-ratio 0.6` (default, 60% sequence-aware)
-- **Conservative Mix**: `--sequence-diversity-ratio 0.4` (40% sequence-aware)
+- **Conservative Default**: `--sequence-diversity-ratio 0.3` (default, 30% sequence-aware)
+- **Balanced Approach**: `--sequence-diversity-ratio 0.5` (50% sequence-aware)
+- **High Exploration**: `--sequence-diversity-ratio 0.7` (70% sequence-aware)
 - **Traditional Baseline**: `--no-sequence-diversity` (pure traditional diversity)
+- **Aggressive Sequence Search**: `--sequence-diversity-ratio 0.8 --enable-shuffle-mutation`
 
 ## ASCII Token Filtering
 

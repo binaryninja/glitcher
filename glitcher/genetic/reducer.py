@@ -102,7 +102,8 @@ class GeneticProbabilityReducer:
 
         # Sequence-aware diversity configuration
         self.use_sequence_aware_diversity: bool = True  # Enable sequence-aware diversity injection
-        self.sequence_diversity_ratio: float = 0.6  # Fraction of diversity injection to use sequence-aware strategies
+        self.sequence_diversity_ratio: float = 0.3  # Fraction of diversity injection to use sequence-aware strategies
+        self.enable_shuffle_mutation: bool = False  # Enable shuffle mutation (disabled by default to preserve combinations)
 
         self.setup_logging()
 
@@ -890,15 +891,24 @@ class GeneticProbabilityReducer:
                     mutation_type = 'remove'
                 else:
                     # At exact count, only replace, swap, or shuffle to maintain count
-                    mutation_type = random.choices(['replace', 'swap', 'shuffle'], weights=[0.6, 0.2, 0.2])[0]
+                    if self.enable_shuffle_mutation:
+                        mutation_type = random.choices(['replace', 'swap', 'shuffle'], weights=[0.85, 0.1, 0.05])[0]
+                    else:
+                        mutation_type = random.choices(['replace', 'swap'], weights=[0.9, 0.1])[0]
             else:
                 # Variable token count - allow all mutation types
                 if len(individual.tokens) == 0:
                     mutation_type = 'add'
                 elif len(individual.tokens) >= self.max_tokens_per_individual:
-                    mutation_type = random.choices(['replace', 'remove', 'swap', 'shuffle'], weights=[0.5, 0.2, 0.1, 0.2])[0]
+                    if self.enable_shuffle_mutation:
+                        mutation_type = random.choices(['replace', 'remove', 'swap', 'shuffle'], weights=[0.7, 0.2, 0.05, 0.05])[0]
+                    else:
+                        mutation_type = random.choices(['replace', 'remove', 'swap'], weights=[0.75, 0.2, 0.05])[0]
                 else:
-                    mutation_type = random.choices(['replace', 'add', 'remove', 'swap', 'shuffle'], weights=[0.3, 0.2, 0.2, 0.1, 0.2])[0]
+                    if self.enable_shuffle_mutation:
+                        mutation_type = random.choices(['replace', 'add', 'remove', 'swap', 'shuffle'], weights=[0.5, 0.25, 0.15, 0.05, 0.05])[0]
+                    else:
+                        mutation_type = random.choices(['replace', 'add', 'remove', 'swap'], weights=[0.55, 0.25, 0.15, 0.05])[0]
 
             if mutation_type == 'replace' and individual.tokens:
                 # Replace random token with emphasis on diversity
@@ -937,7 +947,7 @@ class GeneticProbabilityReducer:
                 idx1, idx2 = random.sample(range(len(individual.tokens)), 2)
                 individual.tokens[idx1], individual.tokens[idx2] = individual.tokens[idx2], individual.tokens[idx1]
 
-            elif mutation_type == 'shuffle' and len(individual.tokens) >= 2:
+            elif mutation_type == 'shuffle' and len(individual.tokens) >= 2 and self.enable_shuffle_mutation:
                 # Shuffle all tokens to explore different sequences
                 random.shuffle(individual.tokens)
 
@@ -1122,8 +1132,8 @@ class GeneticProbabilityReducer:
                         new_ind = None
 
                         while attempt < max_attempts:
-                            # Choose strategy based on sequence diversity configuration
-                            if self.use_sequence_aware_diversity and random.random() < self.sequence_diversity_ratio:
+                            # Choose strategy based on sequence diversity configuration (only during deep stagnation)
+                            if self.use_sequence_aware_diversity and stagnation_counter >= 50 and random.random() < self.sequence_diversity_ratio:
                                 # Use sequence-aware strategies
                                 strategy = i % 4  # 4 sequence-aware strategies
 
@@ -1611,8 +1621,19 @@ def main():
     parser.add_argument(
         "--sequence-diversity-ratio",
         type=float,
-        default=0.6,
-        help="Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.6)"
+        default=0.3,
+        help="Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.3)"
+    )
+    parser.add_argument(
+        "--enable-shuffle-mutation",
+        action="store_true",
+        help="Enable shuffle mutation (disabled by default to preserve token combinations)"
+    )
+    parser.add_argument(
+        "--disable-shuffle-mutation",
+        action="store_true",
+        default=True,
+        help="Disable shuffle mutation to preserve token combinations (default behavior)"
     )
 
     args = parser.parse_args()
@@ -1658,6 +1679,9 @@ def main():
     else:
         analyzer.use_sequence_aware_diversity = args.sequence_aware_diversity
     analyzer.sequence_diversity_ratio = max(0.0, min(1.0, args.sequence_diversity_ratio))
+
+    # Set shuffle mutation behavior
+    analyzer.enable_shuffle_mutation = args.enable_shuffle_mutation
 
     try:
         # Load model and tokenizer
