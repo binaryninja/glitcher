@@ -236,9 +236,12 @@ def report(results_file, output, open_browser, output_format):
 
 
 @cli.command()
-def demo():
+@click.argument('demo_file', type=click.Path(exists=True))
+def demo(demo_file):
     """
     Run a complete demonstration of domain testing and report generation.
+
+    DEMO_FILE: Path to the domain extraction results JSON file to use for demo.
 
     This demonstrates the full workflow from domain extraction testing
     to comprehensive HTML report generation.
@@ -247,12 +250,8 @@ def demo():
     click.echo("🎬 Glitcher Domain Analysis Demo")
     click.echo("=" * 50)
 
-    # Check for demo data
-    demo_file = "email_llams321_domain_extraction.json"
-    if not Path(demo_file).exists():
-        click.echo(f"❌ Demo data not found: {demo_file}")
-        click.echo("   Please ensure the domain extraction results file is available")
-        return
+    # Demo data provided as argument
+    click.echo(f"📂 Using demo data: {demo_file}")
 
     click.echo("🎯 Demo Workflow:")
     click.echo("   1. Load domain extraction test results")
@@ -377,7 +376,7 @@ if __name__ == '__main__':
     click.echo("  • integration - Show integration examples")
     click.echo()
     click.echo("Run 'python cli_report_demo.py COMMAND --help' for command details")
-    click.echo("Run 'python cli_report_demo.py demo' for full demonstration")
+    click.echo("Run 'python cli_report_demo.py demo <demo_file.json>' for full demonstration")
     click.echo()
 
     cli()
