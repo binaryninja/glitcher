@@ -98,7 +98,24 @@ class GUICallback:
 
     def on_evolution_complete(self, results):
         """Called when evolution completes."""
-        self.gui_controller.root.after(0, lambda: self.gui_controller._on_evolution_complete(results))
+        # Convert list results from run_evolution to expected dictionary format
+        if isinstance(results, list) and len(results) > 0:
+            best_individual = max(results, key=lambda x: x.fitness)
+            formatted_results = {
+                'best_individual': best_individual,
+                'final_population': results,
+                'generations_completed': self.gui_controller.config.generations,
+                'best_fitness': best_individual.fitness
+            }
+        else:
+            formatted_results = {
+                'best_individual': None,
+                'final_population': [],
+                'generations_completed': 0,
+                'best_fitness': 0.0
+            }
+
+        self.gui_controller.root.after(0, lambda: self.gui_controller._on_evolution_complete(formatted_results))
 
 
 @dataclass
@@ -1036,18 +1053,28 @@ class GeneticControllerGUI:
         self.results_text.config(state='normal')
         self.results_text.delete(1.0, tk.END)
 
-        best_individual = results.get('best_individual')
+        # Handle both dictionary and direct results
+        if results is None or (isinstance(results, list) and len(results) == 0):
+            self.results_text.insert(tk.END, "❌ No results available - evolution may have been stopped early.\n")
+            self.results_text.config(state='disabled')
+            return
+
+        # Extract results safely
+        best_individual = results.get('best_individual') if isinstance(results, dict) else None
+        generations_completed = results.get('generations_completed', 0) if isinstance(results, dict) else 0
+        final_population = results.get('final_population', []) if isinstance(results, dict) else []
+
+        self.results_text.insert(tk.END, "🏆 EVOLUTION RESULTS\n")
+        self.results_text.insert(tk.END, "=" * 50 + "\n\n")
+
+        self.results_text.insert(tk.END, f"Configuration:\n")
+        self.results_text.insert(tk.END, f"  Model: {self.config.model_name}\n")
+        self.results_text.insert(tk.END, f"  Base Text: '{self.config.base_text}'\n")
+        self.results_text.insert(tk.END, f"  Target Token: '{self.config.target_token}'\n")
+        self.results_text.insert(tk.END, f"  Wanted Token: '{self.config.wanted_token}'\n")
+        self.results_text.insert(tk.END, f"  Generations: {generations_completed}/{self.config.generations}\n\n")
+
         if best_individual:
-            self.results_text.insert(tk.END, "🏆 EVOLUTION RESULTS\n")
-            self.results_text.insert(tk.END, "=" * 50 + "\n\n")
-
-            self.results_text.insert(tk.END, f"Configuration:\n")
-            self.results_text.insert(tk.END, f"  Model: {self.config.model_name}\n")
-            self.results_text.insert(tk.END, f"  Base Text: '{self.config.base_text}'\n")
-            self.results_text.insert(tk.END, f"  Target Token: '{self.config.target_token}'\n")
-            self.results_text.insert(tk.END, f"  Wanted Token: '{self.config.wanted_token}'\n")
-            self.results_text.insert(tk.END, f"  Generations: {results['generations_completed']}/{self.config.generations}\n\n")
-
             self.results_text.insert(tk.END, f"Best Individual:\n")
             self.results_text.insert(tk.END, f"  Token IDs: {best_individual.tokens}\n")
 
@@ -1055,24 +1082,61 @@ class GeneticControllerGUI:
                 try:
                     token_texts = [self.reducer.tokenizer.decode([token_id]) for token_id in best_individual.tokens]
                     self.results_text.insert(tk.END, f"  Token Texts: {token_texts}\n")
-                except:
-                    pass
+
+                    # Show evolved string construction
+                    evolved_prefix = "".join(token_texts)
+                    full_evolved_string = f"{evolved_prefix}{self.config.base_text}"
+                    self.results_text.insert(tk.END, f"  Evolved String: '{full_evolved_string}'\n")
+                except Exception as e:
+                    self.results_text.insert(tk.END, f"  Token decode error: {e}\n")
 
             self.results_text.insert(tk.END, f"  Fitness Score: {best_individual.fitness:.6f}\n")
-            reduction = best_individual.fitness * 100
-            self.results_text.insert(tk.END, f"  Probability Reduction: {reduction:.2f}%\n")
 
-            baseline_prob = results.get('baseline_probability', 0)
-            if baseline_prob and baseline_prob > 0:
-                try:
-                    final_prob = baseline_prob * (1 - best_individual.fitness)
-                    self.results_text.insert(tk.END, f"  Baseline Probability: {baseline_prob:.6f}\n")
-                    self.results_text.insert(tk.END, f"  Final Probability: {final_prob:.6f}\n")
-                except (TypeError, ValueError) as e:
-                    self.results_text.insert(tk.END, f"  Baseline Probability: {baseline_prob}\n")
+            # Show probability changes if available
+            if hasattr(best_individual, 'target_prob_before') and hasattr(best_individual, 'target_prob_after'):
+                reduction = (best_individual.target_prob_before - best_individual.target_prob_after) / best_individual.target_prob_before * 100 if best_individual.target_prob_before > 0 else 0
+                self.results_text.insert(tk.END, f"  Probability Reduction: {reduction:.2f}%\n")
+                self.results_text.insert(tk.END, f"  Before: {best_individual.target_prob_before:.6f} → After: {best_individual.target_prob_after:.6f}\n")
+            else:
+                reduction = best_individual.fitness * 100
+                self.results_text.insert(tk.END, f"  Probability Reduction: {reduction:.2f}%\n")
+
+            # Show wanted token improvements if available
+            if hasattr(best_individual, 'wanted_prob_before') and hasattr(best_individual, 'wanted_prob_after'):
+                wanted_increase = (best_individual.wanted_prob_after - best_individual.wanted_prob_before) / (1.0 - best_individual.wanted_prob_before) * 100 if best_individual.wanted_prob_before < 1.0 else 0
+                self.results_text.insert(tk.END, f"  Wanted Token Increase: {wanted_increase:.2f}%\n")
+                self.results_text.insert(tk.END, f"  Wanted Before: {best_individual.wanted_prob_before:.6f} → After: {best_individual.wanted_prob_after:.6f}\n")
 
         else:
-            self.results_text.insert(tk.END, "No results available - evolution may have been stopped early.\n")
+            self.results_text.insert(tk.END, "❌ No best individual found\n")
+
+        # Show population statistics
+        if final_population:
+            self.results_text.insert(tk.END, f"\nPopulation Statistics:\n")
+            self.results_text.insert(tk.END, f"  Final Population Size: {len(final_population)}\n")
+            fitnesses = [ind.fitness for ind in final_population if hasattr(ind, 'fitness')]
+            if fitnesses:
+                avg_fitness = sum(fitnesses) / len(fitnesses)
+                max_fitness = max(fitnesses)
+                min_fitness = min(fitnesses)
+                self.results_text.insert(tk.END, f"  Average Fitness: {avg_fitness:.6f}\n")
+                self.results_text.insert(tk.END, f"  Max Fitness: {max_fitness:.6f}\n")
+                self.results_text.insert(tk.END, f"  Min Fitness: {min_fitness:.6f}\n")
+
+        else:
+            self.results_text.insert(tk.END, "❌ No best individual found - evolution may have stopped early.\n")
+
+        # Show baseline probability if available
+        baseline_prob = results.get('baseline_probability', self.baseline_probability)
+        if baseline_prob and baseline_prob > 0:
+            self.results_text.insert(tk.END, f"\nBaseline Information:\n")
+            self.results_text.insert(tk.END, f"  Baseline Probability: {baseline_prob:.6f}\n")
+            if best_individual and hasattr(best_individual, 'fitness'):
+                try:
+                    final_prob = baseline_prob * (1 - best_individual.fitness)
+                    self.results_text.insert(tk.END, f"  Estimated Final Probability: {final_prob:.6f}\n")
+                except (TypeError, ValueError):
+                    pass
 
         self.results_text.config(state='disabled')
 
