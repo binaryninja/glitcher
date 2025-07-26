@@ -17,24 +17,34 @@ import json
 import random
 import argparse
 import logging
+import time
+import hashlib
+from pathlib import Path
 from typing import List, Tuple, Dict, Any, Optional
 from dataclasses import dataclass
-
 
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from tqdm import tqdm
 
 
-
 @dataclass
 class Individual:
     """Represents an individual in the genetic algorithm population."""
     tokens: List[int]  # 1-3 token IDs
-    fitness: float = 0.0  # Probability reduction achieved
-    baseline_prob: float = 0.0  # Original probability
-    modified_prob: float = 0.0  # Probability after token insertion
-    new_top_tokens: List[Tuple[int, float]] = None  # Top 10 tokens after applying evolved combination
+    fitness: float = 0.0  # Combined fitness score
+    baseline_prob: float = 0.0  # Original target probability
+    modified_prob: float = 0.0  # Target probability after token insertion
+    target_reduction: float = 0.0  # Target probability reduction
+    wanted_baseline_prob: float = 0.0  # Original wanted probability
+    wanted_modified_prob: float = 0.0  # Wanted probability after token insertion
+    wanted_increase: float = 0.0  # Wanted probability increase
+    new_top_tokens: Optional[List[Tuple[int, float]]] = None  # Top 10 tokens after applying evolved combination
+    # Response generation for GUI display
+    baseline_response: str = ""  # LLM response to baseline input
+    current_response: str = ""  # LLM response to current evolved input
+    full_input_string: str = ""  # Complete input string sent to model
+    baseline_input_string: str = ""  # Baseline input string sent to model
 
     def __str__(self):
         return f"Individual(tokens={self.tokens}, fitness={self.fitness:.4f})"
@@ -45,14 +55,15 @@ class GeneticProbabilityReducer:
     Genetic algorithm for evolving token combinations that reduce prediction probabilities.
     """
 
-    def __init__(self, model_name: str, base_text: str, target_token: Optional[str] = None, gui_callback=None):
+    def __init__(self, model_name: str, base_text: str, target_token: Optional[str] = None, wanted_token: Optional[str] = None, gui_callback=None):
         """
         Initialize the genetic algorithm.
 
         Args:
             model_name: HuggingFace model identifier
             base_text: Base text to test probability reduction on
-            target_token: Specific token to target (auto-detected if None)
+            target_token: Specific token to target for reduction (auto-detected if None)
+            wanted_token: Specific token to target for increase (optional)
             gui_callback: Optional GUI callback for real-time visualization
 
         Note:
@@ -62,6 +73,7 @@ class GeneticProbabilityReducer:
         self.model_name = model_name
         self.base_text = base_text
         self.target_token = target_token
+        self.wanted_token = wanted_token
         self.gui_callback = gui_callback
 
         # Load model and tokenizer
@@ -69,8 +81,10 @@ class GeneticProbabilityReducer:
         self.model = None
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        # Glitch tokens
+        # Token pools
         self.glitch_tokens: List[int] = []
+        self.ascii_tokens: List[int] = []
+        self.available_tokens: List[int] = []
 
         # GA parameters
         self.population_size = 50
@@ -87,9 +101,11 @@ class GeneticProbabilityReducer:
         self.final_mutation_rate = 0.1   # End low for exploitation
         self.current_mutation_rate = self.initial_mutation_rate
 
-        # Target information
+        # Target and wanted token information
         self.target_token_id: Optional[int] = None
-        self.baseline_probability: float = 0.0
+        self.wanted_token_id: Optional[int] = None
+        self.baseline_target_probability: float = 0.0
+        self.baseline_wanted_probability: float = 0.0
         self.initial_top_tokens: List[Tuple[int, float]] = []  # Store initial top 10 tokens with probabilities
         self.token_impact_map: Dict[int, Dict[str, Any]] = {}  # Map of token_id -> impact metrics
 
@@ -105,81 +121,208 @@ class GeneticProbabilityReducer:
         self.sequence_diversity_ratio: float = 0.3  # Fraction of diversity injection to use sequence-aware strategies
         self.enable_shuffle_mutation: bool = False  # Enable shuffle mutation (disabled by default to preserve combinations)
 
+        # Caching configuration
+        self.cache_dir: Path = Path("cache/comprehensive_search")
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self.use_cache: bool = True  # Enable caching by default
+
         self.setup_logging()
 
     def setup_logging(self):
         """Setup logging configuration."""
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s'
-        )
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
         self.logger = logging.getLogger(__name__)
 
     def load_model(self):
-        """Load the language model and tokenizer."""
+        """Load the language model and tokenizer with chat template support."""
         self.logger.info(f"Loading model: {self.model_name}")
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+
+        # Set up padding token if not available
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
         self.model = AutoModelForCausalLM.from_pretrained(
             self.model_name,
-            torch_dtype=torch.float16,
-            device_map="auto",
-            attn_implementation="eager"  # Avoid SDPA issues
+            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+            device_map="auto" if torch.cuda.is_available() else None
         )
+
+        if not torch.cuda.is_available():
+            self.model = self.model.to(self.device)
+
         self.model.eval()
 
+        # Detect if this is an instruct model and set up chat template
+        self._setup_chat_template()
+
         self.logger.info(f"Model loaded on device: {self.device}")
+        self.logger.info(f"Instruct model: {self.is_instruct_model}")
+        if self.is_instruct_model:
+            self.logger.info(f"Using chat template for proper conversation formatting")
 
-    def load_glitch_tokens(self, token_file: str, ascii_only: bool = False):
-        """
-        Load glitch tokens from JSON file.
+    def _setup_chat_template(self):
+        """Set up chat template and system prompt for instruct models."""
+        # Check if this is an instruct model
+        model_name_lower = self.model_name.lower()
+        self.is_instruct_model = any(keyword in model_name_lower for keyword in
+                                   ['instruct', 'chat', 'assistant', 'conv'])
 
-        Args:
-            token_file: Path to JSON file containing glitch tokens
-            ascii_only: If True, filter to only include tokens with ASCII-only decoded text
-        """
-        self.logger.info(f"Loading glitch tokens from: {token_file}")
+        if self.is_instruct_model:
+            # Create system prompt for continuation task
+            self.system_prompt = (
+                "You are a text completion assistant. Your task is to continue sequences of text. "
+                "When the user provides text, you should predict and output the most likely next word(s) "
+                "that would naturally follow in the sequence. Respond with only the continuation, "
+                "without any additional explanation or formatting."
+            )
+            self.logger.info("Set up instruct model with continuation system prompt")
+        else:
+            self.system_prompt = None
+            self.logger.info("Non-instruct model detected, using direct completion")
+
+    def _format_input_for_model(self, modified_text: str) -> str:
+        """Format input text according to model type (instruct vs base model)."""
+        if not self.is_instruct_model or not hasattr(self.tokenizer, 'chat_template') or self.tokenizer.chat_template is None:
+            # For base models or models without chat templates, use direct text
+            self.logger.debug(f"Using direct text format: '{modified_text}'")
+            return modified_text
+
+        # For instruct models, format as conversation
+        messages = []
+        if self.system_prompt:
+            messages.append({"role": "system", "content": self.system_prompt})
+
+        messages.append({"role": "user", "content": modified_text})
 
         try:
-            with open(token_file, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-
-            if isinstance(data, list):
-                # List of token IDs
-                self.glitch_tokens = data
-            elif isinstance(data, dict):
-                # Dictionary format - extract token IDs
-                if 'classifications' in data:
-                    # Format: {"classifications": [{"token_id": 123, ...}, ...]}
-                    self.glitch_tokens = [t['token_id'] for t in data['classifications'] if 'token_id' in t]
-                elif 'tokens' in data:
-                    self.glitch_tokens = [t['id'] for t in data['tokens'] if 'id' in t]
-                else:
-                    # Assume keys are token IDs
-                    self.glitch_tokens = [int(k) for k in data.keys() if k.isdigit()]
-
-            self.logger.info(f"Loaded {len(self.glitch_tokens)} glitch tokens")
-
-            if not self.glitch_tokens:
-                raise ValueError("No glitch tokens found in file")
-
-            # Filter to ASCII-only tokens if requested
-            if ascii_only:
-                original_count = len(self.glitch_tokens)
-                self.glitch_tokens = self._filter_ascii_tokens(self.glitch_tokens)
-                filtered_count = len(self.glitch_tokens)
-                self.logger.info(f"ASCII filtering: {original_count} -> {filtered_count} tokens "
-                               f"({original_count - filtered_count} non-ASCII tokens removed)")
-
-                if not self.glitch_tokens:
-                    raise ValueError("No ASCII-only glitch tokens found after filtering")
-
+            # Use the model's chat template
+            formatted_input = self.tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
+            self.logger.debug(f"Formatted instruct input: '{formatted_input}'")
+            return formatted_input
         except Exception as e:
-            self.logger.error(f"Error loading glitch tokens: {e}")
-            raise
+            self.logger.warning(f"Failed to apply chat template: {e}, falling back to direct text")
+            return modified_text
+
+    def _get_assistant_start_position(self, formatted_input: str) -> int:
+        """Get the token position where the assistant response should start."""
+        if not self.is_instruct_model:
+            # For base models, we want the position after the input
+            input_tokens = self.tokenizer.encode(formatted_input, add_special_tokens=False)
+            return len(input_tokens)
+
+        # For instruct models, find where assistant response would start
+        # This is right after the generation prompt
+        input_tokens = self.tokenizer.encode(formatted_input, add_special_tokens=False)
+        return len(input_tokens)
+
+    def load_glitch_tokens(self, token_file: Optional[str] = None, ascii_only: bool = False, include_normal_tokens: bool = False, comprehensive_search: bool = False):
+        """
+        Load glitch tokens from JSON file and optionally normal ASCII tokens from vocabulary.
+
+        Args:
+            token_file: Path to JSON file containing glitch tokens (optional)
+            ascii_only: If True, filter to only include tokens with ASCII-only decoded text
+            include_normal_tokens: If True, also include normal ASCII tokens from vocabulary
+            comprehensive_search: If True, load full vocabulary for comprehensive wanted token search
+        """
+        # Initialize token lists
+        self.glitch_tokens = []
+        self.ascii_tokens = []
+
+        # Load glitch tokens if file provided
+        if token_file:
+            self.logger.info(f"Loading glitch tokens from: {token_file}")
+            try:
+                with open(token_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+
+                if isinstance(data, list):
+                    # List of token IDs
+                    self.glitch_tokens = data
+                elif isinstance(data, dict):
+                    # Dictionary format - extract token IDs
+                    if 'classifications' in data:
+                        # Format: {"classifications": [{"token_id": 123, ...}, ...]}
+                        self.glitch_tokens = [t['token_id'] for t in data['classifications'] if 'token_id' in t]
+                    elif 'tokens' in data:
+                        self.glitch_tokens = [t['id'] for t in data['tokens'] if 'id' in t]
+                    else:
+                        # Assume keys are token IDs
+                        self.glitch_tokens = [int(k) for k in data.keys() if k.isdigit()]
+
+                self.logger.info(f"Loaded {len(self.glitch_tokens)} glitch tokens")
+
+            except Exception as e:
+                self.logger.error(f"Error loading glitch tokens: {e}")
+                self.glitch_tokens = []
+
+        # Load normal ASCII tokens from model vocabulary if requested
+        if include_normal_tokens or comprehensive_search:
+            self.ascii_tokens = self._load_ascii_tokens_from_vocab(comprehensive=comprehensive_search)
+            self.logger.info(f"Loaded {len(self.ascii_tokens)} ASCII tokens from model vocabulary")
+
+        # Combine all available tokens
+        all_tokens = list(set(self.glitch_tokens + self.ascii_tokens))
+
+        # Filter to ASCII-only tokens if requested
+        if ascii_only:
+            original_count = len(all_tokens)
+            all_tokens = self._filter_ascii_tokens(all_tokens)
+            filtered_count = len(all_tokens)
+            self.logger.info(f"ASCII filtering: {original_count} -> {filtered_count} tokens "
+                           f"({original_count - filtered_count} non-ASCII tokens removed)")
+
+        self.available_tokens = all_tokens
+
+        if not self.available_tokens:
+            raise ValueError("No tokens available after filtering")
+
+        self.logger.info(f"Total available tokens: {len(self.available_tokens)} "
+                        f"(glitch: {len(self.glitch_tokens)}, normal: {len(self.ascii_tokens)})")
+
+    def _load_ascii_tokens_from_vocab(self, comprehensive: bool = False) -> List[int]:
+        """
+        Load ASCII-only tokens from the model's tokenizer vocabulary.
+
+        Args:
+            comprehensive: If True, scan all tokens. If False, sample for speed.
+
+        Returns:
+            List of token IDs that decode to ASCII-only text
+        """
+        if self.tokenizer is None:
+            raise ValueError("Tokenizer must be loaded first")
+
+        ascii_tokens = []
+        vocab_size = len(self.tokenizer.get_vocab())
+
+        if comprehensive:
+            self.logger.info(f"Comprehensive scan: testing all {vocab_size} tokens in vocabulary...")
+            sample_rate = 1  # Test every token
+        else:
+            self.logger.info(f"Scanning {vocab_size} tokens in vocabulary for ASCII-only tokens...")
+            sample_rate = max(1, vocab_size // 10000)  # Sample at most 10k tokens
+
+        for token_id in range(0, vocab_size, sample_rate):
+            try:
+                # Decode token and check if ASCII-only
+                if self._is_ascii_only([token_id]):
+                    decoded = self.tokenizer.decode([token_id])
+                    # Filter out special tokens and empty/whitespace-only tokens
+                    if (not decoded.startswith('<') and not decoded.startswith('[') and
+                        decoded.strip() and len(decoded.strip()) > 0):
+                        ascii_tokens.append(token_id)
+            except Exception:
+                # Skip tokens that can't be decoded
+                continue
+
+        return ascii_tokens
 
     def _filter_ascii_tokens(self, token_ids: List[int]) -> List[int]:
         """
@@ -189,130 +332,512 @@ class GeneticProbabilityReducer:
             token_ids: List of token IDs to filter
 
         Returns:
-            List of token IDs that decode to ASCII-only text
+            Filtered list of token IDs with ASCII-only decoded text
         """
-        # Load tokenizer if not already loaded
         if self.tokenizer is None:
-            from transformers import AutoTokenizer
-            self.logger.info(f"Loading tokenizer for ASCII filtering: {self.model_name}")
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True)
+            raise ValueError("Tokenizer must be loaded first")
 
         ascii_tokens = []
         for token_id in token_ids:
-            try:
-                # Decode the token
-                decoded_text = self.tokenizer.decode([token_id], skip_special_tokens=False)
-
-                # Check if all characters are ASCII (0-127)
-                if self._is_ascii_only(decoded_text):
-                    ascii_tokens.append(token_id)
-                else:
-                    self.logger.debug(f"Filtered non-ASCII token {token_id}: '{decoded_text}' "
-                                    f"(contains non-ASCII characters)")
-
-            except Exception as e:
-                self.logger.warning(f"Error decoding token {token_id}: {e}")
-                continue
+            if self._is_ascii_only([token_id]):
+                ascii_tokens.append(token_id)
 
         return ascii_tokens
 
-    def _is_ascii_only(self, text: str) -> bool:
+    def _is_ascii_only(self, token_ids: List[int]) -> bool:
         """
-        Check if text contains only ASCII characters (0-127).
+        Check if the decoded text of token IDs contains only ASCII characters.
 
         Args:
-            text: Text to check
+            token_ids: List of token IDs to check
 
         Returns:
-            True if text contains only ASCII characters, False otherwise
+            True if decoded text is ASCII-only, False otherwise
         """
         try:
-            # Attempt to encode as ASCII - will raise UnicodeEncodeError if non-ASCII
-            text.encode('ascii')
-            return True
-        except UnicodeEncodeError:
+            if self.tokenizer is not None:
+                decoded = self.tokenizer.decode(token_ids)
+            else:
+                return False
+            # Check if all characters are ASCII (0-127)
+            return all(ord(char) < 128 for char in decoded)
+        except Exception:
             return False
 
-
-    def get_baseline_probability(self) -> Tuple[int, float]:
+    def get_baseline_probability(self) -> Tuple[Optional[int], float, Optional[int], Optional[float]]:
         """
-        Get baseline probability for the target token.
+        Get baseline probabilities for target and wanted tokens.
 
         Returns:
-            Tuple of (target_token_id, probability)
+            Tuple of (target_token_id, target_probability, wanted_token_id, wanted_probability)
         """
         if self.model is None or self.tokenizer is None:
             raise ValueError("Model and tokenizer must be loaded first")
 
         self.logger.info(f"Getting baseline probability for: {self.base_text}")
 
-        # Tokenize base text
-        inputs = self.tokenizer(self.base_text, return_tensors="pt").to(self.device)
+        # Format input according to model type
+        formatted_input = self._format_input_for_model(self.base_text)
+        self.logger.info(f"Baseline formatted input: '{formatted_input}'")
+
+        # Tokenize formatted input
+        inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.device)
+
+        # Get the position where we want to measure probabilities
+        assistant_start_pos = self._get_assistant_start_position(formatted_input)
 
         # Get model predictions
         with torch.no_grad():
             outputs = self.model(**inputs)
+            # For instruct models, measure at assistant start position (last position)
+            # For base models, measure at the end of input
             logits = outputs.logits[0, -1, :]  # Last position logits
             probs = torch.softmax(logits, dim=-1)
 
         # Capture initial top 10 tokens for comparison
-        top_probs, top_indices = torch.topk(probs, 10)
+        top_probs, top_indices = torch.topk(probs, 100)
         self.initial_top_tokens = [(int(idx.item()), float(prob.item())) for idx, prob in zip(top_indices, top_probs)]
-        self.logger.info(f"Initial top 10 tokens captured: {[(idx, f'{prob:.4f}') for idx, prob in self.initial_top_tokens[:5]]}...")
+        # Log initial top 10 tokens with decoded text for readability
+        initial_tokens_readable = []
+        for idx, prob in self.initial_top_tokens[:100]:
+            token_text = self.tokenizer.decode([idx])
+            initial_tokens_readable.append(f"'{token_text}'")
+        self.logger.info(f"Initial top 10 tokens: {', '.join(initial_tokens_readable)}")
 
+        # Handle target token (for reduction)
         if self.target_token:
             # Use specified target token
             target_tokens = self.tokenizer.encode(self.target_token, add_special_tokens=False)
             if target_tokens:
                 target_id = target_tokens[0]
-                prob = probs[int(target_id)].item()
+                target_prob = probs[int(target_id)].item()
             else:
                 raise ValueError(f"Could not tokenize target: {self.target_token}")
-        else:
-            # Use most likely token
+        elif not self.wanted_token:
+            # Use most likely token only if no wanted token specified
             target_id = int(torch.argmax(probs).item())
-            prob = probs[target_id].item()
+            target_prob = probs[target_id].item()
+        else:
+            # No target when only wanted token is specified
+            target_id = None
+            target_prob = 0.0
 
-        target_text = self.tokenizer.decode([target_id])
-        self.logger.info(f"Baseline: '{self.base_text}' → '{target_text}' (ID: {target_id}, prob: {prob:.4f})")
+        if target_id is not None:
+            if self.tokenizer is None:
+                raise ValueError("Tokenizer must be loaded first")
+            target_text = self.tokenizer.decode([target_id])
+            if self.is_instruct_model:
+                self.logger.info(f"Target baseline (instruct): '{self.base_text}' → '{target_text}' (ID: {target_id}, prob: {target_prob:.4f})")
+            else:
+                self.logger.info(f"Target baseline: '{self.base_text}' → '{target_text}' (ID: {target_id}, prob: {target_prob:.4f})")
 
-        return target_id, prob
+        # Handle wanted token (for increase, optional)
+        wanted_id = None
+        wanted_prob = None
+        if self.wanted_token:
+            wanted_tokens = self.tokenizer.encode(self.wanted_token, add_special_tokens=False)
+            if wanted_tokens:
+                wanted_id = wanted_tokens[0]
+                wanted_prob = probs[int(wanted_id)].item()
+                wanted_text = self.tokenizer.decode([wanted_id])
+                if self.is_instruct_model:
+                    self.logger.info(f"Wanted baseline (instruct): '{self.base_text}' → '{wanted_text}' (ID: {wanted_id}, prob: {wanted_prob:.4f})")
+                else:
+                    self.logger.info(f"Wanted baseline: '{self.base_text}' → '{wanted_text}' (ID: {wanted_id}, prob: {wanted_prob:.4f})")
+            else:
+                raise ValueError(f"Could not tokenize wanted token: {self.wanted_token}")
 
-    def baseline_token_impacts(self) -> Dict[int, Dict[str, Any]]:
+        # Generate baseline response for GUI display
+        self.baseline_response = self._generate_response(self.base_text)
+
+        return target_id, target_prob, wanted_id, wanted_prob
+
+    def _generate_cache_key(self, max_tokens: Optional[int] = None, batch_size: int = 16) -> str:
         """
-        Baseline the individual impact of all glitch tokens on target probability.
+        Generate a unique cache key for comprehensive search results.
+
+        Args:
+            max_tokens: Maximum number of tokens to test
+            batch_size: Batch size used for processing
 
         Returns:
-            Dictionary mapping token_id -> {
-                'token_text': str,
-                'baseline_prob': float,
-                'modified_prob': float,
-                'impact': float,
-                'reduction_ratio': float,
-                'rank_by_impact': int
-            }
+            Unique cache key string
         """
-        if not self.glitch_tokens:
-            raise ValueError("Glitch tokens must be loaded first")
+        # Create a hash based on search parameters
+        cache_data = {
+            'model_name': self.model_name,
+            'base_text': self.base_text,
+            'wanted_token': self.wanted_token,
+            'wanted_token_id': self.wanted_token_id,
+            'baseline_wanted_probability': self.baseline_wanted_probability,
+            'available_tokens_count': len(self.available_tokens),
+            'max_tokens': max_tokens,
+            'batch_size': batch_size,
+            'version': '1.0'  # Increment this if cache format changes
+        }
 
-        if self.target_token_id is None or self.baseline_probability == 0.0:
-            raise ValueError("Baseline probability must be established first")
+        cache_string = json.dumps(cache_data, sort_keys=True)
+        cache_hash = hashlib.md5(cache_string.encode()).hexdigest()
+        return f"comprehensive_search_{cache_hash}.json"
 
-        self.logger.info(f"Baselining individual impact of {len(self.glitch_tokens)} tokens...")
+    def _save_comprehensive_search_cache(self, results: Dict[int, Dict[str, Any]],
+                                       max_tokens: Optional[int] = None,
+                                       batch_size: int = 16) -> None:
+        """
+        Save comprehensive search results to cache.
 
-        impact_results = {}
+        Args:
+            results: Search results to cache
+            max_tokens: Maximum tokens parameter used
+            batch_size: Batch size parameter used
+        """
+        if not self.use_cache:
+            return
 
-        # Test each token individually
-        for token_id in tqdm(self.glitch_tokens, desc="Testing token impacts"):
+        cache_key = self._generate_cache_key(max_tokens, batch_size)
+        cache_file = self.cache_dir / cache_key
+
+        cache_data = {
+            'timestamp': time.time(),
+            'model_name': self.model_name,
+            'base_text': self.base_text,
+            'wanted_token': self.wanted_token,
+            'wanted_token_id': self.wanted_token_id,
+            'baseline_wanted_probability': self.baseline_wanted_probability,
+            'search_parameters': {
+                'max_tokens': max_tokens,
+                'batch_size': batch_size,
+                'available_tokens_count': len(self.available_tokens)
+            },
+            'results': results
+        }
+
+        try:
+            with open(cache_file, 'w', encoding='utf-8') as f:
+                json.dump(cache_data, f, indent=2, ensure_ascii=False)
+            self.logger.info("Comprehensive search results cached to: %s", cache_file)
+        except Exception as e:
+            self.logger.warning("Failed to save cache: %s", e)
+
+    def _load_comprehensive_search_cache(self, max_tokens: Optional[int] = None,
+                                       batch_size: int = 16) -> Optional[Dict[int, Dict[str, Any]]]:
+        """
+        Load comprehensive search results from cache if available and valid.
+
+        Args:
+            max_tokens: Maximum tokens parameter
+            batch_size: Batch size parameter
+
+        Returns:
+            Cached search results or None if not available/invalid
+        """
+        if not self.use_cache:
+            return None
+
+        cache_key = self._generate_cache_key(max_tokens, batch_size)
+        cache_file = self.cache_dir / cache_key
+
+        if not cache_file.exists():
+            return None
+
+        try:
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                cache_data = json.load(f)
+
+            # Validate cache data
+            if (cache_data.get('model_name') != self.model_name or
+                cache_data.get('base_text') != self.base_text or
+                cache_data.get('wanted_token') != self.wanted_token or
+                cache_data.get('wanted_token_id') != self.wanted_token_id or
+                abs(cache_data.get('baseline_wanted_probability', 0) - self.baseline_wanted_probability) > 1e-6):
+                self.logger.info("Cache invalid: parameters changed")
+                return None
+
+            # Check cache age (optional - could add expiration)
+            cache_age = time.time() - cache_data.get('timestamp', 0)
+            cache_age_hours = cache_age / 3600
+
+            # Convert string keys back to integers
+            results = {}
+            for token_id_str, metrics in cache_data['results'].items():
+                results[int(token_id_str)] = metrics
+
+            self.logger.info("Loaded comprehensive search results from cache (%d tokens, %.1f hours old)",
+                           len(results), cache_age_hours)
+            return results
+
+        except Exception as e:
+            self.logger.warning("Failed to load cache: %s", e)
+            return None
+
+    def comprehensive_wanted_token_search(self, max_tokens: Optional[int] = None, batch_size: int = 16) -> Dict[int, Dict[str, Any]]:
+        """
+        Perform comprehensive search through all available tokens to find best ones for wanted token increase.
+        Uses optimized batching and early stopping for efficiency. Results are cached for faster subsequent runs.
+
+        Args:
+            max_tokens: Maximum number of tokens to test (None = test all available)
+            batch_size: Number of tokens to process in each batch for efficiency
+
+        Returns:
+            Dictionary mapping token_id to impact metrics, sorted by wanted token impact
+        """
+        if self.wanted_token_id is None:
+            raise ValueError("Wanted token must be specified for comprehensive search")
+
+        if not self.available_tokens:
+            raise ValueError("No tokens available for comprehensive search")
+
+        if self.tokenizer is None or self.model is None:
+            raise ValueError("Model and tokenizer must be loaded first")
+
+        # Check cache first
+        cached_results = self._load_comprehensive_search_cache(max_tokens, batch_size)
+        if cached_results is not None:
+            wanted_token_text = "unknown"
+            if self.tokenizer and self.wanted_token_id is not None:
+                wanted_token_text = self.tokenizer.decode([self.wanted_token_id])
+            self.logger.info("Using cached comprehensive search results")
+
+            # Update available tokens with cached results
+            top_tokens = list(cached_results.items())[:50]
+            high_impact_tokens = [token_id for token_id, metrics in top_tokens if metrics.get('wanted_impact', 0) > 0]
+            if high_impact_tokens:
+                remaining_tokens = [t for t in self.available_tokens if t not in high_impact_tokens]
+                self.available_tokens = high_impact_tokens + remaining_tokens
+                self.logger.info("Reordered available tokens using cached results: %d high-impact tokens prioritized", len(high_impact_tokens))
+
+            return cached_results
+
+        # Use all available tokens if max_tokens not specified
+        test_tokens = self.available_tokens
+        if max_tokens is not None:
+            test_tokens = self.available_tokens[:max_tokens]
+
+        wanted_token_text = "unknown"
+        if self.tokenizer and self.wanted_token_id is not None:
+            wanted_token_text = self.tokenizer.decode([self.wanted_token_id])
+
+        self.logger.info("Comprehensive wanted token search: testing %d tokens", len(test_tokens))
+        self.logger.info("Target wanted token: %s", wanted_token_text)
+        self.logger.info("Using batch processing with batch_size=%d", batch_size)
+
+        token_impacts = {}
+        best_impact = 0.0
+        best_tokens = []
+        excellent_tokens = []  # Tokens with >90% impact
+
+        # Progress tracking
+        total_tokens = len(test_tokens)
+        processed = 0
+
+        # Process tokens in batches for efficiency
+        for batch_start in range(0, total_tokens, batch_size):
+            batch_end = min(batch_start + batch_size, total_tokens)
+            batch_tokens = test_tokens[batch_start:batch_end]
+
             try:
-                # Decode token text
+                # Process batch
+                batch_results = self._process_token_batch_for_wanted(batch_tokens)
+
+                # Allow GUI updates every batch to maintain responsiveness
+                if self.gui_callback and batch_start % (batch_size * 5) == 0:  # Update every 5 batches
+                    try:
+                        import matplotlib.pyplot as plt
+                        if hasattr(plt, 'get_fignums') and plt.get_fignums():
+                            plt.pause(0.001)
+                    except Exception:
+                        pass
+
+                # Update results and tracking
+                for token_id, metrics in batch_results.items():
+                    token_impacts[token_id] = metrics
+                    wanted_impact = metrics['wanted_impact']
+
+                    # Track best tokens
+                    if wanted_impact > best_impact:
+                        best_impact = wanted_impact
+                        best_tokens = [(token_id, metrics['token_text'], wanted_impact, metrics['wanted_prob_after'])]
+                    elif wanted_impact == best_impact and len(best_tokens) < 5:
+                        best_tokens.append((token_id, metrics['token_text'], wanted_impact, metrics['wanted_prob_after']))
+
+                    # Track excellent tokens (>90% normalized impact)
+                    if metrics['wanted_normalized'] > 0.9:
+                        excellent_tokens.append((token_id, metrics['token_text'], wanted_impact))
+
+                processed += len(batch_tokens)
+
+                # Enhanced progress logging every 500 tokens
+                if processed % 500 == 0 or batch_end == total_tokens:
+                    progress_pct = (processed / total_tokens) * 100
+                    self.logger.info("Progress: %d/%d (%.1f%%) | Best impact: %.6f | Excellent tokens found: %d",
+                                   processed, total_tokens, progress_pct, best_impact, len(excellent_tokens))
+
+                    # Update GUI during comprehensive search to prevent freezing
+                    if self.gui_callback:
+                        try:
+                            # Create progress update data for GUI
+                            progress_data = {
+                                'phase': 'comprehensive_search',
+                                'progress_pct': progress_pct,
+                                'tokens_processed': processed,
+                                'total_tokens': total_tokens,
+                                'best_impact': best_impact,
+                                'excellent_tokens': len(excellent_tokens)
+                            }
+                            # Update GUI with progress information
+                            if hasattr(self.gui_callback, 'animator') and hasattr(self.gui_callback.animator, 'update_comprehensive_search_progress'):
+                                self.gui_callback.animator.update_comprehensive_search_progress(progress_data)
+                            else:
+                                # Fallback to basic matplotlib update
+                                import matplotlib.pyplot as plt
+                                if hasattr(plt, 'get_fignums') and plt.get_fignums():
+                                    plt.pause(0.001)
+                        except Exception:
+                            pass  # Ignore GUI update errors
+
+                # Early stopping if we have many excellent tokens
+                if len(excellent_tokens) >= 50:
+                    self.logger.info("Early stopping: found %d excellent tokens (>90%% impact)", len(excellent_tokens))
+                    break
+
+            except Exception as e:
+                self.logger.warning(f"Error processing batch {batch_start}-{batch_end}: {e}")
+                continue
+
+        # Sort by wanted impact (descending)
+        sorted_impacts = dict(sorted(token_impacts.items(), key=lambda x: x[1]['wanted_impact'], reverse=True))
+
+        # Enhanced results logging
+        top_tokens = list(sorted_impacts.items())[:20]  # Show top 20
+        wanted_token_text = self.tokenizer.decode([self.wanted_token_id]) if self.tokenizer and self.wanted_token_id is not None else "unknown"
+        self.logger.info("Top 20 tokens for wanted '%s':", wanted_token_text)
+        for i, (token_id, metrics) in enumerate(top_tokens, 1):
+            impact_indicator = "[EXCELLENT]" if metrics['wanted_normalized'] > 0.9 else "[GOOD]" if metrics['wanted_normalized'] > 0.5 else ""
+            self.logger.info("  %2d. Token %6d '%-20s' Impact: %8.6f (%.1f%%) Prob: %.4f -> %.4f %s",
+                           i, token_id, metrics['token_text'], metrics['wanted_impact'],
+                           metrics['wanted_normalized']*100, metrics['wanted_prob_before'],
+                           metrics['wanted_prob_after'], impact_indicator)
+
+        # Update available tokens to prioritize high-impact tokens more aggressively
+        high_impact_tokens = [token_id for token_id, metrics in top_tokens[:50] if metrics['wanted_impact'] > 0]  # Top 50 positive impact
+        if high_impact_tokens:
+            # Put high-impact tokens at the beginning of available_tokens
+            remaining_tokens = [t for t in self.available_tokens if t not in high_impact_tokens]
+            self.available_tokens = high_impact_tokens + remaining_tokens
+            self.logger.info("Reordered available tokens: %d high-impact tokens prioritized (top 50 positive)", len(high_impact_tokens))
+
+        # Summary statistics
+        positive_impacts = [m['wanted_impact'] for m in token_impacts.values() if m['wanted_impact'] > 0]
+        if positive_impacts:
+            avg_positive_impact = sum(positive_impacts) / len(positive_impacts)
+            self.logger.info("Search summary: %d positive tokens found | Average positive impact: %.6f | Best impact: %.6f",
+                           len(positive_impacts), avg_positive_impact, best_impact)
+        else:
+            self.logger.info("Search summary: No positive impact tokens found from %d tested tokens", len(token_impacts))
+
+        # Save results to cache
+        self._save_comprehensive_search_cache(sorted_impacts, max_tokens, batch_size)
+
+        return sorted_impacts
+
+    def _process_token_batch_for_wanted(self, token_batch: List[int]) -> Dict[int, Dict[str, Any]]:
+        """
+        Process a batch of tokens for wanted token impact analysis.
+
+        Args:
+            token_batch: List of token IDs to process
+
+        Returns:
+            Dictionary mapping token_id to impact metrics
+        """
+        batch_results = {}
+
+        for token_id in token_batch:
+            try:
+                # Test individual token impact on wanted token
+                if self.tokenizer is None:
+                    continue
                 token_text = self.tokenizer.decode([token_id])
 
-                # Create modified text with single token at beginning
-                user_string = f"({token_text}): "
-                modified_text = user_string + self.base_text
+                # Try multiple positioning strategies for better coverage
+                test_positions = [
+                    f"{token_text} {self.base_text}",  # Prefix
+                    f"{self.base_text} {token_text}",  # Suffix
+                    f"{token_text}: {self.base_text}",  # Colon separator
+                ]
 
-                # Get probability with this token
+                best_impact = -float('inf')
+                best_prob = self.baseline_wanted_probability
+
+                # Test different positions and keep the best result
+                for modified_text in test_positions:
+                    inputs = self.tokenizer(modified_text, return_tensors="pt").to(self.device)
+
+                    with torch.no_grad():
+                        if self.model is None:
+                            continue
+                        outputs = self.model(**inputs)
+                        logits = outputs.logits[0, -1, :]
+                        probs = torch.softmax(logits, dim=-1)
+
+                    wanted_modified_prob = probs[self.wanted_token_id].item()
+                    wanted_impact = wanted_modified_prob - self.baseline_wanted_probability
+
+                    if wanted_impact > best_impact:
+                        best_impact = wanted_impact
+                        best_prob = wanted_modified_prob
+
+                # Calculate normalized impact (how much closer to 1.0 we get)
+                if self.baseline_wanted_probability < 1.0:
+                    wanted_normalized = best_impact / (1.0 - self.baseline_wanted_probability)
+                else:
+                    wanted_normalized = 0.0
+
+                batch_results[token_id] = {
+                    'token_text': token_text,
+                    'wanted_impact': best_impact,
+                    'wanted_normalized': wanted_normalized,
+                    'wanted_prob_before': self.baseline_wanted_probability,
+                    'wanted_prob_after': best_prob,
+                }
+
+            except Exception as e:
+                # Skip problematic tokens but don't stop the batch
+                continue
+
+        return batch_results
+
+    def baseline_token_impacts(self, max_tokens: int = 500) -> Dict[int, Dict[str, Any]]:
+        """
+        Calculate baseline impact of individual tokens on target probability.
+
+        Args:
+            max_tokens: Maximum number of tokens to test
+
+        Returns:
+            Dictionary mapping token_id to impact metrics
+        """
+        if not self.available_tokens:
+            raise ValueError("No tokens available for baseline analysis")
+
+        if self.tokenizer is None:
+            raise ValueError("Tokenizer must be loaded first")
+
+        if self.model is None:
+            raise ValueError("Model must be loaded first")
+
+        self.logger.info(f"Computing baseline token impacts for {min(len(self.available_tokens), max_tokens)} tokens...")
+
+        token_impacts = {}
+        test_tokens = self.available_tokens[:max_tokens]
+
+        for token_id in tqdm(test_tokens, desc="Baseline analysis"):
+            try:
+                # Test individual token impact
+                token_text = self.tokenizer.decode([token_id])
+                modified_text = f"({token_text}): {self.base_text}"
+
                 inputs = self.tokenizer(modified_text, return_tensors="pt").to(self.device)
 
                 with torch.no_grad():
@@ -320,90 +845,187 @@ class GeneticProbabilityReducer:
                     logits = outputs.logits[0, -1, :]
                     probs = torch.softmax(logits, dim=-1)
 
-                modified_prob = probs[self.target_token_id].item()
-                impact = self.baseline_probability - modified_prob
-                reduction_ratio = impact / self.baseline_probability if self.baseline_probability > 0 else 0.0
+                target_modified_prob = 0.0
+                target_impact = 0.0
+                if self.target_token_id is not None:
+                    target_modified_prob = probs[self.target_token_id].item()
+                    target_impact = self.baseline_target_probability - target_modified_prob
 
-                impact_results[token_id] = {
+                wanted_modified_prob = 0.0
+                wanted_impact = 0.0
+                if self.wanted_token_id is not None:
+                    wanted_modified_prob = probs[self.wanted_token_id].item()
+                    wanted_impact = wanted_modified_prob - self.baseline_wanted_probability
+
+                # Calculate combined impact score
+                target_normalized = target_impact / self.baseline_target_probability if self.target_token_id is not None and self.baseline_target_probability > 0 else 0
+                wanted_normalized = wanted_impact / (1.0 - self.baseline_wanted_probability) if self.wanted_token_id is not None and self.baseline_wanted_probability < 1.0 else 0
+
+                if self.target_token_id is None and self.wanted_token_id is not None:
+                    # Only wanted token specified - focus purely on wanted impact
+                    combined_impact = wanted_normalized
+                elif self.wanted_token_id is not None and self.target_token_id is not None:
+                    # Both tokens specified - equal weight
+                    combined_impact = 0.5 * target_normalized + 0.5 * wanted_normalized
+                else:
+                    # Only target specified
+                    combined_impact = target_normalized
+
+                token_impacts[token_id] = {
                     'token_text': token_text,
-                    'baseline_prob': self.baseline_probability,
-                    'modified_prob': modified_prob,
-                    'impact': impact,
-                    'reduction_ratio': reduction_ratio,
-                    'rank_by_impact': 0  # Will be filled after sorting
+                    'target_impact': target_impact,
+                    'target_normalized': target_normalized,
+                    'wanted_impact': wanted_impact,
+                    'wanted_normalized': wanted_normalized,
+                    'combined_impact': combined_impact,
+                    'target_prob_before': self.baseline_target_probability,
+                    'target_prob_after': target_modified_prob,
+                    'wanted_prob_before': self.baseline_wanted_probability,
+                    'wanted_prob_after': wanted_modified_prob
                 }
 
             except Exception as e:
                 self.logger.warning(f"Error testing token {token_id}: {e}")
-                impact_results[token_id] = {
-                    'token_text': self.tokenizer.decode([token_id]) if token_id < len(self.tokenizer) else f"<UNK:{token_id}>",
-                    'baseline_prob': self.baseline_probability,
-                    'modified_prob': self.baseline_probability,
-                    'impact': 0.0,
-                    'reduction_ratio': 0.0,
-                    'rank_by_impact': len(self.glitch_tokens)
-                }
+                continue
 
-        # Sort by impact and assign ranks
-        sorted_by_impact = sorted(impact_results.items(), key=lambda x: x[1]['impact'], reverse=True)
-        for rank, (token_id, data) in enumerate(sorted_by_impact, 1):
-            impact_results[token_id]['rank_by_impact'] = rank
+        # Sort by combined impact
+        sorted_impacts = dict(sorted(token_impacts.items(), key=lambda x: x[1]['combined_impact'], reverse=True))
+        self.token_impact_map = sorted_impacts
 
-        # Store results
-        self.token_impact_map = impact_results
+        self.logger.info(f"Baseline analysis complete. Top token impact: {list(sorted_impacts.values())[0]['combined_impact']:.4f}")
+        return sorted_impacts
 
-        # Log top performers
-        self.logger.info("Top 10 individual token impacts:")
-        for i, (token_id, data) in enumerate(sorted_by_impact[:10]):
-            self.logger.info(f"  {i+1:2d}. Token {token_id:6d} '{data['token_text'][:20]}' "
-                           f"-> Impact: {data['impact']:.4f} ({data['reduction_ratio']:.1%})")
+    def _generate_response(self, input_text: str, max_new_tokens: int = 50) -> str:
+        """
+        Generate a text response from the model given input text.
 
-        # Log statistics
-        positive_impacts = [d['impact'] for d in impact_results.values() if d['impact'] > 0]
-        if positive_impacts:
-            avg_positive_impact = sum(positive_impacts) / len(positive_impacts)
-            max_impact = max(positive_impacts)
-            self.logger.info(f"Impact statistics: {len(positive_impacts)}/{len(self.glitch_tokens)} tokens "
-                           f"have positive impact (avg: {avg_positive_impact:.4f}, max: {max_impact:.4f})")
+        Args:
+            input_text: The input text to generate from
+            max_new_tokens: Maximum number of new tokens to generate
 
-        return self.token_impact_map
+        Returns:
+            Generated response text
+        """
+        try:
+            if self.tokenizer is None or self.model is None:
+                return ""
+
+            # Format input according to model type
+            formatted_input = self._format_input_for_model(input_text)
+            inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.device)
+
+            with torch.no_grad():
+                # Generate response
+                outputs = self.model.generate(
+                    **inputs,
+                    max_new_tokens=max_new_tokens,
+                    do_sample=True,
+                    temperature=0.7,
+                    pad_token_id=self.tokenizer.eos_token_id
+                )
+
+                # Decode only the new tokens (response part)
+                input_length = inputs.input_ids.shape[1]
+                response_tokens = outputs[0][input_length:]
+                response = self.tokenizer.decode(response_tokens, skip_special_tokens=True)
+
+                return response.strip()
+
+        except Exception as e:
+            self.logger.warning(f"Error generating response for input '{input_text[:50]}...': {e}")
+            return ""
 
     def evaluate_fitness(self, individual: Individual) -> float:
         """
-        Evaluate fitness of an individual (probability reduction).
+        Evaluate fitness of an individual (multi-objective: reduce target, increase wanted).
 
         Args:
             individual: Individual to evaluate
 
         Returns:
-            Fitness score (probability reduction)
+            Fitness score combining target reduction and wanted increase
         """
+        # Generate baseline response if not already done
+        if not hasattr(self, 'baseline_response'):
+            self.baseline_response = self._generate_response(self.base_text)
+
         # Create modified text with tokens at beginning
+        if self.tokenizer is None:
+            raise ValueError("Tokenizer must be loaded first")
         token_texts = [self.tokenizer.decode([tid]) for tid in individual.tokens]
         joined_tokens = "".join(token_texts)
-        user_string = f"({joined_tokens}): "
-        modified_text=user_string + self.base_text
 
+        # For instruct models, include the glitch tokens in the user message
+        # For base models, use the original format
+        if self.is_instruct_model:
+            modified_text = f"{joined_tokens} {self.base_text}".strip()
+        else:
+            modified_text = f"({joined_tokens}): {self.base_text}"
 
         try:
-            inputs = self.tokenizer(modified_text, return_tensors="pt").to(self.device)
+            if self.tokenizer is None or self.model is None:
+                raise ValueError("Model and tokenizer must be loaded first")
+
+            # Format input according to model type
+            formatted_input = self._format_input_for_model(modified_text)
+            self.logger.debug(f"Fitness evaluation input: '{formatted_input}'")
+            inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.device)
 
             with torch.no_grad():
                 outputs = self.model(**inputs)
+                # Measure probabilities at the assistant response position
                 logits = outputs.logits[0, -1, :]
                 probs = torch.softmax(logits, dim=-1)
 
-            modified_prob = probs[self.target_token_id].item()
+            # Get target token probability (if target token is specified)
+            target_modified_prob = 0.0
+            target_reduction = 0.0
+            if self.target_token_id is not None:
+                target_modified_prob = probs[self.target_token_id].item()
+                target_reduction = self.baseline_target_probability - target_modified_prob
+
+            # Get wanted token probability (if specified)
+            wanted_modified_prob = 0.0
+            wanted_increase = 0.0
+            if self.wanted_token_id is not None:
+                wanted_modified_prob = probs[self.wanted_token_id].item()
+                wanted_increase = wanted_modified_prob - self.baseline_wanted_probability
 
             # Capture new top 10 tokens after applying evolved combination
             top_probs, top_indices = torch.topk(probs, 10)
             individual.new_top_tokens = [(int(idx.item()), float(prob.item())) for idx, prob in zip(top_indices, top_probs)]
 
-            # Fitness is probability reduction
-            fitness = self.baseline_probability - modified_prob
+            # Calculate normalized fitness scores
+            target_fitness = target_reduction / self.baseline_target_probability if self.baseline_target_probability > 0 else 0
 
-            individual.baseline_prob = self.baseline_probability
-            individual.modified_prob = modified_prob
+            wanted_fitness = 0.0
+            if self.wanted_token_id is not None and self.baseline_wanted_probability < 1.0:
+                wanted_fitness = wanted_increase / (1.0 - self.baseline_wanted_probability)  # Normalize by potential increase
+
+            # Calculate combined fitness based on what tokens are specified
+            if self.target_token_id is None and self.wanted_token_id is not None:
+                # Only wanted token specified - focus purely on maximizing wanted probability
+                fitness = wanted_fitness
+            elif self.wanted_token_id is not None and self.target_token_id is not None:
+                # Both tokens specified - equal weight to both objectives
+                fitness = 0.5 * target_fitness + 0.5 * wanted_fitness
+            else:
+                # Only target specified - focus on reduction
+                fitness = target_fitness
+
+            # Generate responses for GUI display
+            individual.baseline_response = getattr(self, 'baseline_response', '')
+            individual.current_response = self._generate_response(modified_text)
+            individual.full_input_string = formatted_input
+            individual.baseline_input_string = self._format_input_for_model(self.base_text)
+
+            # Store metrics for display
+            individual.baseline_prob = self.baseline_target_probability
+            individual.modified_prob = target_modified_prob
+            individual.target_reduction = target_reduction
+            individual.wanted_baseline_prob = self.baseline_wanted_probability
+            individual.wanted_modified_prob = wanted_modified_prob
+            individual.wanted_increase = wanted_increase
             individual.fitness = fitness
 
             return fitness
@@ -414,586 +1036,437 @@ class GeneticProbabilityReducer:
             return -1.0
 
     def create_random_individual(self) -> Individual:
-        """Create a random individual with exact or variable token count based on configuration."""
+        """Create a random individual with random token combination."""
         if self.use_exact_token_count:
             num_tokens = self.max_tokens_per_individual
         else:
             num_tokens = random.randint(1, self.max_tokens_per_individual)
-        tokens = random.sample(self.glitch_tokens, num_tokens)
+
+        if len(self.available_tokens) < num_tokens:
+            tokens = self.available_tokens.copy()
+        else:
+            tokens = random.sample(self.available_tokens, num_tokens)
         return Individual(tokens=tokens)
 
-    def create_baseline_guided_individual(self, top_tokens: List[int]) -> Individual:
+    def create_baseline_guided_individual(self) -> Individual:
         """
-        Create an individual guided by baseline impact results.
-
-        Args:
-            top_tokens: List of token IDs sorted by impact (best first)
-
-        Returns:
-            Individual with tokens selected based on impact weights
+        Create an individual guided by baseline token impact analysis.
+        Uses weighted selection favoring high-impact tokens.
         """
+        if not self.token_impact_map:
+            return self.create_random_individual()
+
         if self.use_exact_token_count:
             num_tokens = self.max_tokens_per_individual
         else:
             num_tokens = random.randint(1, self.max_tokens_per_individual)
 
-        # Create weighted selection based on impact scores
-        # Use exponential decay to favor top tokens while maintaining some diversity
-        weights = []
-        available_tokens = top_tokens[:min(len(top_tokens), 50)]  # Use top 50 to maintain diversity
+        # Get tokens sorted by impact
+        impact_tokens = list(self.token_impact_map.keys())
+        impacts = [self.token_impact_map[tid]['combined_impact'] for tid in impact_tokens]
 
-        for i, token_id in enumerate(available_tokens):
-            # Exponential decay weight: higher impact = higher weight
-            weight = max(0.1, 1.0 * (0.9 ** i))  # Decay factor of 0.9
-            weights.append(weight)
+        # Create weights (higher impact = higher probability)
+        min_impact = min(impacts) if impacts else 0
+        weights = [max(0.01, impact - min_impact + 0.1) for impact in impacts]
 
-        # Select tokens using weighted random sampling without replacement
+        # Weighted selection without replacement
         selected_tokens = []
-        temp_tokens = available_tokens.copy()
-        temp_weights = weights.copy()
+        available_tokens = impact_tokens.copy()
+        available_weights = weights.copy()
 
         for _ in range(num_tokens):
-            if not temp_tokens:
+            if not available_tokens:
                 break
 
             # Weighted random selection
-            total_weight = sum(temp_weights)
-            if total_weight == 0:
-                break
-
-            r = random.uniform(0, total_weight)
-            cumulative = 0
-            selected_idx = 0
-
-            for i, weight in enumerate(temp_weights):
-                cumulative += weight
-                if r <= cumulative:
-                    selected_idx = i
-                    break
-
-            # Add selected token and remove from available pool
-            selected_tokens.append(temp_tokens[selected_idx])
-            temp_tokens.pop(selected_idx)
-            temp_weights.pop(selected_idx)
+            selected_idx = random.choices(range(len(available_tokens)), weights=available_weights)[0]
+            selected_tokens.append(available_tokens.pop(selected_idx))
+            available_weights.pop(selected_idx)
 
         return Individual(tokens=selected_tokens)
 
-    def create_elite_seeded_individual(self, top_tokens: List[int], strategy: str = "top_singles") -> Individual:
+    def create_elite_seeded_individual(self, strategy: str = "singles") -> Individual:
         """
-        Create an individual using elite seeding strategies based on top baseline performers.
+        Create an individual seeded with elite combinations from baseline analysis.
 
         Args:
-            top_tokens: List of token IDs sorted by impact (best first)
-            strategy: Seeding strategy ("top_singles", "top_pairs", "top_combinations")
-
-        Returns:
-            Individual with elite token combinations
+            strategy: Seeding strategy ("singles", "pairs", "combinations")
         """
-        if not top_tokens:
+        if not self.token_impact_map:
             return self.create_random_individual()
 
-        if strategy == "top_singles":
-            if self.use_exact_token_count:
-                num_tokens = min(self.max_tokens_per_individual, len(top_tokens))
-            else:
-                num_tokens = min(1, len(top_tokens))
-            selected_tokens = top_tokens[:num_tokens]
+        top_tokens = list(self.token_impact_map.keys())[:20]  # Top 20 tokens
 
-        elif strategy == "top_pairs":
+        if strategy == "singles":
+            # Best individual tokens
             if self.use_exact_token_count:
-                num_tokens = min(self.max_tokens_per_individual, len(top_tokens))
+                num_tokens = self.max_tokens_per_individual
             else:
-                num_tokens = min(2, len(top_tokens))
-            selected_tokens = top_tokens[:num_tokens]
+                num_tokens = random.randint(1, self.max_tokens_per_individual)
+            tokens = top_tokens[:num_tokens]
 
-        elif strategy == "top_combinations":
+        elif strategy == "pairs":
+            # Best token pairs
+            num_pairs = min(self.max_tokens_per_individual // 2, len(top_tokens) // 2)
+            tokens = []
+            for i in range(num_pairs):
+                tokens.extend(top_tokens[i*2:(i+1)*2])
+
+        elif strategy == "combinations":
+            # Random combinations of top tokens
             if self.use_exact_token_count:
-                num_tokens = min(self.max_tokens_per_individual, len(top_tokens))
+                num_tokens = self.max_tokens_per_individual
             else:
-                max_tokens = min(self.max_tokens_per_individual, len(top_tokens), 4)
-                num_tokens = random.randint(2, max_tokens)
-            selected_tokens = top_tokens[:num_tokens]
+                num_tokens = random.randint(1, self.max_tokens_per_individual)
+            tokens = random.sample(top_tokens[:min(len(top_tokens), num_tokens * 3)], num_tokens)
 
         else:
-            # Default behavior based on exact count setting
-            if self.use_exact_token_count:
-                num_tokens = min(self.max_tokens_per_individual, len(top_tokens))
-                selected_tokens = top_tokens[:num_tokens] if num_tokens <= len(top_tokens) else random.sample(top_tokens, num_tokens)
-            else:
-                max_tokens = min(self.max_tokens_per_individual, len(top_tokens))
-                num_tokens = random.randint(1, max_tokens)
-                selected_tokens = random.sample(top_tokens[:10], num_tokens)
+            return self.create_random_individual()
 
-        return Individual(tokens=selected_tokens)
+        return Individual(tokens=tokens)
 
     def create_initial_population(self) -> List[Individual]:
-        """Create initial population using multiple baseline-guided seeding strategies."""
+        """Create initial population with baseline-guided seeding."""
         population = []
+        seeded_count = 0
 
-        # If we have baseline results and seeding is enabled, use them for intelligent seeding
-        if self.token_impact_map and self.use_baseline_seeding:
-            # Get top performing tokens sorted by impact
-            sorted_tokens = sorted(
-                self.token_impact_map.items(),
-                key=lambda x: x[1]['impact'],
-                reverse=True
-            )
+        if self.use_baseline_seeding and self.token_impact_map:
+            # Calculate seeded population size
+            seeded_size = int(self.population_size * self.baseline_seeding_ratio)
 
-            # Extract top tokens with positive impact
-            top_tokens = [token_id for token_id, data in sorted_tokens if data['impact'] > 0]
+            # Create seeded individuals using multiple strategies
+            elite_singles = max(1, seeded_size // 5)
+            elite_pairs = max(1, seeded_size // 5)
+            elite_combinations = max(1, seeded_size // 4)
+            baseline_guided = seeded_size - elite_singles - elite_pairs - elite_combinations
 
-            if top_tokens:
-                self.logger.info(f"Seeding population with {len(top_tokens)} top-performing tokens using multiple strategies")
+            # Elite singles (best individual tokens)
+            for _ in range(elite_singles):
+                population.append(self.create_elite_seeded_individual("singles"))
+                seeded_count += 1
 
-                # Calculate seeding distribution based on baseline_seeding_ratio
-                baseline_population_size = int(self.population_size * self.baseline_seeding_ratio)
+            # Elite pairs (best token pairs)
+            for _ in range(elite_pairs):
+                population.append(self.create_elite_seeded_individual("pairs"))
+                seeded_count += 1
 
-                # Strategy 1: Elite singles (~15% of baseline population) - Best individual tokens
-                elite_singles_count = max(1, int(baseline_population_size * 0.15))
-                for i in range(min(elite_singles_count, len(top_tokens))):
-                    individual = self.create_elite_seeded_individual(top_tokens, "top_singles")
-                    population.append(individual)
+            # Elite combinations (best token combinations)
+            for _ in range(elite_combinations):
+                population.append(self.create_elite_seeded_individual("combinations"))
+                seeded_count += 1
 
-                # Strategy 2: Elite pairs (~20% of baseline population) - Best token pairs
-                elite_pairs_count = max(1, int(baseline_population_size * 0.20))
-                for i in range(elite_pairs_count):
-                    individual = self.create_elite_seeded_individual(top_tokens, "top_pairs")
-                    population.append(individual)
+            # Baseline-guided weighted selection
+            for _ in range(baseline_guided):
+                population.append(self.create_baseline_guided_individual())
+                seeded_count += 1
 
-                # Strategy 3: Elite combinations (~25% of baseline population) - Best token combinations
-                elite_combinations_count = max(1, int(baseline_population_size * 0.25))
-                for i in range(elite_combinations_count):
-                    individual = self.create_elite_seeded_individual(top_tokens, "top_combinations")
-                    population.append(individual)
+            self.logger.info(f"✓ Population seeded with {seeded_count} individuals using baseline guidance")
 
-                # Strategy 4: Baseline-guided weighted selection (remaining baseline population)
-                current_baseline_count = elite_singles_count + elite_pairs_count + elite_combinations_count
-                remaining_baseline_count = baseline_population_size - current_baseline_count
-                for i in range(max(0, remaining_baseline_count)):
-                    individual = self.create_baseline_guided_individual(top_tokens)
-                    population.append(individual)
+        # Fill remaining population with random individuals
+        random_count = self.population_size - len(population)
+        for _ in range(random_count):
+            population.append(self.create_random_individual())
 
-                # Strategy 5: Random individuals for diversity (remaining population)
-                current_count = len(population)
-                random_count = self.population_size - current_count
-                for _ in range(random_count):
-                    individual = self.create_random_individual()
-                    population.append(individual)
-
-                self.logger.info(f"Population seeded with: {elite_singles_count} elite singles, "
-                               f"{elite_pairs_count} elite pairs, {elite_combinations_count} elite combinations, "
-                               f"{remaining_baseline_count} baseline-guided, {random_count} random individuals "
-                               f"(baseline ratio: {self.baseline_seeding_ratio:.1%})")
-            else:
-                # No positive impact tokens, fall back to random
-                self.logger.warning("No positive impact tokens found, using random initialization")
-                for _ in range(self.population_size):
-                    individual = self.create_random_individual()
-                    population.append(individual)
-        else:
-            # No baseline data or seeding disabled, use random initialization
-            if not self.use_baseline_seeding:
-                self.logger.info("Baseline seeding disabled, using random initialization")
-            else:
-                self.logger.info("No baseline data available, using random initialization")
-            for _ in range(self.population_size):
-                individual = self.create_random_individual()
-                population.append(individual)
+        self.logger.info(f"✓ Created initial population: {seeded_count} seeded + {random_count} random = {len(population)} total")
 
         return population
 
-    def tournament_selection(self, population: List[Individual], tournament_size: int = 2) -> Individual:
-        """
-        Tournament selection for choosing parents.
-
-        Args:
-            population: Current population
-            tournament_size: Number of individuals in tournament
-
-        Returns:
-            Selected individual
-        """
-        tournament = random.sample(population, tournament_size)
+    def tournament_selection(self, population: List[Individual], tournament_size: int = 3) -> Individual:
+        """Select individual using tournament selection."""
+        tournament = random.sample(population, min(tournament_size, len(population)))
         return max(tournament, key=lambda x: x.fitness)
 
     def crossover(self, parent1: Individual, parent2: Individual) -> Tuple[Individual, Individual]:
         """
-        Create offspring through improved crossover with exact token count maintenance.
+        Create offspring through crossover.
 
         Args:
             parent1: First parent
             parent2: Second parent
 
         Returns:
-            Two offspring individuals with exactly max_tokens_per_individual tokens
+            Tuple of two offspring
         """
         if random.random() > self.crossover_rate:
-            # No crossover, return copies of parents (already have exact count)
             return Individual(tokens=parent1.tokens.copy()), Individual(tokens=parent2.tokens.copy())
 
-        # Single-point crossover for meaningful recombination
-        cut1 = random.randint(1, len(parent1.tokens))
-        cut2 = random.randint(1, len(parent2.tokens))
+        # Combine unique tokens from both parents
+        combined_tokens = list(set(parent1.tokens + parent2.tokens))
 
-        child1_tokens = parent1.tokens[:cut1] + parent2.tokens[cut2:]
-        child2_tokens = parent2.tokens[:cut2] + parent1.tokens[cut1:]
+        if len(combined_tokens) < 2:
+            return Individual(tokens=parent1.tokens.copy()), Individual(tokens=parent2.tokens.copy())
 
-        # Remove duplicates within each child
-        child1_tokens = list(dict.fromkeys(child1_tokens))
-        child2_tokens = list(dict.fromkeys(child2_tokens))
-
-        # Ensure proper token count based on configuration
+        # Create two offspring with different token combinations
         if self.use_exact_token_count:
-            child1_tokens = self._ensure_exact_token_count(child1_tokens)
-            child2_tokens = self._ensure_exact_token_count(child2_tokens)
+            target_size = self.max_tokens_per_individual
         else:
-            # For variable count, just ensure we don't exceed max
-            child1_tokens = child1_tokens[:self.max_tokens_per_individual]
-            child2_tokens = child2_tokens[:self.max_tokens_per_individual]
+            target_size = random.randint(1, self.max_tokens_per_individual)
 
-        return Individual(tokens=child1_tokens), Individual(tokens=child2_tokens)
+        # Ensure we have enough tokens
+        if len(combined_tokens) >= target_size:
+            child1_tokens = random.sample(combined_tokens, target_size)
+        else:
+            child1_tokens = combined_tokens.copy()
 
-    def _ensure_exact_token_count(self, tokens: List[int]) -> List[int]:
+        if len(combined_tokens) >= target_size:
+            child2_tokens = random.sample(combined_tokens, target_size)
+        else:
+            child2_tokens = combined_tokens.copy()
+
+        child1 = Individual(tokens=child1_tokens)
+        child2 = Individual(tokens=child2_tokens)
+
+        # Ensure exact token count if required
+        if self.use_exact_token_count:
+            child1 = self._ensure_exact_token_count(child1)
+            child2 = self._ensure_exact_token_count(child2)
+
+        return child1, child2
+
+    def _ensure_exact_token_count(self, individual: Individual) -> Individual:
         """
-        Ensure a token list has exactly max_tokens_per_individual tokens.
+        Ensure individual has exactly max_tokens_per_individual tokens.
 
         Args:
-            tokens: Input token list
+            individual: Individual to adjust
 
         Returns:
-            Token list with exact count
+            Individual with exact token count
         """
-        if len(tokens) == self.max_tokens_per_individual:
-            return tokens
-        elif len(tokens) > self.max_tokens_per_individual:
-            # Trim to exact count
-            return tokens[:self.max_tokens_per_individual]
+        current_count = len(individual.tokens)
+        target_count = self.max_tokens_per_individual
+
+        if current_count == target_count:
+            return individual
+
+        if current_count < target_count:
+            # Add random tokens
+            needed = target_count - current_count
+            available = [t for t in self.available_tokens if t not in individual.tokens]
+            if len(available) >= needed:
+                additional = random.sample(available, needed)
+                individual.tokens.extend(additional)
         else:
-            # Pad to exact count with random tokens
-            result = tokens.copy()
-            available_tokens = [t for t in self.glitch_tokens if t not in result]
+            # Remove random tokens
+            individual.tokens = random.sample(individual.tokens, target_count)
 
-            while len(result) < self.max_tokens_per_individual and available_tokens:
-                new_token = random.choice(available_tokens)
-                result.append(new_token)
-                available_tokens.remove(new_token)
+        return individual
 
-            # If we still need more tokens and no unique ones available, allow duplicates
-            while len(result) < self.max_tokens_per_individual:
-                result.append(random.choice(self.glitch_tokens))
-
-            return result
-
-    def create_sequence_variations(self, individual: Individual, num_variations: int = 3) -> List[Individual]:
+    def create_sequence_variations(self, top_individuals: List[Individual]) -> List[Individual]:
         """
-        Create sequence variations of an individual by permuting token order.
+        Create sequence variations of top-performing individuals.
 
         Args:
-            individual: Source individual to create variations from
-            num_variations: Number of sequence variations to generate
+            top_individuals: List of best performing individuals
 
         Returns:
-            List of individuals with different token sequences
+            List of sequence-varied individuals
         """
-        if not individual.tokens or len(individual.tokens) <= 1:
-            return [Individual(tokens=individual.tokens.copy())]
-
-        import itertools
         variations = []
 
-        # Generate all possible permutations
-        all_perms = list(itertools.permutations(individual.tokens))
+        for individual in top_individuals[:5]:  # Use top 5
+            tokens = individual.tokens.copy()
 
-        # If we have fewer permutations than requested, use all
-        if len(all_perms) <= num_variations:
-            for perm in all_perms:
-                variations.append(Individual(tokens=list(perm)))
-        else:
-            # Sample random permutations
-            selected_perms = random.sample(all_perms, num_variations)
-            for perm in selected_perms:
-                variations.append(Individual(tokens=list(perm)))
+            # Create permutations
+            if len(tokens) > 1:
+                # Reverse order
+                reversed_tokens = tokens[::-1]
+                variations.append(Individual(tokens=reversed_tokens))
+
+                # Random shuffle
+                shuffled_tokens = tokens.copy()
+                random.shuffle(shuffled_tokens)
+                variations.append(Individual(tokens=shuffled_tokens))
 
         return variations
 
-    def create_sequence_aware_individual(self, top_performers: List[Individual]) -> Individual:
+    def create_sequence_aware_individual(self, top_individuals: List[Individual]) -> Individual:
         """
-        Create a new individual by combining and reordering tokens from top performers.
+        Create sequence-aware individual using tokens from top performers.
 
         Args:
-            top_performers: List of high-fitness individuals to sample from
+            top_individuals: List of best performing individuals
 
         Returns:
-            Individual with reordered token combination
+            New individual with sequence-aware token selection
         """
-        if not top_performers:
+        if not top_individuals:
             return self.create_random_individual()
 
-        # Strategy 1: Take tokens from multiple top performers and reorder
-        if len(top_performers) >= 2 and random.random() < 0.6:
-            # Collect unique tokens from top performers
-            all_tokens = []
-            for performer in top_performers[:3]:  # Use top 3
-                all_tokens.extend(performer.tokens)
+        # Collect tokens from top individuals
+        all_tokens = []
+        for ind in top_individuals[:10]:
+            all_tokens.extend(ind.tokens)
 
-            # Remove duplicates while preserving some order preference
-            unique_tokens = []
-            seen = set()
-            for token in all_tokens:
-                if token not in seen:
-                    unique_tokens.append(token)
-                    seen.add(token)
+        # Remove duplicates while preserving some order preference
+        unique_tokens = list(dict.fromkeys(all_tokens))
 
-            # Select tokens up to max count
-            if len(unique_tokens) >= self.max_tokens_per_individual:
-                selected_tokens = unique_tokens[:self.max_tokens_per_individual]
-                # Shuffle to create new sequence
-                random.shuffle(selected_tokens)
-            else:
-                selected_tokens = self._ensure_exact_token_count(unique_tokens)
-                random.shuffle(selected_tokens)
-
-            return Individual(tokens=selected_tokens)
-
-        # Strategy 2: Take one top performer and create sequence variation
+        if self.use_exact_token_count:
+            num_tokens = self.max_tokens_per_individual
         else:
-            source = random.choice(top_performers)
-            variations = self.create_sequence_variations(source, num_variations=1)
-            return variations[0] if variations else self.create_random_individual()
+            num_tokens = random.randint(1, self.max_tokens_per_individual)
 
-    def maintain_diversity(self, population: List[Individual]) -> List[Individual]:
-        """
-        Remove duplicate individuals and maintain population diversity.
+        # Select tokens with bias toward earlier positions (higher frequency in top individuals)
+        if len(unique_tokens) >= num_tokens:
+            selected_tokens = unique_tokens[:num_tokens]
+        else:
+            # Need more tokens, add random ones
+            needed = num_tokens - len(unique_tokens)
+            available = [t for t in self.available_tokens if t not in unique_tokens]
+            additional = random.sample(available, min(needed, len(available)))
+            selected_tokens = unique_tokens + additional
 
-        Args:
-            population: Current population
+        # Sometimes shuffle for diversity
+        if random.random() < 0.3:
+            random.shuffle(selected_tokens)
 
-        Returns:
-            Population with duplicates removed and diversity preserved
-        """
-        unique_population = []
-        seen_token_sets = set()
+        return Individual(tokens=selected_tokens)
 
-        # Keep unique individuals based on their token combinations
-        for individual in population:
-            # Create a signature for this individual (sorted tokens to handle order variations)
-            token_signature = tuple(sorted(individual.tokens))
+    def inject_diversity(self, population: List[Individual], generation: int) -> List[Individual]:
+        """Inject diversity into stagnated population."""
+        self.logger.info(f"⚠️  Population stagnated for {self.stagnation_counter} generations - injecting diversity!")
 
-            if token_signature not in seen_token_sets:
-                unique_population.append(individual)
-                seen_token_sets.add(token_signature)
+        # Calculate how many individuals to replace (25-50% based on stagnation severity)
+        if self.stagnation_counter >= 50:
+            replacement_rate = 0.5
+            self.logger.info("🔥 CRITICAL stagnation - replacing 50% of population")
+        elif self.stagnation_counter >= 30:
+            replacement_rate = 0.4
+            self.logger.info("⚡ HIGH stagnation - replacing 40% of population")
+        else:
+            replacement_rate = 0.25
+            self.logger.info("💧 MILD stagnation - replacing 25% of population")
 
-        # If we lost too many individuals due to duplicates, fill with random ones
-        while len(unique_population) < self.population_size:
-            new_individual = self.create_random_individual()
-            token_signature = tuple(sorted(new_individual.tokens))
+        num_to_replace = max(2, int(len(population) * replacement_rate))
 
-            # Ensure the new individual is also unique
-            if token_signature not in seen_token_sets:
-                unique_population.append(new_individual)
-                seen_token_sets.add(token_signature)
-            elif len(unique_population) < self.population_size // 2:
-                # If we're really struggling to find unique individuals, allow some duplicates
-                unique_population.append(new_individual)
+        # Keep the best individuals, replace the worst
+        new_individuals = []
 
-        return unique_population[:self.population_size]
+        # Strategy 1: Random individuals (30%)
+        random_count = max(1, int(num_to_replace * 0.3))
+        for _ in range(random_count):
+            new_individuals.append(self.create_random_individual())
 
-    def calculate_population_diversity(self, population: List[Individual]) -> dict:
-        """
-        Calculate diversity metrics for the population.
+        # Strategy 2: Baseline-guided individuals (40%)
+        if self.token_impact_map:
+            guided_count = max(1, int(num_to_replace * 0.4))
+            for _ in range(guided_count):
+                new_individuals.append(self.create_baseline_guided_individual())
 
-        Args:
-            population: Current population
+        # Strategy 3: Mutated versions of best individuals (30%)
+        remaining = num_to_replace - len(new_individuals)
+        for i in range(remaining):
+            # Take one of the top individuals and heavily mutate it
+            source = population[i % min(5, len(population))]
+            mutated = Individual(tokens=source.tokens.copy())
 
-        Returns:
-            Dictionary with diversity metrics
-        """
+            # Apply heavy mutation (multiple token replacements)
+            num_mutations = random.randint(1, min(3, len(mutated.tokens)))
+            for _ in range(num_mutations):
+                if mutated.tokens and self.available_tokens:
+                    idx = random.randint(0, len(mutated.tokens) - 1)
+                    new_token = random.choice(self.available_tokens)
+                    # Ensure diversity by avoiding current tokens
+                    attempts = 0
+                    while new_token in mutated.tokens and attempts < 10:
+                        new_token = random.choice(self.available_tokens)
+                        attempts += 1
+                    mutated.tokens[idx] = new_token
+
+            new_individuals.append(mutated)
+
+        # Replace worst performers with new diverse individuals
+        for i, new_individual in enumerate(new_individuals):
+            if len(population) - num_to_replace + i < len(population):
+                population[len(population) - num_to_replace + i] = new_individual
+
+        self.logger.info(f"✅ Diversity injection complete - {len(new_individuals)} individuals replaced")
+        return population
+
+    def calculate_population_diversity(self, population: List[Individual]) -> float:
+        """Calculate diversity metric for the population."""
         if not population:
-            return {"unique_individuals": 0, "avg_tokens_per_individual": 0, "unique_tokens": 0, "diversity_ratio": 0.0}
+            return 0.0
 
-        # Count unique individuals
-        seen_token_sets = set()
+        unique_combinations = set()
         for individual in population:
-            token_signature = tuple(sorted(individual.tokens))
-            seen_token_sets.add(token_signature)
+            combination = tuple(sorted(individual.tokens))
+            unique_combinations.add(combination)
 
-        unique_individuals = len(seen_token_sets)
+        return len(unique_combinations) / len(population)
 
-        # Calculate average tokens per individual
-        total_tokens = sum(len(ind.tokens) for ind in population)
-        avg_tokens = total_tokens / len(population) if population else 0
-
-        # Count unique tokens across population
-        all_tokens = set()
-        for individual in population:
-            all_tokens.update(individual.tokens)
-        unique_tokens = len(all_tokens)
-
-        # Diversity ratio (unique individuals / total population)
-        diversity_ratio = unique_individuals / len(population) if population else 0
-
-        return {
-            "unique_individuals": unique_individuals,
-            "avg_tokens_per_individual": avg_tokens,
-            "unique_tokens": unique_tokens,
-            "diversity_ratio": diversity_ratio
-        }
-
-    def calculate_adaptive_mutation_rate(self, generation: int) -> float:
-        """
-        Calculate adaptive mutation rate that decreases over time.
-
-        Args:
-            generation: Current generation number
-
-        Returns:
-            Adaptive mutation rate for current generation
-        """
-        if not self.adaptive_mutation:
-            return self.mutation_rate
-
-        # Linear decay from initial to final mutation rate
-        progress = min(generation / self.max_generations, 1.0)
-        adaptive_rate = self.initial_mutation_rate * (1 - progress) + self.final_mutation_rate * progress
-
-        return adaptive_rate
-
-    def mutate(self, individual: Individual, mutation_rate: Optional[float] = None):
-        """
-        Improved mutation with multiple strategies for better exploration.
-
-        Args:
-            individual: Individual to mutate
-            mutation_rate: Override mutation rate (uses self.current_mutation_rate if None)
-        """
-        effective_rate = mutation_rate if mutation_rate is not None else self.current_mutation_rate
-        if random.random() > effective_rate:
+    def mutate(self, individual: Individual):
+        """Mutate an individual by replacing tokens with enhanced strategies."""
+        if random.random() > self.mutation_rate:
             return
 
-        # Multi-point mutation: potentially multiple changes per individual
-        num_mutations = random.choices([1, 2, 3], weights=[0.7, 0.25, 0.05])[0]
+        if not individual.tokens:
+            return
+
+        # Adaptive mutation - sometimes apply multiple mutations for diversity
+        num_mutations = 1
+        if hasattr(self, 'stagnation_counter') and self.stagnation_counter > 10:
+            # More aggressive mutation when stagnating
+            num_mutations = random.choices([1, 2, 3], weights=[0.6, 0.3, 0.1])[0]
 
         for _ in range(num_mutations):
-            if random.random() > effective_rate:  # Each mutation has independent chance
-                continue
+            if not individual.tokens:
+                break
 
-            # Choose mutation strategy based on exact token count setting
-            if self.use_exact_token_count:
-                # Maintain exact token count - only replace and swap
-                if len(individual.tokens) == 0:
-                    # Should not happen with exact token count, but fallback to adding tokens
-                    mutation_type = 'add'
-                elif len(individual.tokens) < self.max_tokens_per_individual:
-                    # Need to add tokens to reach exact count
-                    mutation_type = 'add'
-                elif len(individual.tokens) > self.max_tokens_per_individual:
-                    # Need to remove tokens to reach exact count
-                    mutation_type = 'remove'
-                else:
-                    # At exact count, only replace, swap, or shuffle to maintain count
-                    if self.enable_shuffle_mutation:
-                        mutation_type = random.choices(['replace', 'swap', 'shuffle'], weights=[0.85, 0.1, 0.05])[0]
-                    else:
-                        mutation_type = random.choices(['replace', 'swap'], weights=[0.9, 0.1])[0]
-            else:
-                # Variable token count - allow all mutation types
-                if len(individual.tokens) == 0:
-                    mutation_type = 'add'
-                elif len(individual.tokens) >= self.max_tokens_per_individual:
-                    if self.enable_shuffle_mutation:
-                        mutation_type = random.choices(['replace', 'remove', 'swap', 'shuffle'], weights=[0.7, 0.2, 0.05, 0.05])[0]
-                    else:
-                        mutation_type = random.choices(['replace', 'remove', 'swap'], weights=[0.75, 0.2, 0.05])[0]
-                else:
-                    if self.enable_shuffle_mutation:
-                        mutation_type = random.choices(['replace', 'add', 'remove', 'swap', 'shuffle'], weights=[0.5, 0.25, 0.15, 0.05, 0.05])[0]
-                    else:
-                        mutation_type = random.choices(['replace', 'add', 'remove', 'swap'], weights=[0.55, 0.25, 0.15, 0.05])[0]
+            mutation_type = random.choices(['replace', 'swap'], weights=[0.9, 0.1])[0]
 
-            if mutation_type == 'replace' and individual.tokens:
-                # Replace random token with emphasis on diversity
+            if mutation_type == 'replace':
+                # Replace a random token with a new one
                 idx = random.randint(0, len(individual.tokens) - 1)
-                old_token = individual.tokens[idx]
+                new_token = random.choice(self.available_tokens)
 
-                # Try to find a different token (avoid replacing with same token)
+                # Try to avoid duplicates and encourage diversity
                 attempts = 0
-                while attempts < 5:
-                    new_token = random.choice(self.glitch_tokens)
-                    if new_token != old_token and new_token not in individual.tokens:
-                        individual.tokens[idx] = new_token
-                        break
-                    attempts += 1
-                else:
-                    # Fallback: replace anyway
-                    individual.tokens[idx] = random.choice(self.glitch_tokens)
-
-            elif mutation_type == 'add' and len(individual.tokens) < self.max_tokens_per_individual:
-                # Add random token with duplicate avoidance to reach exact count
-                attempts = 0
-                while attempts < 10 and len(individual.tokens) < self.max_tokens_per_individual:
-                    new_token = random.choice(self.glitch_tokens)
-                    if new_token not in individual.tokens:
-                        individual.tokens.append(new_token)
-                        break
+                while new_token in individual.tokens and attempts < 10:
+                    new_token = random.choice(self.available_tokens)
                     attempts += 1
 
-            elif mutation_type == 'remove' and len(individual.tokens) > (1 if not self.use_exact_token_count else self.max_tokens_per_individual):
-                # Remove random token (respect minimum of 1 for variable count)
-                idx = random.randint(0, len(individual.tokens) - 1)
-                individual.tokens.pop(idx)
+                individual.tokens[idx] = new_token
 
             elif mutation_type == 'swap' and len(individual.tokens) >= 2:
-                # Swap positions of two tokens (order mutation)
+                # Swap positions of two tokens
                 idx1, idx2 = random.sample(range(len(individual.tokens)), 2)
                 individual.tokens[idx1], individual.tokens[idx2] = individual.tokens[idx2], individual.tokens[idx1]
 
-            elif mutation_type == 'shuffle' and len(individual.tokens) >= 2 and self.enable_shuffle_mutation:
-                # Shuffle all tokens to explore different sequences
-                random.shuffle(individual.tokens)
-
     def evolve_generation(self, population: List[Individual], generation: int = 0) -> List[Individual]:
-        """
-        Evolve one generation of the population with improved diversity preservation.
-
-        Args:
-            population: Current population
-            generation: Current generation number for adaptive parameters
-
-        Returns:
-            New population with better diversity
-        """
-        # Update adaptive mutation rate
-        if self.adaptive_mutation:
-            self.current_mutation_rate = self.calculate_adaptive_mutation_rate(generation)
-        # Ensure population diversity before evolution
-        population = self.maintain_diversity(population)
-
+        """Evolve one generation with stagnation detection and diversity injection."""
         # Evaluate fitness for all individuals
         for individual in population:
-            if individual.fitness == 0.0:  # Not evaluated yet
+            if individual.fitness == 0.0:
                 self.evaluate_fitness(individual)
 
-        # Sort by fitness (descending)
+        # Sort by fitness
         population.sort(key=lambda x: x.fitness, reverse=True)
+
+        # Check for stagnation and inject diversity if needed
+        if hasattr(self, 'last_best_fitness') and hasattr(self, 'stagnation_counter'):
+            current_best = population[0].fitness
+            if abs(current_best - self.last_best_fitness) < 1e-6:
+                self.stagnation_counter += 1
+            else:
+                self.stagnation_counter = 0
+                self.last_best_fitness = current_best
+
+            # Inject diversity if stagnated
+            if self.stagnation_counter >= 20:
+                population = self.inject_diversity(population, generation)
+                self.stagnation_counter = 0
 
         # Create new population
         new_population = []
 
-        # Elitism - keep best individuals (reduced elite size for more diversity)
+        # Elitism - keep best individuals
         new_population.extend(population[:self.elite_size])
 
         # Generate offspring
         while len(new_population) < self.population_size:
-            # Use tournament selection with some diversity pressure
-            parent1 = self.tournament_selection(population, tournament_size=2)  # Reduced tournament size
-            parent2 = self.tournament_selection(population, tournament_size=2)
-
-            # Ensure parents are different to promote diversity
-            max_attempts = 5
-            attempts = 0
-            while parent1.tokens == parent2.tokens and attempts < max_attempts:
-                parent2 = self.tournament_selection(population, tournament_size=2)
-                attempts += 1
+            parent1 = self.tournament_selection(population)
+            parent2 = self.tournament_selection(population)
 
             child1, child2 = self.crossover(parent1, parent2)
 
@@ -1002,287 +1475,150 @@ class GeneticProbabilityReducer:
 
             new_population.extend([child1, child2])
 
-        # Trim to exact population size and ensure final diversity
-        new_population = new_population[:self.population_size]
-        new_population = self.maintain_diversity(new_population)
-
-        return new_population
+        return new_population[:self.population_size]
 
     def run_evolution(self) -> List[Individual]:
-        """
-        Run the genetic algorithm evolution.
-
-        Returns:
-            Final population sorted by fitness
-        """
+        """Run the genetic algorithm evolution."""
         self.logger.info("Starting genetic algorithm evolution")
 
-        # Setup baseline
-        self.target_token_id, self.baseline_probability = self.get_baseline_probability()
+        # Get baseline probabilities
+        target_id, target_prob, wanted_id, wanted_prob = self.get_baseline_probability()
+        self.target_token_id = target_id
+        self.baseline_target_probability = target_prob
+        self.wanted_token_id = wanted_id
+        self.baseline_wanted_probability = wanted_prob or 0.0
 
-        # Baseline individual token impacts
-        self.baseline_token_impacts()
+        # Perform comprehensive wanted token search if wanted token is specified
+        if self.wanted_token_id is not None:
+            self.logger.info("Performing comprehensive wanted token search before genetic algorithm...")
 
-        # Notify GUI callback of evolution start
+            # Notify GUI that comprehensive search is starting
+            if self.gui_callback:
+                try:
+                    # Update GUI to show comprehensive search phase
+                    if hasattr(self.gui_callback, 'animator') and hasattr(self.gui_callback.animator, 'update_comprehensive_search_progress'):
+                        start_data = {
+                            'phase': 'comprehensive_search',
+                            'progress_pct': 0,
+                            'tokens_processed': 0,
+                            'total_tokens': len(self.available_tokens),
+                            'best_impact': 0,
+                            'excellent_tokens': 0
+                        }
+                        self.gui_callback.animator.update_comprehensive_search_progress(start_data)
+                    else:
+                        # Fallback to basic matplotlib update
+                        import matplotlib.pyplot as plt
+                        if hasattr(plt, 'get_fignums') and plt.get_fignums():
+                            plt.suptitle("Comprehensive Search in Progress...", fontsize=12)
+                            plt.pause(0.001)
+                except Exception:
+                    pass
+
+            comprehensive_results = self.comprehensive_wanted_token_search()
+
+            # Save comprehensive search results
+            if hasattr(self, 'token_impact_map'):
+                self.token_impact_map.update(comprehensive_results)
+            else:
+                self.token_impact_map = comprehensive_results
+
+            # Notify GUI that comprehensive search is complete
+            if self.gui_callback:
+                try:
+                    if hasattr(self.gui_callback, 'animator') and hasattr(self.gui_callback.animator, 'fig'):
+                        # Reset title for genetic algorithm phase
+                        title = f"🧬 Genetic Algorithm Evolution"
+                        if self.wanted_token:
+                            title += f" - Maximizing '{self.wanted_token}'"
+                        if self.target_token:
+                            title += f" - Reducing '{self.target_token}'"
+                        self.gui_callback.animator.fig.suptitle(title, fontsize=14, fontweight='bold', color='#4169E1')
+                        self.gui_callback.animator.fig.canvas.draw()
+                    else:
+                        # Fallback to basic matplotlib update
+                        import matplotlib.pyplot as plt
+                        if hasattr(plt, 'get_fignums') and plt.get_fignums():
+                            plt.suptitle("Starting Genetic Algorithm Evolution...", fontsize=12)
+                            plt.pause(0.001)
+                except Exception:
+                    pass
+
+        # Notify GUI of evolution start
         if self.gui_callback:
-            target_text = self.tokenizer.decode([self.target_token_id]) if self.target_token_id else None
-            self.gui_callback.on_evolution_start(
-                baseline_prob=self.baseline_probability,
-                target_token_id=self.target_token_id,
-                target_token_text=target_text,
-                initial_top_tokens=self.initial_top_tokens,
-                tokenizer=self.tokenizer
-            )
+            baseline_data = {
+                'target_baseline_prob': self.baseline_target_probability,
+                'wanted_baseline_prob': self.baseline_wanted_probability,
+                'target_token_id': self.target_token_id,
+                'wanted_token_id': self.wanted_token_id,
+                'initial_top_tokens': [self.tokenizer.decode([token_id]) for token_id, _ in self.initial_top_tokens[:10]] if hasattr(self, 'initial_top_tokens') and self.tokenizer else []
+            }
+            self.gui_callback.on_evolution_start(baseline_data)
+
+        # Run baseline token impact analysis
+        if not self.use_baseline_seeding:
+            self.logger.info("Skipping baseline analysis (baseline seeding disabled)")
+        else:
+            self.baseline_token_impacts()
 
         # Create initial population
         population = self.create_initial_population()
 
-        # Log initial diversity
-        initial_diversity = self.calculate_population_diversity(population)
-        self.logger.info(f"Initial population diversity: {initial_diversity['unique_individuals']}/{len(population)} unique individuals "
-                        f"(diversity ratio: {initial_diversity['diversity_ratio']:.3f})")
-
-        best_fitness_history = []
-        avg_fitness_history = []
-        diversity_history = []
-        stagnation_counter = 0
-        last_best_fitness = 0.0
-        early_stopped = False
+        # Initialize stagnation tracking
+        self.last_best_fitness = 0.0
+        self.stagnation_counter = 0
 
         # Evolution loop
         for generation in tqdm(range(self.max_generations), desc="Evolving"):
             population = self.evolve_generation(population, generation)
 
-            # Track statistics
-            fitnesses = [ind.fitness for ind in population if ind.fitness > -1.0]
-            if fitnesses:
-                best_fitness = max(fitnesses)
-                avg_fitness = sum(fitnesses) / len(fitnesses)
-            else:
-                best_fitness = avg_fitness = 0.0
+            # Update GUI with current generation data
+            if self.gui_callback:
+                best_individual = max(population, key=lambda x: x.fitness)
+                diversity = self.calculate_population_diversity(population)
 
-            best_fitness_history.append(best_fitness)
-            avg_fitness_history.append(avg_fitness)
+                # Decode token texts for GUI display
+                if best_individual.tokens and self.tokenizer:
+                    try:
+                        token_texts = [self.tokenizer.decode([token_id]) for token_id in best_individual.tokens]
+                        # Store in a way that GUI can access (will be passed to callback)
+                    except:
+                        token_texts = [f"Token_{token_id}" for token_id in best_individual.tokens]
 
-            # Track diversity metrics
-            diversity_metrics = self.calculate_population_diversity(population)
-            diversity_history.append(diversity_metrics)
+                self.gui_callback.on_generation_complete(generation, population, best_individual, diversity, self.stagnation_counter)
 
-            # Check for stagnation
-            if abs(best_fitness - last_best_fitness) < 1e-6:
-                stagnation_counter += 1
-            else:
-                stagnation_counter = 0
-                last_best_fitness = best_fitness
+                # Allow GUI to update in real-time
+                try:
+                    import matplotlib.pyplot as plt
+                    if plt.get_fignums():  # Check if GUI windows exist
+                        plt.pause(0.001)  # Small pause to allow GUI updates
+                except:
+                    pass  # Ignore if matplotlib not available or GUI disabled
 
-            # Log every 10 generations with diversity info
+            # Log progress with diversity metrics
             if generation % 10 == 0:
-                mutation_info = f"Mutation rate = {self.current_mutation_rate:.3f}" if self.adaptive_mutation else f"Mutation rate = {self.mutation_rate:.3f}"
-                self.logger.info(f"Generation {generation}: Best fitness = {best_fitness:.4f}, "
-                               f"Avg fitness = {avg_fitness:.4f}, "
-                               f"Diversity = {diversity_metrics['unique_individuals']}/{len(population)} "
-                               f"({diversity_metrics['diversity_ratio']:.3f}), "
-                               f"Stagnation = {stagnation_counter}, {mutation_info}")
+                best_individual = max(population, key=lambda x: x.fitness)
+                diversity = self.calculate_population_diversity(population)
+                self.logger.info(
+                    f"Generation {generation}: Best fitness = {best_individual.fitness:.4f}, "
+                    f"Target reduction = {best_individual.target_reduction:.4f}, "
+                    f"Wanted increase = {best_individual.wanted_increase:.4f}, "
+                    f"Diversity = {diversity:.3f}, Stagnation = {self.stagnation_counter}"
+                )
 
-                if stagnation_counter >= 20:
-                    self.logger.info(f"⚠️  Population stagnated for {stagnation_counter} generations - aggressive diversity injection!")
-
-                    # More aggressive diversity injection strategy
-                    if stagnation_counter >= 50:
-                        # Very aggressive: replace 60% of population, including some elites
-                        injection_rate = 0.6
-                        replace_elites = True
-                        # Temporarily boost mutation rate for next few generations
-                        self.current_mutation_rate = min(0.8, self.current_mutation_rate * 2.0)
-                        self.logger.info(f"🔥 CRITICAL stagnation ({stagnation_counter}gen) - replacing {injection_rate*100:.0f}% of population + boosting mutation to {self.current_mutation_rate:.3f}")
-                    elif stagnation_counter >= 30:
-                        # Moderate aggressive: replace 40% of population
-                        injection_rate = 0.4
-                        replace_elites = False
-                        self.current_mutation_rate = min(0.6, self.current_mutation_rate * 1.5)
-                        self.logger.info(f"⚡ HIGH stagnation ({stagnation_counter}gen) - replacing {injection_rate*100:.0f}% of population + boosting mutation to {self.current_mutation_rate:.3f}")
-                    else:
-                        # Initial injection: replace 25% of population
-                        injection_rate = 0.25
-                        replace_elites = False
-                        self.logger.info(f"💧 MILD stagnation ({stagnation_counter}gen) - replacing {injection_rate*100:.0f}% of population")
-
-                    num_to_replace = max(2, int(len(population) * injection_rate))
-
-                    # Create diverse new individuals with sequence-aware strategies
-                    new_individuals = []
-
-                    # Extract top performers for sequence-aware strategies
-                    top_performers = sorted([ind for ind in population if ind.fitness > 0],
-                                          key=lambda x: x.fitness, reverse=True)[:5]
-                    proven_tokens = set()
-                    for performer in top_performers:
-                        proven_tokens.update(performer.tokens)
-
-                    # Get existing token combinations (both sorted and exact sequences)
-                    existing_combinations = set()
-                    existing_sequences = set()
-                    for ind in population:
-                        existing_combinations.add(tuple(sorted(ind.tokens)))
-                        existing_sequences.add(tuple(ind.tokens))
-
-                    for i in range(num_to_replace):
-                        max_attempts = 20  # Prevent infinite loops
-                        attempt = 0
-                        new_ind = None
-
-                        while attempt < max_attempts:
-                            # Choose strategy based on sequence diversity configuration (only during deep stagnation)
-                            if self.use_sequence_aware_diversity and stagnation_counter >= 50 and random.random() < self.sequence_diversity_ratio:
-                                # Use sequence-aware strategies
-                                strategy = i % 4  # 4 sequence-aware strategies
-
-                                if strategy == 0:
-                                    # Strategy 1: Sequence variations of top performers
-                                    if top_performers:
-                                        source = random.choice(top_performers[:3])
-                                        variations = self.create_sequence_variations(source, num_variations=3)
-                                        candidate = random.choice(variations)
-                                    else:
-                                        candidate = self.create_random_individual()
-                                elif strategy == 1:
-                                    # Strategy 2: Sequence-aware combination from multiple top performers
-                                    if len(top_performers) >= 2:
-                                        candidate = self.create_sequence_aware_individual(top_performers)
-                                    else:
-                                        candidate = self.create_random_individual()
-                                elif strategy == 2:
-                                    # Strategy 3: Reverse sequence of best performer
-                                    if top_performers:
-                                        best = top_performers[0]
-                                        reversed_tokens = best.tokens.copy()
-                                        reversed_tokens.reverse()
-                                        candidate = Individual(tokens=reversed_tokens)
-                                    else:
-                                        candidate = self.create_random_individual()
-                                else:
-                                    # Strategy 4: Heavy mutation with sequence focus
-                                    if population:
-                                        best_current = max(population, key=lambda x: x.fitness)
-                                        new_tokens = best_current.tokens.copy()
-
-                                        # Apply mutations while maintaining token count
-                                        num_mutations = random.randint(1, min(3, len(new_tokens)))
-                                        for _ in range(num_mutations):
-                                            if random.random() < 0.8:
-                                                # Replace random token
-                                                idx = random.randint(0, len(new_tokens) - 1)
-                                                new_token = random.choice(self.glitch_tokens)
-                                                if new_token not in new_tokens:
-                                                    new_tokens[idx] = new_token
-
-                                        # Always shuffle for sequence diversity
-                                        random.shuffle(new_tokens)
-                                        candidate = Individual(tokens=new_tokens)
-                                    else:
-                                        candidate = self.create_random_individual()
-                            else:
-                                # Use traditional diversity strategies
-                                candidate = self.create_random_individual()
-
-                            # Check if this sequence is unique (prioritize sequence diversity over just token set diversity)
-                            candidate_sequence = tuple(candidate.tokens)
-                            candidate_combination = tuple(sorted(candidate.tokens))
-
-                            # Accept if sequence is unique, or if token combination is unique
-                            if (candidate_sequence not in existing_sequences or
-                                candidate_combination not in existing_combinations):
-                                new_ind = candidate
-                                existing_combinations.add(candidate_combination)
-                                existing_sequences.add(candidate_sequence)
-                                break
-
-                            attempt += 1
-
-                        # If we couldn't find a unique individual, use the last candidate
-                        if new_ind is None:
-                            new_ind = candidate
-
-                        new_individuals.append(new_ind)
-
-                    # Replace individuals in population
-                    if replace_elites:
-                        # Replace random individuals including some elites
-                        indices_to_replace = random.sample(range(len(population)), num_to_replace)
-                    else:
-                        # Replace worst performers (preserve elites)
-                        indices_to_replace = list(range(len(population) - num_to_replace, len(population)))
-
-                    for i, new_ind in enumerate(new_individuals):
-                        if i < len(indices_to_replace):
-                            population[indices_to_replace[i]] = new_ind
-
-                    # Force re-evaluation of all new individuals
-                    for individual in new_individuals:
-                        self.evaluate_fitness(individual)
-
-                    # Reset stagnation counter after injection
-                    stagnation_counter = 0
-                    last_best_fitness = best_fitness
-
-                    self.logger.info(f"✅ Diversity injection complete - {num_to_replace} individuals replaced, stagnation counter reset")
-
-                # Find best individual for detailed logging
-                if fitnesses:
-                    best_individual = max(population, key=lambda x: x.fitness)
-                    best_tokens = [self.tokenizer.decode([token_id]).strip() for token_id in best_individual.tokens]
-                    self.logger.info(f"Best tokens = {best_individual.tokens}")
-
-            # Check for early stopping - target probability reduction achieved
-            if fitnesses and best_fitness >= (self.baseline_probability * self.early_stopping_threshold):
-                reduction_pct = (best_fitness / self.baseline_probability) * 100
-                threshold_pct = self.early_stopping_threshold * 100
-                self.logger.info(f"🎯 Target probability reduction ({threshold_pct:.1f}%) achieved at generation {generation}!")
-                self.logger.info(f"Final reduction: {reduction_pct:.2f}%")
-                early_stopped = True
-
-                # Still notify GUI callback before breaking
-                if self.gui_callback:
-                    best_individual = max(population, key=lambda x: x.fitness)
-                    current_prob = getattr(best_individual, 'modified_prob', self.baseline_probability)
-                    new_top_tokens = getattr(best_individual, 'new_top_tokens', None)
-
-                    self.gui_callback.on_generation_complete(
-                        generation=generation,
-                        best_individual=best_individual,
-                        avg_fitness=avg_fitness,
-                        current_probability=current_prob,
-                        tokenizer=self.tokenizer,
-                        new_top_tokens=new_top_tokens
-                    )
-
+            # Check for early stopping
+            best_fitness = max(ind.fitness for ind in population)
+            if best_fitness >= self.early_stopping_threshold:
+                self.logger.info(f"Early stopping at generation {generation}")
                 break
 
-            # Notify GUI callback of generation progress
-            if self.gui_callback and fitnesses:
+            # Check for early stopping when only wanted token is specified and reaches near 100%
+            if self.target_token_id is None and self.wanted_token_id is not None:
                 best_individual = max(population, key=lambda x: x.fitness)
-                current_prob = getattr(best_individual, 'modified_prob', self.baseline_probability)
-
-                # Get new top tokens if available
-                new_top_tokens = getattr(best_individual, 'new_top_tokens', None)
-
-                self.gui_callback.on_generation_complete(
-                    generation=generation,
-                    best_individual=best_individual,
-                    avg_fitness=avg_fitness,
-                    current_probability=current_prob,
-                    tokenizer=self.tokenizer,
-                    new_top_tokens=new_top_tokens
-                )
-
-            # Log progress
-            if generation % 10 == 0:
-                best_individual = max(population, key=lambda x: x.fitness)
-                self.logger.info(
-                    f"Generation {generation}: Best fitness = {best_fitness:.4f}, "
-                    f"Avg fitness = {avg_fitness:.4f}, "
-                    f"Best tokens = {best_individual.tokens}"
-                )
+                if best_individual.wanted_modified_prob >= 0.99:
+                    wanted_token_text = self.tokenizer.decode([self.wanted_token_id]) if self.tokenizer and self.wanted_token_id is not None else "unknown"
+                    self.logger.info(f"Early stopping at generation {generation}: wanted token '{wanted_token_text}' reached {best_individual.wanted_modified_prob:.4f} probability (99%+)")
+                    break
 
         # Final evaluation and sorting
         for individual in population:
@@ -1291,28 +1627,40 @@ class GeneticProbabilityReducer:
 
         population.sort(key=lambda x: x.fitness, reverse=True)
 
-        # Notify GUI callback of evolution completion
+        # Notify GUI of evolution completion
         if self.gui_callback:
-            self.gui_callback.on_evolution_complete(population, self.max_generations)
+            self.gui_callback.on_evolution_complete(population)
 
-        if early_stopped:
-            self.logger.info("Evolution completed (early stopping triggered)")
-        else:
-            self.logger.info("Evolution completed")
         return population
 
     def display_results(self, population: List[Individual], top_n: int = 10):
-        """
-        Display the best results from evolution.
-
-        Args:
-            population: Final population
-            top_n: Number of top results to display
-        """
-        print(f"\n=== Top {top_n} Probability Reducers ===")
+        """Display the best results from evolution."""
+        if self.target_token_id is None and self.wanted_token_id is not None:
+            print(f"\n=== Top {top_n} Wanted Token Maximization Results ===")
+        else:
+            print(f"\n=== Top {top_n} Multi-Objective Results ===")
         print(f"Base text: '{self.base_text}'")
-        print(f"Target token: '{self.tokenizer.decode([self.target_token_id])}' (ID: {self.target_token_id})")
-        print(f"Baseline probability: {self.baseline_probability:.4f}")
+
+        if self.tokenizer is None:
+            raise ValueError("Tokenizer must be loaded first")
+
+        if self.target_token_id is not None:
+            target_text = self.tokenizer.decode([self.target_token_id])
+            print(f"Target token (reduce): '{target_text}' (ID: {self.target_token_id})")
+            print(f"Target baseline probability: {self.baseline_target_probability:.4f}")
+
+        if self.wanted_token_id is not None:
+            wanted_text = self.tokenizer.decode([self.wanted_token_id])
+            print(f"Wanted token (increase): '{wanted_text}' (ID: {self.wanted_token_id})")
+            print(f"Wanted baseline probability: {self.baseline_wanted_probability:.4f}")
+
+        # Display initial baseline top 10 tokens
+        if hasattr(self, 'initial_top_tokens') and self.initial_top_tokens:
+            print("\nInitial baseline top 10 predicted tokens:")
+            for j, (token_id, prob) in enumerate(self.initial_top_tokens[:10]):
+                token_text = self.tokenizer.decode([token_id])
+                print(f"  {j+1:2d}. '{token_text}' (ID: {token_id}) - {prob:.4f}")
+
         print()
 
         for i, individual in enumerate(population[:top_n]):
@@ -1322,49 +1670,62 @@ class GeneticProbabilityReducer:
             token_texts = [self.tokenizer.decode([tid]) for tid in individual.tokens]
             token_repr = [repr(text) for text in token_texts]
 
-            reduction_pct = (individual.fitness / self.baseline_probability) * 100
-
             print(f"{i+1:2d}. Tokens: {individual.tokens} → {token_repr}")
-            print(f"    Fitness: {individual.fitness:.4f} ({reduction_pct:.1f}% reduction)")
-            print(f"    Probability: {self.baseline_probability:.4f} → {individual.modified_prob:.4f}")
+            print(f"    Combined fitness: {individual.fitness:.4f}")
+
+            if self.target_token_id is not None:
+                print(f"    Target: {self.baseline_target_probability:.4f} → {individual.modified_prob:.4f} "
+                      f"(reduction: {individual.target_reduction:.4f})")
+
+            if self.wanted_token_id is not None:
+                print(f"    Wanted: {self.baseline_wanted_probability:.4f} → {individual.wanted_modified_prob:.4f} "
+                      f"(increase: {individual.wanted_increase:.4f})")
+
+            # Display top 10 predicted tokens after applying this combination
+            if individual.new_top_tokens:
+                print(f"    Top 10 predicted tokens after applying combination:")
+                for j, (token_id, prob) in enumerate(individual.new_top_tokens[:10]):
+                    token_text = self.tokenizer.decode([token_id])
+                    print(f"      {j+1:2d}. '{token_text}' (ID: {token_id}) - {prob:.4f}")
             print()
 
     def save_results(self, population: List[Individual], output_file: str):
-        """
-        Save results to JSON file.
-
-        Args:
-            population: Final population
-            output_file: Output file path
-        """
-        if self.tokenizer is None:
-            raise ValueError("Tokenizer must be loaded first")
-
+        """Save results to JSON file."""
         results = {
             'model_name': self.model_name,
             'base_text': self.base_text,
             'target_token_id': self.target_token_id,
-            'target_token_text': self.tokenizer.decode([self.target_token_id]) if self.target_token_id else None,
-            'baseline_probability': self.baseline_probability,
+            'target_token_text': self.tokenizer.decode([self.target_token_id]) if self.target_token_id and self.tokenizer else None,
+            'target_baseline_probability': self.baseline_target_probability,
+            'wanted_token_id': self.wanted_token_id,
+            'wanted_token_text': self.tokenizer.decode([self.wanted_token_id]) if self.wanted_token_id and self.tokenizer else None,
+            'wanted_baseline_probability': self.baseline_wanted_probability,
             'ga_parameters': {
                 'population_size': self.population_size,
                 'max_generations': self.max_generations,
                 'mutation_rate': self.mutation_rate,
                 'crossover_rate': self.crossover_rate,
-                'max_tokens_per_individual': self.max_tokens_per_individual
+                'max_tokens_per_individual': self.max_tokens_per_individual,
+                'use_normal_tokens': len(self.ascii_tokens) > 0,
+                'total_available_tokens': len(self.available_tokens)
             },
             'results': []
         }
 
         for individual in population:
+            if self.tokenizer is None:
+                continue
             token_texts = [self.tokenizer.decode([token_id]) for token_id in individual.tokens]
             results['results'].append({
                 'tokens': individual.tokens,
                 'token_texts': token_texts,
-                'fitness': individual.fitness,
-                'baseline_prob': individual.baseline_prob,
-                'modified_prob': individual.modified_prob,
-                'reduction_percentage': ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
+                'combined_fitness': individual.fitness,
+                'target_baseline_prob': individual.baseline_prob,
+                'target_modified_prob': individual.modified_prob,
+                'target_reduction': individual.target_reduction,
+                'wanted_baseline_prob': individual.wanted_baseline_prob,
+                'wanted_modified_prob': individual.wanted_modified_prob,
+                'wanted_increase': individual.wanted_increase
             })
 
         with open(output_file, 'w', encoding='utf-8') as f:
@@ -1372,51 +1733,43 @@ class GeneticProbabilityReducer:
 
         self.logger.info(f"Results saved to: {output_file}")
 
-    def get_token_impact_map(self) -> Dict[int, Dict[str, Any]]:
-        """
-        Get the token impact baseline map.
-
-        Returns:
-            Dictionary mapping token_id -> impact metrics
-        """
-        return self.token_impact_map
-
-    def save_token_impact_results(self, output_file: str = "token_impact_baseline.json"):
-        """
-        Save token impact baseline results to JSON file.
-
-        Args:
-            output_file: Output file path
-        """
-        if not self.token_impact_map:
-            self.logger.warning("No token impact data to save. Run baseline_token_impacts() first.")
+    def save_token_impact_results(self, output_file: str):
+        """Save token impact baseline results to JSON file."""
+        if not hasattr(self, 'token_impact_map') or not self.token_impact_map:
+            self.logger.warning("No token impact data available to save")
             return
 
-        # Prepare results for JSON serialization
         results = {
-            'metadata': {
-                'model_name': self.model_name,
-                'base_text': self.base_text,
-                'target_token_id': self.target_token_id,
-                'target_token_text': self.tokenizer.decode([self.target_token_id]) if self.target_token_id else None,
-                'baseline_probability': self.baseline_probability,
+            'model_name': self.model_name,
+            'base_text': self.base_text,
+            'target_token_id': self.target_token_id,
+            'target_token_text': self.tokenizer.decode([self.target_token_id]) if self.target_token_id and self.tokenizer else None,
+            'target_baseline_probability': self.baseline_target_probability,
+            'wanted_token_id': self.wanted_token_id,
+            'wanted_token_text': self.tokenizer.decode([self.wanted_token_id]) if self.wanted_token_id and self.tokenizer else None,
+            'wanted_baseline_probability': self.baseline_wanted_probability,
+            'analysis_parameters': {
                 'total_tokens_tested': len(self.token_impact_map),
-                'positive_impact_tokens': len([d for d in self.token_impact_map.values() if d['impact'] > 0])
+                'total_available_tokens': len(self.available_tokens),
+                'use_normal_tokens': len(self.ascii_tokens) > 0 if hasattr(self, 'ascii_tokens') else False
             },
             'token_impacts': []
         }
 
-        # Sort by impact and add to results
-        sorted_impacts = sorted(self.token_impact_map.items(), key=lambda x: x[1]['impact'], reverse=True)
-        for token_id, data in sorted_impacts:
+        # Convert token impact map to list format for JSON serialization
+        for token_id, impact_data in self.token_impact_map.items():
             results['token_impacts'].append({
                 'token_id': token_id,
-                'token_text': data['token_text'],
-                'baseline_prob': data['baseline_prob'],
-                'modified_prob': data['modified_prob'],
-                'impact': data['impact'],
-                'reduction_ratio': data['reduction_ratio'],
-                'rank_by_impact': data['rank_by_impact']
+                'token_text': impact_data['token_text'],
+                'target_impact': impact_data['target_impact'],
+                'target_normalized': impact_data['target_normalized'],
+                'wanted_impact': impact_data['wanted_impact'],
+                'wanted_normalized': impact_data['wanted_normalized'],
+                'combined_impact': impact_data['combined_impact'],
+                'target_prob_before': impact_data['target_prob_before'],
+                'target_prob_after': impact_data['target_prob_after'],
+                'wanted_prob_before': impact_data['wanted_prob_before'],
+                'wanted_prob_after': impact_data['wanted_prob_after']
             })
 
         with open(output_file, 'w', encoding='utf-8') as f:
@@ -1424,217 +1777,82 @@ class GeneticProbabilityReducer:
 
         self.logger.info(f"Token impact results saved to: {output_file}")
 
-    def display_token_impact_results(self, top_n: int = 10, bottom_n: int = 5):
-        """
-        Display token impact baseline results.
-
-        Args:
-            top_n: Number of top performers to show
-            bottom_n: Number of bottom performers to show
-        """
-        if not self.token_impact_map:
-            self.logger.warning("No token impact data to display. Run baseline_token_impacts() first.")
+    def display_token_impact_results(self, top_n: int = 10):
+        """Display top N token impact results from baseline analysis."""
+        if not hasattr(self, 'token_impact_map') or not self.token_impact_map:
+            print("No token impact data available to display")
             return
 
-        sorted_impacts = sorted(self.token_impact_map.items(), key=lambda x: x[1]['impact'], reverse=True)
+        if self.tokenizer is None:
+            raise ValueError("Tokenizer must be loaded first")
 
-        print(f"\n=== Token Impact Baseline Results ===")
+        print(f"\n=== Top {top_n} Token Impact Results ===")
         print(f"Base text: '{self.base_text}'")
-        print(f"Target token: '{self.tokenizer.decode([self.target_token_id])}' (ID: {self.target_token_id})")
-        print(f"Baseline probability: {self.baseline_probability:.4f}")
-        print(f"Total tokens tested: {len(self.token_impact_map)}")
 
-        positive_impacts = [d['impact'] for d in self.token_impact_map.values() if d['impact'] > 0]
-        print(f"Tokens with positive impact: {len(positive_impacts)}/{len(self.token_impact_map)}")
+        target_text = self.tokenizer.decode([self.target_token_id]) if self.target_token_id else "Unknown"
+        print(f"Target token: '{target_text}' (ID: {self.target_token_id})")
+        print(f"Target baseline probability: {self.baseline_target_probability:.6f}")
 
-        if positive_impacts:
-            avg_positive = sum(positive_impacts) / len(positive_impacts)
-            max_impact = max(positive_impacts)
-            print(f"Average positive impact: {avg_positive:.4f}")
-            print(f"Maximum impact: {max_impact:.4f}")
+        if self.wanted_token_id is not None:
+            wanted_text = self.tokenizer.decode([self.wanted_token_id])
+            print(f"Wanted token: '{wanted_text}' (ID: {self.wanted_token_id})")
+            print(f"Wanted baseline probability: {self.baseline_wanted_probability:.6f}")
 
-        print(f"\n🏆 Top {top_n} Most Effective Tokens:")
-        for i, (token_id, data) in enumerate(sorted_impacts[:top_n]):
-            print(f"  {i+1:2d}. Token {token_id:6d} '{data['token_text'][:30]:<30}' "
-                  f"Impact: {data['impact']:7.4f} ({data['reduction_ratio']:6.1%}) "
-                  f"Prob: {data['baseline_prob']:.4f} → {data['modified_prob']:.4f}")
+        print(f"\nToken Impact Analysis:")
+        print(f"{'Rank':<4} {'Token ID':<8} {'Token Text':<30} {'Impact':<8} {'Target ΔP':<12} {'Wanted ΔP':<12}")
+        print("-" * 80)
 
-        if bottom_n > 0 and len(sorted_impacts) > top_n:
-            print(f"\n⬇️  Bottom {bottom_n} Least Effective Tokens:")
-            for i, (token_id, data) in enumerate(sorted_impacts[-bottom_n:], len(sorted_impacts) - bottom_n + 1):
-                print(f"  {i:2d}. Token {token_id:6d} '{data['token_text'][:30]:<30}' "
-                      f"Impact: {data['impact']:7.4f} ({data['reduction_ratio']:6.1%}) "
-                      f"Prob: {data['baseline_prob']:.4f} → {data['modified_prob']:.4f}")
+        # Get top N tokens by combined impact
+        sorted_impacts = sorted(self.token_impact_map.items(),
+                              key=lambda x: x[1]['combined_impact'],
+                              reverse=True)
+
+        for i, (token_id, impact_data) in enumerate(sorted_impacts[:top_n]):
+            token_text = impact_data['token_text']
+            # Truncate long token text for display
+            if len(token_text) > 28:
+                token_text = token_text[:25] + "..."
+
+            print(f"{i+1:<4} {token_id:<8} {repr(token_text):<30} "
+                  f"{impact_data['combined_impact']:<8.4f} "
+                  f"{impact_data['target_impact']:<12.6f} "
+                  f"{impact_data['wanted_impact']:<12.6f}")
 
 
 def main():
     """Main function with command line interface."""
     parser = argparse.ArgumentParser(
-        description="Genetic Algorithm for Breeding Probability Reducer Token Combinations"
+        description="Multi-Objective Genetic Algorithm for Token Probability Manipulation"
     )
-    parser.add_argument(
-        "model_name",
-        help="HuggingFace model identifier"
-    )
-    parser.add_argument(
-        "--base-text",
-        default="The quick brown",
-        help="Base text to test probability reduction on"
-    )
-    parser.add_argument(
-        "--target-token",
-        help="Specific token to target (auto-detected if not provided)"
-    )
-    parser.add_argument(
-        "--token-file",
-        default="email_llams321.json",
-        help="JSON file containing glitch tokens"
-    )
-    parser.add_argument(
-        "--population-size",
-        type=int,
-        default=50,
-        help="Population size for genetic algorithm"
-    )
-    parser.add_argument(
-        "--generations",
-        type=int,
-        default=100,
-        help="Maximum number of generations"
-    )
-    parser.add_argument(
-        "--mutation-rate",
-        type=float,
-        default=0.1,
-        help="Mutation rate (0.0-1.0)"
-    )
-    parser.add_argument(
-        "--crossover-rate",
-        type=float,
-        default=0.7,
-        help="Crossover rate (0.0-1.0)"
-    )
-    parser.add_argument(
-        "--elite-size",
-        type=int,
-        default=5,
-        help="Number of elite individuals to preserve each generation"
-    )
-    parser.add_argument(
-        "--max-tokens",
-        type=int,
-        default=3,
-        help="Maximum tokens per individual combination (1-10 recommended, default: 3). Higher values explore more complex combinations but may have diminishing returns."
-    )
-    parser.add_argument(
-        "--output",
-        help="Output file for results (JSON format)"
-    )
-    parser.add_argument(
-        "--top-n",
-        type=int,
-        default=10,
-        help="Number of top results to display"
-    )
-    parser.add_argument(
-        "--ascii-only",
-        action="store_true",
-        help="Filter tokens to only include those with ASCII-only decoded text"
-    )
-    parser.add_argument(
-        "--adaptive-mutation",
-        action="store_true",
-        help="Use adaptive mutation rate that starts high (0.8) and decreases to low (0.1) over generations"
-    )
-    parser.add_argument(
-        "--initial-mutation-rate",
-        type=float,
-        default=0.8,
-        help="Initial mutation rate for adaptive mutation (default: 0.8)"
-    )
-    parser.add_argument(
-        "--final-mutation-rate",
-        type=float,
-        default=0.1,
-        help="Final mutation rate for adaptive mutation (default: 0.1)"
-    )
-    parser.add_argument(
-        "--baseline-only",
-        action="store_true",
-        help="Only run token impact baseline analysis without genetic algorithm evolution"
-    )
-    parser.add_argument(
-        "--skip-baseline",
-        action="store_true",
-        help="Skip token impact baseline analysis and go straight to genetic algorithm"
-    )
-    parser.add_argument(
-        "--baseline-output",
-        default="token_impact_baseline.json",
-        help="Output file for token impact baseline results (default: token_impact_baseline.json)"
-    )
-    parser.add_argument(
-        "--baseline-top-n",
-        type=int,
-        default=10,
-        help="Number of top tokens to display in baseline results (default: 10)"
-    )
-    parser.add_argument(
-        "--baseline-seeding",
-        action="store_true",
-        default=True,
-        help="Use baseline results to intelligently seed initial population (default: enabled)"
-    )
-    parser.add_argument(
-        "--no-baseline-seeding",
-        action="store_true",
-        help="Disable baseline-guided population seeding, use random initialization only"
-    )
-    parser.add_argument(
-        "--baseline-seeding-ratio",
-        type=float,
-        default=0.7,
-        help="Fraction of population to seed with baseline guidance (0.0-1.0, default: 0.7)"
-    )
-    parser.add_argument(
-        "--exact-token-count",
-        action="store_true",
-        default=True,
-        help="Use exact max_tokens count for all individuals (default: enabled)"
-    )
-    parser.add_argument(
-        "--variable-token-count",
-        action="store_true",
-        help="Allow variable token count (1 to max_tokens) for individuals"
-    )
-    parser.add_argument(
-        "--sequence-aware-diversity",
-        action="store_true",
-        default=True,
-        help="Enable sequence-aware diversity injection (default: enabled)"
-    )
-    parser.add_argument(
-        "--no-sequence-diversity",
-        action="store_true",
-        help="Disable sequence-aware diversity injection, use traditional diversity only"
-    )
-    parser.add_argument(
-        "--sequence-diversity-ratio",
-        type=float,
-        default=0.3,
-        help="Fraction of diversity injection to use sequence-aware strategies (0.0-1.0, default: 0.3)"
-    )
-    parser.add_argument(
-        "--enable-shuffle-mutation",
-        action="store_true",
-        help="Enable shuffle mutation (disabled by default to preserve token combinations)"
-    )
-    parser.add_argument(
-        "--disable-shuffle-mutation",
-        action="store_true",
-        default=True,
-        help="Disable shuffle mutation to preserve token combinations (default behavior)"
-    )
+    parser.add_argument("model_name", help="HuggingFace model identifier")
+    parser.add_argument("--base-text", default="The quick brown", help="Base text to test on")
+    parser.add_argument("--target-token", help="Token to reduce probability (auto-detected if not provided)")
+    parser.add_argument("--wanted-token", help="Token to increase probability (optional)")
+    parser.add_argument("--token-file", help="JSON file containing glitch tokens (optional)")
+    parser.add_argument("--include-normal-tokens", action="store_true",
+                       help="Include normal ASCII tokens from model vocabulary")
+    parser.add_argument("--comprehensive-search", action="store_true",
+                       help="Perform comprehensive search through all vocabulary tokens (slower but thorough)")
+    parser.add_argument("--ascii-only", action="store_true",
+                       help="Filter to ASCII-only tokens")
+    parser.add_argument("--population-size", type=int, default=50, help="Population size")
+    parser.add_argument("--generations", type=int, default=100, help="Maximum generations")
+    parser.add_argument("--mutation-rate", type=float, default=0.1, help="Mutation rate")
+    parser.add_argument("--crossover-rate", type=float, default=0.7, help="Crossover rate")
+    parser.add_argument("--elite-size", type=int, default=5, help="Elite size")
+    parser.add_argument("--max-tokens", type=int, default=3, help="Maximum tokens per individual")
+    parser.add_argument("--output", help="Output file for results (JSON)")
+    parser.add_argument("--top-n", type=int, default=10, help="Number of top results to display")
+    parser.add_argument("--early-stopping-threshold", type=float, default=0.999,
+                       help="Early stopping threshold for fitness")
+    parser.add_argument("--baseline-seeding-ratio", type=float, default=0.7,
+                       help="Fraction of population to seed with baseline guidance")
+    parser.add_argument("--no-baseline-seeding", action="store_true",
+                       help="Disable baseline-guided population seeding")
+    parser.add_argument("--no-cache", action="store_true",
+                       help="Disable caching of comprehensive search results")
+    parser.add_argument("--clear-cache", action="store_true",
+                       help="Clear comprehensive search cache before running")
 
     args = parser.parse_args()
 
@@ -1642,7 +1860,8 @@ def main():
     analyzer = GeneticProbabilityReducer(
         model_name=args.model_name,
         base_text=args.base_text,
-        target_token=args.target_token
+        target_token=args.target_token,
+        wanted_token=args.wanted_token
     )
 
     # Set GA parameters
@@ -1652,80 +1871,51 @@ def main():
     analyzer.crossover_rate = args.crossover_rate
     analyzer.elite_size = args.elite_size
     analyzer.max_tokens_per_individual = args.max_tokens
-
-    # Set adaptive mutation parameters
-    analyzer.adaptive_mutation = args.adaptive_mutation
-    analyzer.initial_mutation_rate = args.initial_mutation_rate
-    analyzer.final_mutation_rate = args.final_mutation_rate
-    if args.adaptive_mutation:
-        analyzer.current_mutation_rate = args.initial_mutation_rate
+    analyzer.early_stopping_threshold = args.early_stopping_threshold
 
     # Set baseline seeding parameters
     if args.no_baseline_seeding:
         analyzer.use_baseline_seeding = False
-    else:
-        analyzer.use_baseline_seeding = args.baseline_seeding
     analyzer.baseline_seeding_ratio = max(0.0, min(1.0, args.baseline_seeding_ratio))
 
-    # Set token count behavior
-    if args.variable_token_count:
-        analyzer.use_exact_token_count = False
-    else:
-        analyzer.use_exact_token_count = args.exact_token_count
-
-    # Set sequence-aware diversity behavior
-    if args.no_sequence_diversity:
-        analyzer.use_sequence_aware_diversity = False
-    else:
-        analyzer.use_sequence_aware_diversity = args.sequence_aware_diversity
-    analyzer.sequence_diversity_ratio = max(0.0, min(1.0, args.sequence_diversity_ratio))
-
-    # Set shuffle mutation behavior
-    analyzer.enable_shuffle_mutation = args.enable_shuffle_mutation
-
     try:
+        # Handle cache clearing if requested
+        if args.clear_cache:
+            cache_dir = Path("cache/comprehensive_search")
+            if cache_dir.exists():
+                import shutil
+                shutil.rmtree(cache_dir)
+                print(f"Cleared comprehensive search cache: {cache_dir}")
+
         # Load model and tokenizer
         analyzer.load_model()
-        analyzer.load_glitch_tokens(args.token_file, ascii_only=args.ascii_only)
 
-        if args.baseline_only:
-            # Only run token impact baseline analysis
-            analyzer.target_token_id, analyzer.baseline_probability = analyzer.get_baseline_probability()
-            analyzer.baseline_token_impacts()
-            analyzer.display_token_impact_results(top_n=args.baseline_top_n)
-            analyzer.save_token_impact_results(args.baseline_output)
-        else:
-            # Run evolution (which includes baseline unless skipped)
-            if args.skip_baseline:
-                # Temporarily disable baseline in run_evolution
-                original_run_evolution = analyzer.run_evolution
-                def run_evolution_no_baseline():
-                    analyzer.target_token_id, analyzer.baseline_probability = analyzer.get_baseline_probability()
-                    # Skip baseline_token_impacts() call
-                    # ... rest of original run_evolution logic
-                    return original_run_evolution()
+        # Load tokens
+        analyzer.load_glitch_tokens(
+            token_file=args.token_file,
+            ascii_only=args.ascii_only,
+            include_normal_tokens=args.include_normal_tokens,
+            comprehensive_search=args.comprehensive_search
+        )
 
-                # For now, just run normal evolution - the baseline call is fast enough
-                final_population = analyzer.run_evolution()
-            else:
-                final_population = analyzer.run_evolution()
+        # Set cache preferences if specified
+        if hasattr(args, 'no_cache') and args.no_cache:
+            analyzer.use_cache = False
 
-            # Display results
-            analyzer.display_results(final_population, top_n=args.top_n)
+        # Run evolution
+        final_population = analyzer.run_evolution()
 
-            # Save results if requested
-            if args.output:
-                analyzer.save_results(final_population, args.output)
+        # Display results
+        analyzer.display_results(final_population, top_n=args.top_n)
 
-            # Save token impact results if baseline was run
-            if not args.skip_baseline:
-                analyzer.save_token_impact_results(args.baseline_output)
+        # Save results if requested
+        if args.output:
+            analyzer.save_results(final_population, args.output)
 
     except Exception as e:
         analyzer.logger.error(f"Error during execution: {e}")
         raise
 
 
-# CLI integration moved to main cli.py
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()

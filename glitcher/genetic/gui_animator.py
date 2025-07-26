@@ -1,639 +1,801 @@
 #!/usr/bin/env python3
 """
-Real-time GUI Animator for Genetic Algorithm Evolution
+Enhanced Real-Time GUI Animator for Genetic Algorithm Evolution
 
-This module provides real-time visualization of genetic algorithm progress,
-showing fitness evolution, token combinations, and probability reduction stats.
+This module provides a comprehensive real-time visualization for genetic algorithm
+evolution, supporting both target reduction and wanted token maximization modes.
+
+Features:
+- Adaptive layout for single-objective vs multi-objective optimization
+- Real-time fitness evolution charts
+- Token combination visualization with readable text
+- Baseline probability comparison
+- Enhanced context display with string construction
+- LLM response comparison (baseline vs current best)
+- Modern matplotlib interface with proper formatting
 
 Author: Claude
 Date: 2024
 """
 
-try:
-    import matplotlib.pyplot as plt
-    import matplotlib.animation as animation
-    import matplotlib.font_manager as fm
-    MATPLOTLIB_AVAILABLE = True
-except ImportError:
-    plt = None
-    animation = None
-    fm = None
-    MATPLOTLIB_AVAILABLE = False
-
-import numpy as np
-import threading
 import time
-from typing import List, Dict, Any, Optional, Tuple
-from collections import deque
-import logging
+import threading
+from typing import List, Dict, Any, Optional, Tuple, Union
+from dataclasses import dataclass
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.figure import Figure
+from matplotlib.axes import Axes
+import numpy as np
 
 
-class RealTimeGeneticAnimator:
+@dataclass
+class EvolutionMetrics:
+    """Container for evolution metrics and data."""
+    generation: int = 0
+    best_fitness: float = 0.0
+    average_fitness: float = 0.0
+    diversity: float = 0.0
+    stagnation: int = 0
+
+    # Token-specific metrics
+    target_reduction: float = 0.0
+    wanted_increase: float = 0.0
+    target_prob_before: float = 0.0
+    target_prob_after: float = 0.0
+    wanted_prob_before: float = 0.0
+    wanted_prob_after: float = 0.0
+
+    # Best individual data
+    best_tokens: List[int] = None
+    best_token_texts: List[str] = None
+    top_predicted_tokens: List[Tuple[int, str, float]] = None
+
+    # LLM responses
+    baseline_response: str = ""
+    current_response: str = ""
+    full_input_string: str = ""
+    baseline_input_string: str = ""
+
+    def __post_init__(self):
+        if self.best_tokens is None:
+            self.best_tokens = []
+        if self.best_token_texts is None:
+            self.best_token_texts = []
+        if self.top_predicted_tokens is None:
+            self.top_predicted_tokens = []
+
+
+class EnhancedGeneticAnimator:
     """
-    Real-time animator for genetic algorithm evolution.
+    Enhanced real-time GUI animator for genetic algorithm evolution.
 
-    Displays live updates of fitness evolution, current best tokens,
-    and probability reduction statistics as the GA progresses.
+    Supports both single-objective (wanted token only) and multi-objective
+    (target + wanted) optimization with adaptive visualization layouts.
     """
 
-    def __init__(self, base_text: str, target_token_text: str = None,
-                 target_token_id: int = None, baseline_probability: float = None,
-                 max_generations: int = 100):
+    def __init__(self, base_text: str, target_token: Optional[str] = None,
+                 wanted_token: Optional[str] = None, max_generations: int = 100):
         """
-        Initialize the real-time animator.
+        Initialize the enhanced genetic animator.
 
         Args:
-            base_text: Base text being tested
-            target_token_text: Target token text (if known)
-            target_token_id: Target token ID (if known)
-            baseline_probability: Baseline probability before optimization
-            max_generations: Maximum number of generations to display
-
-        Raises:
-            ImportError: If matplotlib is not available
+            base_text: Base text being modified
+            target_token: Token to reduce (optional)
+            wanted_token: Token to maximize (optional)
+            max_generations: Maximum number of generations
         """
-        if not MATPLOTLIB_AVAILABLE:
-            raise ImportError("matplotlib is required for GUI animation. Install with: pip install matplotlib")
         self.base_text = base_text
-        self.target_token_text = target_token_text or "[Auto-detected]"
-        self.target_token_id = target_token_id
-        self.baseline_probability = baseline_probability or 0.0
+        self.target_token = target_token
+        self.wanted_token = wanted_token
         self.max_generations = max_generations
 
-        # Store initial top tokens for comparison
-        self.initial_top_tokens = []  # List of (token_id, probability) tuples
+        # Determine operation mode
+        self.is_wanted_only = target_token is None and wanted_token is not None
+        self.is_multi_objective = target_token is not None and wanted_token is not None
+        self.is_target_only = target_token is not None and wanted_token is None
 
-        # Data storage for real-time updates
-        self.generations = deque(maxlen=max_generations * 2)
-        self.best_fitness = deque(maxlen=max_generations * 2)
-        self.avg_fitness = deque(maxlen=max_generations * 2)
-        self.current_generation = 0
-        self.current_best_tokens = []
-        self.current_token_texts = []
-        self.current_best_fitness = 0.0
-        self.current_avg_fitness = 0.0
-        self.current_probability = baseline_probability or 0.0
-
-        # Store tokenizer for decoding tokens
-        self.tokenizer = None
-
-        # Animation control
+        # Animation state
         self.is_running = False
         self.is_complete = False
-        self.update_lock = threading.Lock()
+        self.animation_thread: Optional[threading.Thread] = None
 
-        # Setup logging
-        self.logger = logging.getLogger(__name__)
+        # Data storage
+        self.metrics_history: List[EvolutionMetrics] = []
+        self.current_metrics = EvolutionMetrics()
+        self.baseline_data: Dict[str, Any] = {}
 
-        # Setup the plot
-        self.setup_plot()
+        # Matplotlib components
+        self.fig: Optional[Figure] = None
+        self.axes: Dict[str, Axes] = {}
+        self.plots: Dict[str, Any] = {}
+        self.text_elements: Dict[str, Any] = {}
 
-    def setup_font_fallback(self):
-        """Setup font fallback to handle missing Unicode characters."""
-        if not MATPLOTLIB_AVAILABLE or fm is None:
+        # Animation control
+        self.animation_obj: Optional[animation.FuncAnimation] = None
+        self.update_interval = 500  # milliseconds
+
+        self._setup_matplotlib()
+        self._create_layout()
+
+    def _setup_matplotlib(self):
+        """Setup matplotlib for interactive use."""
+        try:
+            import matplotlib
+            matplotlib.use('TkAgg')  # Use TkAgg backend for better GUI support
+        except ImportError:
+            try:
+                import matplotlib
+                matplotlib.use('Qt5Agg')  # Fallback to Qt5
+            except ImportError:
+                pass  # Use default backend
+
+        # Set style for better appearance
+        plt.style.use('default')
+        plt.rcParams.update({
+            'figure.facecolor': 'white',
+            'axes.facecolor': 'white',
+            'axes.edgecolor': 'black',
+            'axes.linewidth': 0.8,
+            'font.size': 9,
+            'font.family': 'sans-serif',
+            'text.color': 'black',
+            'axes.labelcolor': 'black',
+            'xtick.color': 'black',
+            'ytick.color': 'black',
+            'grid.alpha': 0.3,
+            'lines.linewidth': 1.5,
+            'axes.grid': True,
+            'grid.linewidth': 0.5
+        })
+
+    def _create_layout(self):
+        """Create appropriate layout based on optimization mode."""
+        if self.is_wanted_only:
+            self._create_wanted_only_layout()
+        elif self.is_multi_objective:
+            self._create_multi_objective_layout()
+        else:  # target_only
+            self._create_target_only_layout()
+
+    def _create_wanted_only_layout(self):
+        """Create layout optimized for wanted token maximization only."""
+        self.fig = plt.figure(figsize=(16, 12))
+        title = f'Maximizing Wanted Token: "{self.wanted_token}"'
+        self.fig.suptitle(title, fontsize=14, fontweight='bold', color='#228B22')
+
+        # Create grid layout - added extra row for LLM responses
+        gs = self.fig.add_gridspec(4, 2, height_ratios=[2, 1, 1.2, 1.8], width_ratios=[3, 2],
+                                  hspace=0.5, wspace=0.3)
+
+        # Main fitness evolution chart
+        self.axes['fitness'] = self.fig.add_subplot(gs[0, :])
+        self.axes['fitness'].set_title('Fitness Evolution (Wanted Token Probability)', fontweight='bold')
+        self.axes['fitness'].set_xlabel('Generation')
+        self.axes['fitness'].set_ylabel('Fitness Score')
+
+        # Probability evolution chart
+        self.axes['probability'] = self.fig.add_subplot(gs[1, 0])
+        self.axes['probability'].set_title('Wanted Token Probability Evolution', fontweight='bold')
+        self.axes['probability'].set_xlabel('Generation')
+        self.axes['probability'].set_ylabel('Probability')
+
+        # Token combination display
+        self.axes['tokens'] = self.fig.add_subplot(gs[1, 1])
+        self.axes['tokens'].set_title('Best Token Combination', fontweight='bold')
+        self.axes['tokens'].axis('off')
+
+        # Context and predictions display
+        self.axes['context'] = self.fig.add_subplot(gs[2, :])
+        self.axes['context'].set_title('Context & Input Strings', fontweight='bold')
+        self.axes['context'].axis('off')
+
+        # LLM responses display
+        self.axes['responses'] = self.fig.add_subplot(gs[3, :])
+        self.axes['responses'].set_title('LLM Responses Comparison', fontweight='bold')
+        self.axes['responses'].axis('off')
+
+        self._initialize_wanted_only_plots()
+
+    def _create_multi_objective_layout(self):
+        """Create layout for multi-objective optimization."""
+        self.fig = plt.figure(figsize=(18, 14))
+        title = f'Multi-Objective: Reduce "{self.target_token}" | Maximize "{self.wanted_token}"'
+        self.fig.suptitle(title, fontsize=14, fontweight='bold', color='#4169E1')
+
+        # Create grid layout - added extra row for LLM responses
+        gs = self.fig.add_gridspec(5, 2, height_ratios=[2, 1, 1, 1.2, 1.8], width_ratios=[3, 2],
+                                  hspace=0.5, wspace=0.3)
+
+        # Main fitness evolution chart
+        self.axes['fitness'] = self.fig.add_subplot(gs[0, :])
+        self.axes['fitness'].set_title('Combined Fitness Evolution', fontweight='bold')
+        self.axes['fitness'].set_xlabel('Generation')
+        self.axes['fitness'].set_ylabel('Fitness Score')
+
+        # Target probability evolution
+        self.axes['target'] = self.fig.add_subplot(gs[1, 0])
+        self.axes['target'].set_title('Target Token Probability (Reduce)', fontweight='bold', color='red')
+        self.axes['target'].set_xlabel('Generation')
+        self.axes['target'].set_ylabel('Probability')
+
+        # Wanted probability evolution
+        self.axes['wanted'] = self.fig.add_subplot(gs[1, 1])
+        self.axes['wanted'].set_title('Wanted Token Probability (Maximize)', fontweight='bold', color='green')
+        self.axes['wanted'].set_xlabel('Generation')
+        self.axes['wanted'].set_ylabel('Probability')
+
+        # Token combination display
+        self.axes['tokens'] = self.fig.add_subplot(gs[2, :])
+        self.axes['tokens'].set_title('Best Token Combination', fontweight='bold')
+        self.axes['tokens'].axis('off')
+
+        # Context and predictions display
+        self.axes['context'] = self.fig.add_subplot(gs[3, :])
+        self.axes['context'].set_title('Context & Input Strings', fontweight='bold')
+        self.axes['context'].axis('off')
+
+        # LLM responses display
+        self.axes['responses'] = self.fig.add_subplot(gs[4, :])
+        self.axes['responses'].set_title('LLM Responses Comparison', fontweight='bold')
+        self.axes['responses'].axis('off')
+
+        self._initialize_multi_objective_plots()
+
+    def _create_target_only_layout(self):
+        """Create layout for target token reduction only."""
+        self.fig = plt.figure(figsize=(16, 12))
+        title = f'Reducing Target Token: "{self.target_token}"'
+        self.fig.suptitle(title, fontsize=14, fontweight='bold', color='#DC143C')
+
+        # Create grid layout - added extra row for LLM responses
+        gs = self.fig.add_gridspec(4, 2, height_ratios=[2, 1, 1.2, 1.8], width_ratios=[3, 2],
+                                  hspace=0.5, wspace=0.3)
+
+        # Main fitness evolution chart
+        self.axes['fitness'] = self.fig.add_subplot(gs[0, :])
+        self.axes['fitness'].set_title('Fitness Evolution (Target Reduction)', fontweight='bold')
+        self.axes['fitness'].set_xlabel('Generation')
+        self.axes['fitness'].set_ylabel('Fitness Score')
+
+        # Probability evolution chart
+        self.axes['probability'] = self.fig.add_subplot(gs[1, 0])
+        self.axes['probability'].set_title('Target Token Probability Evolution', fontweight='bold')
+        self.axes['probability'].set_xlabel('Generation')
+        self.axes['probability'].set_ylabel('Probability')
+
+        # Token combination display
+        self.axes['tokens'] = self.fig.add_subplot(gs[1, 1])
+        self.axes['tokens'].set_title('Best Token Combination', fontweight='bold')
+        self.axes['tokens'].axis('off')
+
+        # Context and predictions display
+        self.axes['context'] = self.fig.add_subplot(gs[2, :])
+        self.axes['context'].set_title('Context & Input Strings', fontweight='bold')
+        self.axes['context'].axis('off')
+
+        # LLM responses display
+        self.axes['responses'] = self.fig.add_subplot(gs[3, :])
+        self.axes['responses'].set_title('LLM Responses Comparison', fontweight='bold')
+        self.axes['responses'].axis('off')
+
+        self._initialize_target_only_plots()
+
+    def _initialize_wanted_only_plots(self):
+        """Initialize plots for wanted token optimization."""
+        # Initialize fitness plot
+        self.plots['fitness_best'], = self.axes['fitness'].plot([], [], 'g-',
+                                                               linewidth=2, label='Best Fitness')
+        self.plots['fitness_avg'], = self.axes['fitness'].plot([], [], 'b--',
+                                                              alpha=0.7, label='Average Fitness')
+        self.axes['fitness'].legend()
+        self.axes['fitness'].grid(True, alpha=0.3)
+
+        # Initialize probability plot
+        self.plots['wanted_prob'], = self.axes['probability'].plot([], [], 'g-',
+                                                                  linewidth=2, label='Wanted Probability')
+        self.axes['probability'].legend()
+        self.axes['probability'].grid(True, alpha=0.3)
+
+        # Initialize text elements
+        self.text_elements['tokens_text'] = self.axes['tokens'].text(0.02, 0.95, "",
+                                                                    transform=self.axes['tokens'].transAxes,
+                                                                    fontsize=10, verticalalignment='top',
+                                                                    fontfamily='monospace')
+
+        self.text_elements['context_text'] = self.axes['context'].text(0.02, 0.95, "",
+                                                                       transform=self.axes['context'].transAxes,
+                                                                       fontsize=9, verticalalignment='top',
+                                                                       fontfamily='monospace')
+
+        self.text_elements['responses_text'] = self.axes['responses'].text(0.02, 0.95, "",
+                                                                           transform=self.axes['responses'].transAxes,
+                                                                           fontsize=9, verticalalignment='top',
+                                                                           fontfamily='monospace')
+
+    def _initialize_multi_objective_plots(self):
+        """Initialize plots for multi-objective optimization."""
+        # Initialize fitness plot
+        self.plots['fitness_best'], = self.axes['fitness'].plot([], [], 'b-',
+                                                               linewidth=2, label='Combined Fitness')
+        self.plots['fitness_avg'], = self.axes['fitness'].plot([], [], 'cyan',
+                                                              alpha=0.7, linestyle='--', label='Average Fitness')
+        self.axes['fitness'].legend()
+        self.axes['fitness'].grid(True, alpha=0.3)
+
+        # Initialize target probability plot
+        self.plots['target_prob'], = self.axes['target'].plot([], [], 'r-',
+                                                             linewidth=2, label='Target Probability')
+        self.axes['target'].legend()
+        self.axes['target'].grid(True, alpha=0.3)
+
+        # Initialize wanted probability plot
+        self.plots['wanted_prob'], = self.axes['wanted'].plot([], [], 'g-',
+                                                             linewidth=2, label='Wanted Probability')
+        self.axes['wanted'].legend()
+        self.axes['wanted'].grid(True, alpha=0.3)
+
+        # Initialize text elements
+        self.text_elements['tokens_text'] = self.axes['tokens'].text(0.02, 0.95, "",
+                                                                    transform=self.axes['tokens'].transAxes,
+                                                                    fontsize=10, verticalalignment='top',
+                                                                    fontfamily='monospace')
+
+        self.text_elements['context_text'] = self.axes['context'].text(0.02, 0.95, "",
+                                                                       transform=self.axes['context'].transAxes,
+                                                                       fontsize=9, verticalalignment='top',
+                                                                       fontfamily='monospace')
+
+        self.text_elements['responses_text'] = self.axes['responses'].text(0.02, 0.95, "",
+                                                                           transform=self.axes['responses'].transAxes,
+                                                                           fontsize=9, verticalalignment='top',
+                                                                           fontfamily='monospace')
+
+    def _initialize_target_only_plots(self):
+        """Initialize plots for target token reduction."""
+        # Initialize fitness plot
+        self.plots['fitness_best'], = self.axes['fitness'].plot([], [], 'r-',
+                                                               linewidth=2, label='Best Fitness')
+        self.plots['fitness_avg'], = self.axes['fitness'].plot([], [], 'orange',
+                                                              alpha=0.7, linestyle='--', label='Average Fitness')
+        self.axes['fitness'].legend()
+        self.axes['fitness'].grid(True, alpha=0.3)
+
+        # Initialize probability plot
+        self.plots['target_prob'], = self.axes['probability'].plot([], [], 'r-',
+                                                                  linewidth=2, label='Target Probability')
+        self.axes['probability'].legend()
+        self.axes['probability'].grid(True, alpha=0.3)
+
+        # Initialize text elements
+        self.text_elements['tokens_text'] = self.axes['tokens'].text(0.02, 0.95, "",
+                                                                    transform=self.axes['tokens'].transAxes,
+                                                                    fontsize=10, verticalalignment='top',
+                                                                    fontfamily='monospace')
+
+        self.text_elements['context_text'] = self.axes['context'].text(0.02, 0.95, "",
+                                                                       transform=self.axes['context'].transAxes,
+                                                                       fontsize=9, verticalalignment='top',
+                                                                       fontfamily='monospace')
+
+        self.text_elements['responses_text'] = self.axes['responses'].text(0.02, 0.95, "",
+                                                                           transform=self.axes['responses'].transAxes,
+                                                                           fontsize=9, verticalalignment='top',
+                                                                           fontfamily='monospace')
+
+    def update_baseline(self, baseline_data: Dict[str, Any]):
+        """Update baseline data for comparison."""
+        self.baseline_data = baseline_data
+
+        # Update baseline reference lines
+        if self.is_wanted_only and 'wanted_baseline_prob' in baseline_data:
+            baseline_prob = baseline_data['wanted_baseline_prob']
+            if 'probability' in self.axes:
+                self.axes['probability'].axhline(y=baseline_prob, color='gray',
+                                                linestyle=':', alpha=0.7, label='Baseline')
+
+        elif self.is_multi_objective:
+            if 'target_baseline_prob' in baseline_data and 'target' in self.axes:
+                self.axes['target'].axhline(y=baseline_data['target_baseline_prob'],
+                                          color='gray', linestyle=':', alpha=0.7)
+            if 'wanted_baseline_prob' in baseline_data and 'wanted' in self.axes:
+                self.axes['wanted'].axhline(y=baseline_data['wanted_baseline_prob'],
+                                          color='gray', linestyle=':', alpha=0.7)
+
+        elif self.is_target_only and 'target_baseline_prob' in baseline_data:
+            baseline_prob = baseline_data['target_baseline_prob']
+            if 'probability' in self.axes:
+                self.axes['probability'].axhline(y=baseline_prob, color='gray',
+                                                linestyle=':', alpha=0.7, label='Baseline')
+
+    def update_metrics(self, metrics: EvolutionMetrics):
+        """Update current metrics and refresh display."""
+        self.current_metrics = metrics
+        self.metrics_history.append(metrics)
+
+        # Trigger immediate visual update
+        self._update_plots_immediate()
+
+    def update_comprehensive_search_progress(self, current: int, total: int, best_impact: float, excellent_count: int):
+        """Update GUI with comprehensive search progress."""
+        if not self.is_running:
             return
 
-        try:
-            # Try to find a font that supports Unicode characters
-            available_fonts = fm.findSystemFonts()
-            unicode_fonts = []
+        # Update the title to show search progress
+        progress_pct = (current / total) * 100 if total > 0 else 0
+        if self.fig:
+            search_title = f"🔍 Comprehensive Search: {progress_pct:.1f}% ({current:,}/{total:,} tokens) | Best Impact: {best_impact:.6f} | Excellent: {excellent_count}"
 
-            # Common fonts that support Unicode/emoji
-            preferred_fonts = ['DejaVu Sans', 'Liberation Sans', 'Arial Unicode MS', 'Segoe UI', 'Noto Sans']
-
-            for font_name in preferred_fonts:
-                try:
-                    font_prop = fm.FontProperties(family=font_name)
-                    if font_prop.get_name() in [f.name for f in fm.fontManager.ttflist]:
-                        unicode_fonts.append(font_name)
-                        break
-                except:
-                    continue
-
-            # Set font if found
-            if unicode_fonts:
-                plt.rcParams['font.family'] = unicode_fonts[0]
-
-            # Suppress font warnings for missing glyphs
-            import warnings
-            warnings.filterwarnings('ignore', message='Glyph .* missing from font.*')
-
-        except Exception:
-            # If font setup fails, just continue with default
-            pass
-
-    def setup_plot(self):
-        """Setup the matplotlib figure and subplots for real-time display."""
-        # Set up matplotlib backend
-        import matplotlib
-        matplotlib.use('TkAgg', force=True)  # Use TkAgg backend for better compatibility
-
-        # Setup font fallback
-        self.setup_font_fallback()
-
-        plt.ion()  # Turn on interactive mode
-
-        self.fig = plt.figure(figsize=(16, 10))
-        self.fig.suptitle('Genetic Algorithm Evolution: Real-time Token Breeding',
-                         fontsize=16, fontweight='bold')
-
-        # Create subplots with expanded layout for token comparison
-        gs = self.fig.add_gridspec(4, 2, height_ratios=[0.8, 2, 1, 1], width_ratios=[2, 1],
-                                  hspace=0.4, wspace=0.3)
-
-        # Top: Basic info panel
-        self.ax_info = self.fig.add_subplot(gs[0, :])
-        self.ax_info.set_xlim(0, 1)
-        self.ax_info.set_ylim(0, 1)
-        self.ax_info.axis('off')
-
-        # Middle left: Fitness evolution chart
-        self.ax_fitness = self.fig.add_subplot(gs[1, 0])
-        self.ax_fitness.set_title('Fitness Evolution Over Generations', fontweight='bold')
-        self.ax_fitness.set_xlabel('Generation')
-        self.ax_fitness.set_ylabel('Fitness Score')
-        self.ax_fitness.grid(True, alpha=0.3)
-        self.ax_fitness.set_xlim(0, max(50, self.max_generations))
-        self.ax_fitness.set_ylim(0, 1.0)
-
-        # Middle right: Current stats panel
-        self.ax_stats = self.fig.add_subplot(gs[1, 1])
-        self.ax_stats.set_title('Current Statistics', fontweight='bold')
-        self.ax_stats.set_xlim(0, 1)
-        self.ax_stats.set_ylim(0, 1)
-        self.ax_stats.axis('off')
-
-        # Bottom left: Current best token combination
-        self.ax_tokens = self.fig.add_subplot(gs[2, :])
-        self.ax_tokens.set_title('Current Best Token Combination', fontweight='bold')
-        self.ax_tokens.set_xlim(0, 1)
-        self.ax_tokens.set_ylim(0, 1)
-        self.ax_tokens.axis('off')
-
-        # Bottom: Token comparison panel (original vs evolved)
-        self.ax_comparison = self.fig.add_subplot(gs[3, :])
-        self.ax_comparison.set_title('Token Evolution: Original Top 10 vs Current Top 10', fontweight='bold')
-        self.ax_comparison.set_xlim(0, 1)
-        self.ax_comparison.set_ylim(0, 1)
-        self.ax_comparison.axis('off')
-
-        # Initialize empty plots
-        line_best_result = self.ax_fitness.plot([], [], 'b-', linewidth=3,
-                                               label='Best Fitness', marker='o', markersize=4)
-        self.line_best = line_best_result[0] if line_best_result else None
-
-        line_avg_result = self.ax_fitness.plot([], [], 'r--', linewidth=2,
-                                              label='Average Fitness', alpha=0.7)
-        self.line_avg = line_avg_result[0] if line_avg_result else None
-
-        self.ax_fitness.legend(loc='upper left')
-
-        # Initial display
-        self.update_display()
-        plt.show(block=False)
-        plt.pause(0.1)
-
-    def update_data(self, generation: int, best_fitness: float, avg_fitness: float,
-                   best_tokens: List[int], token_texts: List[str] = None,
-                   current_probability: float = None, tokenizer=None,
-                   new_top_tokens: List[Tuple[int, float]] = None):
-        """
-        Update the animator with new data from the genetic algorithm.
-
-        Args:
-            generation: Current generation number
-            best_fitness: Best fitness score in current generation
-            avg_fitness: Average fitness score in current generation
-            best_tokens: List of token IDs in best individual
-            token_texts: List of decoded token texts (optional)
-            current_probability: Current probability after token insertion
-            new_top_tokens: Top 10 tokens after applying evolved combination
-        """
-        with self.update_lock:
-            self.current_generation = generation
-            self.current_best_fitness = best_fitness
-            self.current_avg_fitness = avg_fitness
-            self.current_best_tokens = best_tokens.copy() if best_tokens else []
-            self.current_token_texts = token_texts.copy() if token_texts else []
-            self.current_new_top_tokens = new_top_tokens.copy() if new_top_tokens else []
-
-            if current_probability is not None:
-                self.current_probability = current_probability
-
-            # Store data for plotting
-            self.generations.append(generation)
-            self.best_fitness.append(best_fitness)
-            self.avg_fitness.append(avg_fitness)
-
-            # Update display if running
-            if self.is_running:
-                self.update_display()
-
-    def update_baseline(self, baseline_probability: float, target_token_id: int = None,
-                       target_token_text: str = None, initial_top_tokens: list = None,
-                       tokenizer = None):
-        """Update baseline information."""
-        with self.update_lock:
-            self.baseline_probability = baseline_probability
-            if target_token_id is not None:
-                self.target_token_id = target_token_id
-            if target_token_text is not None:
-                self.target_token_text = target_token_text
-            if initial_top_tokens is not None:
-                self.initial_top_tokens = initial_top_tokens.copy()
-            if tokenizer is not None:
-                self.tokenizer = tokenizer
-
-    def update_display(self):
-        """Update the visual display with current data."""
-        if not plt.fignum_exists(self.fig.number):
-            return  # Window was closed
-
-        try:
-            # Update fitness plots
-            if len(self.generations) > 0 and self.line_best is not None and self.line_avg is not None:
-                x_data = list(self.generations)
-                y_best = list(self.best_fitness)
-                y_avg = list(self.avg_fitness)
-
-                self.line_best.set_data(x_data, y_best)
-                self.line_avg.set_data(x_data, y_avg)
-
-                # Auto-scale axes if needed
-                if len(x_data) > 0:
-                    max_gen = max(x_data)
-                    if max_gen > self.ax_fitness.get_xlim()[1] * 0.8:
-                        self.ax_fitness.set_xlim(0, max_gen * 1.2)
-
-                    max_fit = max(max(y_best) if y_best else [0], max(y_avg) if y_avg else [0])
-                    if max_fit > self.ax_fitness.get_ylim()[1] * 0.8:
-                        self.ax_fitness.set_ylim(0, min(1.0, max_fit * 1.2))
-
-            # Update info panel
-            self.ax_info.clear()
-            self.ax_info.set_xlim(0, 1)
-            self.ax_info.set_ylim(0, 1)
-            self.ax_info.axis('off')
-
-            target_display = f'"{self.target_token_text}"'
-            if self.target_token_id is not None:
-                target_display += f" (ID: {self.target_token_id})"
-
-            # Enhanced info showing token positioning and context
-            info_text = f'🎯 PREDICTION TARGET: {target_display}\n'
-
-            # Show how the string is constructed
-            if self.current_token_texts and len(self.current_token_texts) > 0:
-                evolved_prefix = "".join(self.current_token_texts)
-                full_context = evolved_prefix + self.base_text
-
-                # Truncate for display if needed
-                max_context_length = 60
-                if len(full_context) > max_context_length:
-                    display_context = full_context[:max_context_length] + "..."
+            # Get current title and update it
+            current_title = self.fig._suptitle.get_text() if self.fig._suptitle else ""
+            if "🔍 Comprehensive Search:" not in current_title:
+                # First time showing search progress
+                if self.is_wanted_only:
+                    base_title = f'Maximizing Wanted Token: "{self.wanted_token}"'
+                elif self.is_multi_objective:
+                    base_title = f'Multi-Objective: Reduce "{self.target_token}" | Maximize "{self.wanted_token}"'
                 else:
-                    display_context = full_context
+                    base_title = f'Reducing Target Token: "{self.target_token}"'
 
-                info_text += f'📝 Input Context: "[{evolved_prefix}]{self.base_text}" → {target_display}\n'
-                info_text += f'🔍 Full String: "{display_context}"\n'
+                full_title = f"{base_title}\n{search_title}"
             else:
-                info_text += f'📝 Base Context: "{self.base_text}" → {target_display}\n'
-
-            info_text += f'📊 Baseline Probability: {self.baseline_probability:.4f}'
-
-            if self.baseline_probability > 0 and self.current_probability > 0:
-                reduction = (1 - self.current_probability / self.baseline_probability) * 100
-                info_text += f'  |  Current: {self.current_probability:.4f}  |  Reduction: {reduction:.1f}%'
-
-            self.ax_info.text(0.5, 0.5, info_text, ha='center', va='center',
-                             fontsize=12, bbox=dict(boxstyle="round,pad=0.5",
-                                                   facecolor="lightblue", alpha=0.8))
-
-            # Update stats panel
-            self.ax_stats.clear()
-            self.ax_stats.set_xlim(0, 1)
-            self.ax_stats.set_ylim(0, 1)
-            self.ax_stats.axis('off')
-
-            # Calculate current stats
-            reduction_pct = 0.0
-            if self.baseline_probability > 0 and self.current_probability > 0:
-                reduction_pct = (1 - self.current_probability / self.baseline_probability) * 100
-
-            progress_pct = (self.current_generation / self.max_generations) * 100 if self.max_generations > 0 else 0
-
-            stats_text = f"""Generation: {self.current_generation}
-
-Best Fitness: {self.current_best_fitness:.4f}
-Avg Fitness: {self.current_avg_fitness:.4f}
-
-Current Probability: {self.current_probability:.4f}
-Reduction: {reduction_pct:.1f}%
-
-Progress: {progress_pct:.1f}%"""
-
-            color = "lightgreen" if self.current_best_fitness > 0.5 else "lightyellow"
-
-            self.ax_stats.text(0.05, 0.95, stats_text, ha='left', va='top', fontsize=11,
-                              bbox=dict(boxstyle="round,pad=0.5", facecolor=color, alpha=0.8))
-
-            # Update tokens panel
-            self.ax_tokens.clear()
-            self.ax_tokens.set_xlim(0, 1)
-            self.ax_tokens.set_ylim(0, 1)
-            self.ax_tokens.axis('off')
-
-            if self.current_best_tokens:
-                tokens_str = f"Token IDs: {self.current_best_tokens}\n"
-
-                if self.current_token_texts:
-                    # Format token texts nicely
-                    texts_display = []
-                    for text in self.current_token_texts:
-                        # Clean up token text for display
-                        clean_text = repr(text) if text else "<?>"
-                        texts_display.append(clean_text)
-
-                    tokens_str += f"Decoded: {texts_display}\n"
+                # Update existing search progress
+                lines = current_title.split('\n')
+                if len(lines) >= 2:
+                    full_title = f"{lines[0]}\n{search_title}"
                 else:
-                    tokens_str += "Decoded: [Token texts not available]\n"
+                    full_title = f"{current_title}\n{search_title}"
 
-                # Show the full constructed string with visual separation
-                if self.current_token_texts and self.base_text:
-                    evolved_tokens_text = "".join(self.current_token_texts)
-                    full_string = evolved_tokens_text + self.base_text
+            self.fig.suptitle(full_title, fontsize=12, fontweight='bold')
 
-                    # Truncate if too long for display
-                    max_display_length = 80
-                    if len(full_string) > max_display_length:
-                        truncated = full_string[:max_display_length] + "..."
-                        tokens_str += f"\nFull String: [{evolved_tokens_text}] + \"{self.base_text[:50]}...\"\n"
-                        tokens_str += f"Result: \"{truncated}\""
-                    else:
-                        # Use visual markers to show token insertion point
-                        tokens_str += f"\nFull String: [{evolved_tokens_text}] + \"{self.base_text}\"\n"
-                        tokens_str += f"Result: \"{full_string}\""
-                else:
-                    tokens_str += "\nFull String: [Constructing...]"
+            # Force a GUI update to show progress immediately
+            if hasattr(self.fig.canvas, 'draw_idle'):
+                self.fig.canvas.draw_idle()
+            plt.pause(0.001)  # Very short pause to allow GUI update
 
-                # Add fitness info
-                tokens_str += f"\n\nFitness: {self.current_best_fitness:.4f}"
+    def _update_plots_immediate(self):
+        """Update all plots immediately without animation delay."""
+        if not self.is_running or not self.metrics_history:
+            return
 
-            else:
-                tokens_str = "Initializing population..."
-
-            # Color based on fitness
-            if self.current_best_fitness > 0.7:
-                token_color = "lightgreen"
-            elif self.current_best_fitness > 0.3:
-                token_color = "lightyellow"
-            else:
-                token_color = "lightcoral"
-
-            self.ax_tokens.text(0.5, 0.5, tokens_str, ha='center', va='center',
-                               fontsize=9, bbox=dict(boxstyle="round,pad=0.5",
-                                                     facecolor=token_color, alpha=0.8),
-                               family='monospace')
-
-            # Update token comparison panel
-            self.ax_comparison.clear()
-            self.ax_comparison.set_xlim(0, 1)
-            self.ax_comparison.set_ylim(0, 1)
-            self.ax_comparison.axis('off')
-
-            if hasattr(self, 'initial_top_tokens') and self.initial_top_tokens:
-                # Display original vs evolved token comparison
-                comparison_text = self._format_token_comparison()
-
-                self.ax_comparison.text(0.5, 0.5, comparison_text, ha='center', va='center',
-                                       fontsize=9, bbox=dict(boxstyle="round,pad=0.5",
-                                                           facecolor="lightblue", alpha=0.8),
-                                       family='monospace')
-            else:
-                self.ax_comparison.text(0.5, 0.5, "Token comparison will appear once evolution starts...",
-                                       ha='center', va='center', fontsize=10,
-                                       bbox=dict(boxstyle="round,pad=0.5", facecolor="lightgray", alpha=0.8))
-
-            # Update display
-            plt.draw()
-            plt.pause(0.01)  # Small pause to allow GUI updates
-
-        except Exception as e:
-            self.logger.warning(f"Error updating display: {e}")
-
-    def _format_token_comparison(self):
-        """Format token comparison text for display."""
-        if not hasattr(self, 'initial_top_tokens') or not self.initial_top_tokens:
-            return "No comparison data available"
-
-        lines = []
-        lines.append("🧬 TOKEN EVOLUTION ANALYSIS")
-        lines.append("=" * 60)
-
-        # Show full string construction
-        if self.current_token_texts and self.base_text:
-            evolved_prefix = "".join(self.current_token_texts)
-            full_string = evolved_prefix + self.base_text
-
-            # Truncate if too long for display
-            max_display_length = 50
-            if len(full_string) > max_display_length:
-                display_string = full_string[:max_display_length] + "..."
-            else:
-                display_string = full_string
-
-            lines.append("📝 STRING CONSTRUCTION:")
-            lines.append(f"  Original:  \"{self.base_text}\"")
-            lines.append(f"  Evolved:   [{evolved_prefix}] + \"{self.base_text}\"")
-            lines.append(f"  Result:    \"{display_string}\"")
-            lines.append("")
-
-        # Show probability changes
-        if self.baseline_probability > 0 and self.current_probability > 0:
-            reduction = (1 - self.current_probability / self.baseline_probability) * 100
-            lines.append("📊 PREDICTION IMPACT:")
-            target_display = f'"{self.target_token_text}"'
-            if self.target_token_id is not None:
-                target_display += f" (ID:{self.target_token_id})"
-            lines.append(f"  Target Token: {target_display}")
-            lines.append(f"  Baseline Prob: {self.baseline_probability:.4f}")
-            lines.append(f"  Current Prob:  {self.current_probability:.4f}")
-            lines.append(f"  Reduction:     {reduction:.1f}%")
-            lines.append("")
-
-        # Format current evolved tokens
-        lines.append("🧬 EVOLVED TOKENS:")
-        if self.current_best_tokens:
-            token_display = []
-            for token_id in self.current_best_tokens:
-                token_text = "<?>"
-                if self.tokenizer is not None:
-                    try:
-                        token_text = self.tokenizer.decode([token_id])
-                        # Clean up token display
-                        if token_text.strip():
-                            token_text = repr(token_text)
-                    except:
-                        pass
-                token_display.append(f"ID:{token_id}({token_text})")
-            lines.append(f"  {' + '.join(token_display)}")
+        # Update plot data
+        if self.is_wanted_only:
+            self._update_wanted_only_plots()
+        elif self.is_multi_objective:
+            self._update_multi_objective_plots()
         else:
-            lines.append("  [Initializing...]")
+            self._update_target_only_plots()
 
-        lines.append("")
+        # Update text displays
+        self._update_token_display()
+        self._update_context_display()
+        self._update_responses_display()
 
-        # Show fitness score
-        lines.append(f"🎯 FITNESS SCORE: {self.current_best_fitness:.4f}")
-        lines.append("EVOLUTION STATUS:")
-        lines.append("-" * 20)
-        lines.append(f"Generation: {self.current_generation}")
-        lines.append(f"Best Fitness: {self.current_best_fitness:.4f}")
-        if self.baseline_probability > 0 and self.current_probability > 0:
-            reduction = (1 - self.current_probability / self.baseline_probability) * 100
-            lines.append(f"Probability Reduction: {reduction:.1f}%")
+        # Refresh the display
+        if hasattr(self.fig, 'canvas') and hasattr(self.fig.canvas, 'draw_idle'):
+            self.fig.canvas.draw_idle()
 
-        return "\n".join(lines)
+    def _update_wanted_only_plots(self):
+        """Update plots for wanted token optimization."""
+        generations = [m.generation for m in self.metrics_history]
+        best_fitness = [m.best_fitness for m in self.metrics_history]
+        avg_fitness = [m.average_fitness for m in self.metrics_history]
+        wanted_probs = [m.wanted_prob_after for m in self.metrics_history]
+
+        self.plots['fitness_best'].set_data(generations, best_fitness)
+        self.plots['fitness_avg'].set_data(generations, avg_fitness)
+        self.plots['wanted_prob'].set_data(generations, wanted_probs)
+
+        # Auto-scale axes
+        self.axes['fitness'].relim()
+        self.axes['fitness'].autoscale_view()
+        self.axes['probability'].relim()
+        self.axes['probability'].autoscale_view()
+
+    def _update_multi_objective_plots(self):
+        """Update plots for multi-objective optimization."""
+        generations = [m.generation for m in self.metrics_history]
+        best_fitness = [m.best_fitness for m in self.metrics_history]
+        avg_fitness = [m.average_fitness for m in self.metrics_history]
+        target_probs = [m.target_prob_after for m in self.metrics_history]
+        wanted_probs = [m.wanted_prob_after for m in self.metrics_history]
+
+        self.plots['fitness_best'].set_data(generations, best_fitness)
+        self.plots['fitness_avg'].set_data(generations, avg_fitness)
+        self.plots['target_prob'].set_data(generations, target_probs)
+        self.plots['wanted_prob'].set_data(generations, wanted_probs)
+
+        # Auto-scale axes
+        self.axes['fitness'].relim()
+        self.axes['fitness'].autoscale_view()
+        self.axes['target'].relim()
+        self.axes['target'].autoscale_view()
+        self.axes['wanted'].relim()
+        self.axes['wanted'].autoscale_view()
+
+    def _update_target_only_plots(self):
+        """Update plots for target token reduction."""
+        generations = [m.generation for m in self.metrics_history]
+        best_fitness = [m.best_fitness for m in self.metrics_history]
+        avg_fitness = [m.average_fitness for m in self.metrics_history]
+        target_probs = [m.target_prob_after for m in self.metrics_history]
+
+        self.plots['fitness_best'].set_data(generations, best_fitness)
+        self.plots['fitness_avg'].set_data(generations, avg_fitness)
+        self.plots['target_prob'].set_data(generations, target_probs)
+
+        # Auto-scale axes
+        self.axes['fitness'].relim()
+        self.axes['fitness'].autoscale_view()
+        self.axes['probability'].relim()
+        self.axes['probability'].autoscale_view()
+
+    def _update_token_display(self):
+        """Update the token combination display - show token values instead of IDs."""
+        tokens_text = "Current Best Combination:\n"
+        if self.current_metrics.best_token_texts:
+            # Show token values instead of IDs
+            token_values = ", ".join([f"'{text}'" for text in self.current_metrics.best_token_texts])
+            tokens_text += f"Tokens: {token_values}\n"
+            if self.current_metrics.best_tokens:
+                token_ids = ", ".join([str(tid) for tid in self.current_metrics.best_tokens])
+                tokens_text += f"IDs: [{token_ids}]\n\n"
+        else:
+            tokens_text += "No tokens yet...\n\n"
+
+        tokens_text += f"Generation: {self.current_metrics.generation}\n"
+        tokens_text += f"Fitness: {self.current_metrics.best_fitness:.6f}\n"
+        tokens_text += f"Diversity: {self.current_metrics.diversity:.3f}\n"
+        tokens_text += f"Stagnation: {self.current_metrics.stagnation}\n\n"
+
+        if self.is_wanted_only:
+            wanted_increase_pct = (self.current_metrics.wanted_increase /
+                                 (1.0 - self.current_metrics.wanted_prob_before) * 100) \
+                                 if self.current_metrics.wanted_prob_before < 1.0 else 0
+            tokens_text += f"Wanted Increase: {wanted_increase_pct:.2f}%\n"
+            tokens_text += f"Probability: {self.current_metrics.wanted_prob_before:.6f} → {self.current_metrics.wanted_prob_after:.6f}"
+
+        elif self.is_multi_objective:
+            target_reduction_pct = (self.current_metrics.target_reduction /
+                                  self.current_metrics.target_prob_before * 100) \
+                                  if self.current_metrics.target_prob_before > 0 else 0
+            wanted_increase_pct = (self.current_metrics.wanted_increase /
+                                 (1.0 - self.current_metrics.wanted_prob_before) * 100) \
+                                 if self.current_metrics.wanted_prob_before < 1.0 else 0
+            tokens_text += f"Target Reduction: {target_reduction_pct:.2f}%\n"
+            tokens_text += f"Wanted Increase: {wanted_increase_pct:.2f}%\n"
+            tokens_text += f"Target: {self.current_metrics.target_prob_before:.6f} → {self.current_metrics.target_prob_after:.6f}\n"
+            tokens_text += f"Wanted: {self.current_metrics.wanted_prob_before:.6f} → {self.current_metrics.wanted_prob_after:.6f}"
+
+        else:  # target_only
+            target_reduction_pct = (self.current_metrics.target_reduction /
+                                  self.current_metrics.target_prob_before * 100) \
+                                  if self.current_metrics.target_prob_before > 0 else 0
+            tokens_text += f"Target Reduction: {target_reduction_pct:.2f}%\n"
+            tokens_text += f"Probability: {self.current_metrics.target_prob_before:.6f} → {self.current_metrics.target_prob_after:.6f}"
+
+        self.text_elements['tokens_text'].set_text(tokens_text)
+
+    def _update_context_display(self):
+        """Update the context and input strings display."""
+        context_text = "Input Strings for LLM:\n\n"
+
+        # Show baseline input string
+        if self.current_metrics.baseline_input_string:
+            context_text += f"BASELINE INPUT:\n'{self.current_metrics.baseline_input_string}'\n\n"
+        else:
+            context_text += f"BASELINE INPUT:\n'{self.base_text}'\n\n"
+
+        # Show current evolved input string
+        if self.current_metrics.full_input_string:
+            context_text += f"CURRENT INPUT:\n'{self.current_metrics.full_input_string}'\n\n"
+        else:
+            # Construct evolved string if not provided
+            evolved_prefix = "".join(self.current_metrics.best_token_texts) if self.current_metrics.best_token_texts else ""
+            full_string = f"{evolved_prefix}{self.base_text}"
+            context_text += f"CURRENT INPUT:\n'{full_string}'\n\n"
+
+        # Show top predicted tokens
+        if self.current_metrics.top_predicted_tokens:
+            context_text += "Top 5 Predicted Tokens:\n"
+            for i, (token_id, token_text, prob) in enumerate(self.current_metrics.top_predicted_tokens[:5]):
+                context_text += f"  {i+1}. '{token_text}' (ID: {token_id}) - {prob:.4f}\n"
+
+        self.text_elements['context_text'].set_text(context_text)
+
+    def _update_responses_display(self):
+        """Update the LLM responses comparison display."""
+        responses_text = "LLM Responses Comparison:\n\n"
+
+        # Show baseline response
+        if self.current_metrics.baseline_response:
+            responses_text += f"BASELINE RESPONSE:\n'{self.current_metrics.baseline_response}'\n\n"
+        else:
+            responses_text += "BASELINE RESPONSE:\n(No baseline response available)\n\n"
+
+        # Show current best response
+        if self.current_metrics.current_response:
+            responses_text += f"CURRENT BEST RESPONSE:\n'{self.current_metrics.current_response}'\n\n"
+        else:
+            responses_text += "CURRENT BEST RESPONSE:\n(No current response available)\n\n"
+
+        # Add comparison if both responses are available
+        if self.current_metrics.baseline_response and self.current_metrics.current_response:
+            if self.current_metrics.baseline_response == self.current_metrics.current_response:
+                responses_text += "STATUS: ⚠️  Responses are identical\n"
+            else:
+                responses_text += "STATUS: ✅ Responses are different\n"
+                # Calculate character difference
+                baseline_len = len(self.current_metrics.baseline_response)
+                current_len = len(self.current_metrics.current_response)
+                responses_text += f"Length change: {baseline_len} → {current_len} chars ({current_len - baseline_len:+d})\n"
+
+        self.text_elements['responses_text'].set_text(responses_text)
 
     def start_animation(self):
         """Start the real-time animation."""
+        if self.is_running:
+            return
+
+        print("🚀 Starting GUI animation...")
         self.is_running = True
-        self.logger.info("Starting real-time genetic algorithm animation...")
+
+        # Show the figure
+        plt.show(block=False)
+
+        # Ensure proper display
+        if self.fig and hasattr(self.fig, 'canvas'):
+            try:
+                self.fig.canvas.manager.show()
+                self.fig.canvas.draw()
+                self.fig.canvas.flush_events()
+                print("✅ GUI window displayed")
+            except Exception as e:
+                print(f"⚠️  Warning: Could not optimize window display: {e}")
+
+        # Initial update if we have data
+        if self.metrics_history:
+            self._update_plots_immediate()
 
     def stop_animation(self):
         """Stop the animation."""
         self.is_running = False
 
-    def mark_complete(self, final_message: str = None):
-        """Mark the evolution as complete."""
+    def mark_complete(self):
+        """Mark evolution as complete and add completion indicator."""
         self.is_complete = True
-        self.is_running = False
 
-        if final_message:
-            # Add completion message to the plot
-            self.fig.suptitle(f'Genetic Algorithm Evolution: COMPLETED\n{final_message}',
-                             fontsize=16, fontweight='bold', color='green')
-            plt.draw()
-            plt.pause(0.1)
+        # Add completion marker to fitness plot
+        if self.metrics_history and 'fitness' in self.axes:
+            final_gen = self.metrics_history[-1].generation
+            final_fitness = self.metrics_history[-1].best_fitness
 
-        self.logger.info("Genetic algorithm evolution completed!")
+            self.axes['fitness'].annotate('✅ Complete',
+                                        xy=(final_gen, final_fitness),
+                                        xytext=(final_gen - 5, final_fitness + 0.05),
+                                        arrowprops=dict(arrowstyle='->', color='green', lw=2),
+                                        fontsize=12, fontweight='bold', color='green')
 
-    def save_animation_data(self, filename: str):
-        """Save current animation data for later replay."""
-        data = {
-            'base_text': self.base_text,
-            'target_token_text': self.target_token_text,
-            'target_token_id': self.target_token_id,
-            'baseline_probability': self.baseline_probability,
-            'generations': list(self.generations),
-            'best_fitness': list(self.best_fitness),
-            'avg_fitness': list(self.avg_fitness),
-            'final_tokens': self.current_best_tokens,
-            'final_token_texts': self.current_token_texts,
-            'final_fitness': self.current_best_fitness
-        }
+        # Update title to show completion
+        if self.fig and hasattr(self.fig, '_suptitle') and self.fig._suptitle:
+            current_title = self.fig._suptitle.get_text()
+            self.fig.suptitle(f"✅ COMPLETE: {current_title}", fontweight='bold', color='green')
 
-        import json
-        with open(filename, 'w') as f:
-            json.dump(data, f, indent=2)
+        # Force display update
+        if self.fig and hasattr(self.fig, 'canvas'):
+            self.fig.canvas.draw()
+            self.fig.canvas.flush_events()
 
-        self.logger.info(f"Animation data saved to {filename}")
-
-    def keep_alive(self, duration: float = None):
-        """
-        Keep the animation window alive for viewing.
-
-        Args:
-            duration: How long to keep alive (seconds). None = indefinite
-        """
-        if not hasattr(self, 'fig') or not plt.fignum_exists(self.fig.number):
-            return
-
-        self.logger.info("Animation window is live. Close the window or press Ctrl+C to exit.")
-
+    def keep_alive(self):
+        """Keep the GUI window alive after evolution completes."""
         try:
-            if duration is None:
-                # Keep alive indefinitely
-                while plt.fignum_exists(self.fig.number):
-                    plt.pause(0.5)
-            else:
-                # Keep alive for specified duration
-                start_time = time.time()
-                while plt.fignum_exists(self.fig.number) and (time.time() - start_time) < duration:
-                    plt.pause(0.1)
-
+            print("🖼️  GUI animation is live. Close the window to exit.")
+            while plt.get_fignums():
+                plt.pause(0.5)
         except KeyboardInterrupt:
-            self.logger.info("Animation stopped by user.")
-        except Exception as e:
-            self.logger.warning(f"Animation error: {e}")
+            print("\n🛑 Animation stopped by user.")
         finally:
-            plt.ioff()
-            if hasattr(self, 'fig') and plt.fignum_exists(self.fig.number):
-                plt.close(self.fig)
+            plt.close('all')
 
 
 class GeneticAnimationCallback:
     """
-    Callback interface for the genetic algorithm to update the animator.
+    Callback interface for genetic algorithm integration.
 
-    This class bridges the genetic algorithm with the real-time animator,
-    providing methods that the GA can call to update the visualization.
+    This class provides the interface between the genetic algorithm
+    and the GUI animator, handling data updates and lifecycle events.
     """
 
-    def __init__(self, animator: RealTimeGeneticAnimator):
-        """Initialize with an animator instance."""
-        self.animator = animator
-        self.logger = logging.getLogger(__name__)
+    def __init__(self, animator: EnhancedGeneticAnimator, tokenizer=None):
+        """
+        Initialize the animation callback.
 
-    def on_evolution_start(self, baseline_prob: float, target_token_id: int = None,
-                          target_token_text: str = None, initial_top_tokens: list = None,
-                          tokenizer = None):
+        Args:
+            animator: The GUI animator instance
+            tokenizer: Tokenizer for decoding token texts
+        """
+        self.animator = animator
+        self.tokenizer = tokenizer
+
+    def on_evolution_start(self, baseline_data: Dict[str, Any]):
         """Called when evolution starts."""
-        self.animator.update_baseline(baseline_prob, target_token_id, target_token_text, initial_top_tokens, tokenizer)
+        self.animator.update_baseline(baseline_data)
         self.animator.start_animation()
 
-    def on_generation_complete(self, generation: int, best_individual, avg_fitness: float,
-                              current_probability: float = None, tokenizer=None,
-                              new_top_tokens: List[Tuple[int, float]] = None):
+    def set_tokenizer(self, tokenizer):
+        """Set the tokenizer for token decoding."""
+        self.tokenizer = tokenizer
+
+    def on_generation_complete(self, generation: int, population: List[Any],
+                             best_individual: Any, diversity: float, stagnation: int):
         """Called when a generation completes."""
-        # Decode tokens if tokenizer is available
-        token_texts = None
-        if tokenizer and hasattr(best_individual, 'tokens'):
-            try:
-                token_texts = [tokenizer.decode([token_id]) for token_id in best_individual.tokens]
-            except Exception as e:
-                self.logger.warning(f"Failed to decode tokens: {e}")
-
-        # Update animator
-        best_tokens = getattr(best_individual, 'tokens', [])
-        best_fitness = getattr(best_individual, 'fitness', 0.0)
-
-        self.animator.update_data(
+        # Extract metrics from the genetic algorithm state
+        metrics = EvolutionMetrics(
             generation=generation,
-            best_fitness=best_fitness,
-            avg_fitness=avg_fitness,
-            best_tokens=best_tokens,
-            token_texts=token_texts,
-            current_probability=current_probability,
-            tokenizer=tokenizer,
-            new_top_tokens=new_top_tokens
+            best_fitness=best_individual.fitness,
+            diversity=diversity,
+            stagnation=stagnation,
+            target_reduction=getattr(best_individual, 'target_reduction', 0.0),
+            wanted_increase=getattr(best_individual, 'wanted_increase', 0.0),
+            target_prob_before=getattr(best_individual, 'baseline_prob', 0.0),
+            target_prob_after=getattr(best_individual, 'modified_prob', 0.0),
+            wanted_prob_before=getattr(best_individual, 'wanted_baseline_prob', 0.0),
+            wanted_prob_after=getattr(best_individual, 'wanted_modified_prob', 0.0),
+            best_tokens=getattr(best_individual, 'tokens', []),
+            best_token_texts=[],  # Will be filled below
+            top_predicted_tokens=[],  # Will be filled below
+            baseline_response=getattr(best_individual, 'baseline_response', ''),
+            current_response=getattr(best_individual, 'current_response', ''),
+            full_input_string=getattr(best_individual, 'full_input_string', ''),
+            baseline_input_string=getattr(best_individual, 'baseline_input_string', '')
         )
 
-    def on_evolution_complete(self, final_population, total_generations: int):
+        # Calculate average fitness
+        if population:
+            total_fitness = sum(getattr(ind, 'fitness', 0.0) for ind in population)
+            metrics.average_fitness = total_fitness / len(population)
+
+        # Get token texts with proper decoding (show values instead of IDs)
+        if hasattr(best_individual, 'tokens') and best_individual.tokens:
+            if self.tokenizer:
+                try:
+                    metrics.best_token_texts = [self.tokenizer.decode([token_id]) for token_id in best_individual.tokens]
+                except Exception:
+                    metrics.best_token_texts = [f"Token_{tid}" for tid in best_individual.tokens]
+            elif hasattr(best_individual, 'token_texts'):
+                metrics.best_token_texts = best_individual.token_texts
+            else:
+                metrics.best_token_texts = [f"Token_{tid}" for tid in best_individual.tokens]
+
+        # Get top predicted tokens with proper decoding
+        if hasattr(best_individual, 'new_top_tokens') and best_individual.new_top_tokens:
+            if self.tokenizer:
+                try:
+                    metrics.top_predicted_tokens = [
+                        (token_id, self.tokenizer.decode([token_id]), prob)
+                        for token_id, prob in best_individual.new_top_tokens[:10]
+                    ]
+                except Exception:
+                    metrics.top_predicted_tokens = [
+                        (token_id, f"Token_{token_id}", prob)
+                        for token_id, prob in best_individual.new_top_tokens[:10]
+                    ]
+            else:
+                metrics.top_predicted_tokens = [
+                    (token_id, f"Token_{token_id}", prob)
+                    for token_id, prob in best_individual.new_top_tokens[:10]
+                ]
+
+        self.animator.update_metrics(metrics)
+
+    def on_evolution_complete(self, final_population: List[Any]):
         """Called when evolution completes."""
-        if final_population:
-            best_individual = final_population[0]
-            final_fitness = getattr(best_individual, 'fitness', 0.0)
-            final_tokens = getattr(best_individual, 'tokens', [])
+        self.animator.mark_complete()
 
-            message = f"Best fitness: {final_fitness:.4f} | Best tokens: {final_tokens}"
-            self.animator.mark_complete(message)
-        else:
-            self.animator.mark_complete("Evolution completed")
-
-    def save_results(self, filename: str):
-        """Save animation data to file."""
-        self.animator.save_animation_data(filename)
-
-    def keep_alive(self, duration: float = None):
+    def keep_alive(self):
         """Keep the animation alive for viewing."""
-        self.animator.keep_alive(duration)
+        self.animator.keep_alive()
+
+
+# Backwards compatibility aliases
+RealTimeGeneticAnimator = EnhancedGeneticAnimator
