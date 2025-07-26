@@ -24,7 +24,7 @@ from glitcher.model import (
 )
 
 # Import genetic algorithm functionality
-from .genetic import GeneticProbabilityReducer, GeneticBatchRunner, RealTimeGeneticAnimator, GeneticAnimationCallback
+from .genetic import GeneticProbabilityReducer, GeneticBatchRunner, EnhancedGeneticAnimator, GeneticAnimationCallback
 
 # Import range mining functionality
 try:
@@ -372,7 +372,11 @@ class GlitcherCLI:
         )
         genetic_parser.add_argument(
             "--target-token", type=str,
-            help="Specific token to target (auto-detected if not provided)"
+            help="Specific token to target for reduction (auto-detected if not provided)"
+        )
+        genetic_parser.add_argument(
+            "--wanted-token", type=str,
+            help="Specific token to target for increase (optional)"
         )
         genetic_parser.add_argument(
             "--token-file", type=str, default="glitch_tokens.json",
@@ -430,6 +434,22 @@ class GlitcherCLI:
         genetic_parser.add_argument(
             "--ascii-only", action="store_true",
             help="Filter tokens to only include those with ASCII-only decoded text"
+        )
+        genetic_parser.add_argument(
+            "--include-normal-tokens", action="store_true",
+            help="Include normal ASCII tokens from model vocabulary in addition to glitch tokens"
+        )
+        genetic_parser.add_argument(
+            "--comprehensive-search", action="store_true",
+            help="Perform comprehensive search through all vocabulary tokens for wanted token optimization (slower but thorough)"
+        )
+        genetic_parser.add_argument(
+            "--no-cache", action="store_true",
+            help="Disable caching of comprehensive search results"
+        )
+        genetic_parser.add_argument(
+            "--clear-cache", action="store_true",
+            help="Clear comprehensive search cache before running"
         )
         genetic_parser.add_argument(
             "--adaptive-mutation", action="store_true",
@@ -498,6 +518,13 @@ class GlitcherCLI:
         genetic_parser.add_argument(
             "--disable-shuffle-mutation", action="store_true", default=True,
             help="Disable shuffle mutation to preserve token combinations (default behavior)"
+        )
+
+        # GUI command
+        gui_parser = subparsers.add_parser("gui", help="Launch graphical user interface for genetic algorithm control")
+        gui_parser.add_argument(
+            "--config", type=str,
+            help="Configuration file to load on startup"
         )
 
         return parser
@@ -1221,8 +1248,10 @@ class GlitcherCLI:
             if self.args.gui:
                 try:
                     print("Initializing real-time GUI animation...")
-                    animator = RealTimeGeneticAnimator(
+                    animator = EnhancedGeneticAnimator(
                         base_text=self.args.base_text,
+                        target_token=self.args.target_token,
+                        wanted_token=getattr(self.args, 'wanted_token', None),
                         max_generations=self.args.generations
                     )
                     gui_callback = GeneticAnimationCallback(animator)
@@ -1287,8 +1316,13 @@ class GlitcherCLI:
                     model_name=self.args.model_path,
                     base_text=self.args.base_text,
                     target_token=self.args.target_token,
+                    wanted_token=getattr(self.args, 'wanted_token', None),
                     gui_callback=gui_callback
                 )
+
+                # Pass tokenizer to GUI callback after model loading
+                if gui_callback and hasattr(ga, 'tokenizer') and ga.tokenizer:
+                    gui_callback.set_tokenizer(ga.tokenizer)
 
                 # Configure GA parameters
                 ga.population_size = self.args.population_size
@@ -1331,7 +1365,25 @@ class GlitcherCLI:
 
                 # Load model and tokens
                 ga.load_model()
-                ga.load_glitch_tokens(self.args.token_file, ascii_only=self.args.ascii_only)
+                # Handle cache clearing if requested
+                if getattr(self.args, 'clear_cache', False):
+                    from pathlib import Path
+                    import shutil
+                    cache_dir = Path("cache/comprehensive_search")
+                    if cache_dir.exists():
+                        shutil.rmtree(cache_dir)
+                        print(f"Cleared comprehensive search cache: {cache_dir}")
+
+                ga.load_glitch_tokens(
+                    token_file=self.args.token_file,
+                    ascii_only=self.args.ascii_only,
+                    include_normal_tokens=getattr(self.args, 'include_normal_tokens', False),
+                    comprehensive_search=getattr(self.args, 'comprehensive_search', False)
+                )
+
+                # Set cache preferences if specified
+                if getattr(self.args, 'no_cache', False):
+                    ga.use_cache = False
 
                 if self.args.baseline_only:
                     # Only run token impact baseline analysis
@@ -1339,7 +1391,11 @@ class GlitcherCLI:
                     print(f"Model: {self.args.model_path}")
                     print(f"Base text: '{self.args.base_text}'")
 
-                    ga.target_token_id, ga.baseline_probability = ga.get_baseline_probability()
+                    target_id, target_prob, wanted_id, wanted_prob = ga.get_baseline_probability()
+                    ga.target_token_id = target_id
+                    ga.baseline_target_probability = target_prob
+                    ga.wanted_token_id = wanted_id
+                    ga.baseline_wanted_probability = wanted_prob or 0.0
                     ga.baseline_token_impacts()
                     ga.display_token_impact_results(top_n=self.args.baseline_top_n)
                     ga.save_token_impact_results(self.args.baseline_output)
@@ -1372,7 +1428,7 @@ class GlitcherCLI:
                         'base_text': self.args.base_text,
                         'target_token_id': ga.target_token_id,
                         'target_token_text': ga.tokenizer.decode([ga.target_token_id]) if ga.target_token_id else None,
-                        'baseline_probability': ga.baseline_probability,
+                        'baseline_probability': ga.baseline_target_probability,
                         'ga_parameters': {
                             'population_size': ga.population_size,
                             'max_generations': ga.max_generations,
@@ -1405,22 +1461,120 @@ class GlitcherCLI:
                     print("\nTop Results:")
                     for i, individual in enumerate(final_population[:5], 1):
                         token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
-                        reduction_pct = ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
-                        print(f"{i}. Tokens: {individual.tokens} ({token_texts})")
-                        print(f"   Fitness: {individual.fitness:.6f}")
-                        print(f"   Probability reduction: {reduction_pct:.2f}%")
+
+                        if ga.target_token_id is None and ga.wanted_token_id is not None:
+                            # Only wanted token specified - show wanted token increase
+                            wanted_increase_pct = (individual.wanted_increase / (1.0 - individual.wanted_baseline_prob) * 100) if individual.wanted_baseline_prob < 1.0 else 0
+                            print(f"{i}. Tokens: {individual.tokens} ({token_texts})")
+                            print(f"   Fitness: {individual.fitness:.6f}")
+                            print(f"   Wanted token increase: {wanted_increase_pct:.2f}%")
+                            print(f"   Wanted probability: {individual.wanted_baseline_prob:.6f} → {individual.wanted_modified_prob:.6f}")
+                        else:
+                            # Target token reduction (original behavior)
+                            reduction_pct = ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
+                            print(f"{i}. Tokens: {individual.tokens} ({token_texts})")
+                            print(f"   Fitness: {individual.fitness:.6f}")
+                            print(f"   Probability reduction: {reduction_pct:.2f}%")
                         print()
 
                     # Keep GUI alive if it was used
                     if gui_callback:
                         print("GUI animation is live. Close the window when done viewing.")
                         try:
-                            gui_callback.keep_alive(duration=None)  # Keep alive until window closed
+                            gui_callback.keep_alive()  # Keep alive until window closed
                         except KeyboardInterrupt:
                             print("GUI closed by user.")
 
         except Exception as e:
             print(f"ERROR: Error in genetic algorithm: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
+
+    def run_gui(self):
+        """Launch the graphical user interface for genetic algorithm control."""
+        try:
+            import tkinter as tk
+            from tkinter import messagebox
+            from .genetic.gui_controller import GeneticControllerGUI, GeneticConfig
+
+            print("🚀 Launching Glitcher GUI...")
+
+            # Create root window
+            root = tk.Tk()
+            root.title("Glitcher Genetic Algorithm Controller")
+            root.geometry("1200x800")
+            root.minsize(800, 600)
+
+            # Center window on screen
+            root.update_idletasks()
+            width = root.winfo_width()
+            height = root.winfo_height()
+            x = (root.winfo_screenwidth() // 2) - (width // 2)
+            y = (root.winfo_screenheight() // 2) - (height // 2)
+            root.geometry(f"{width}x{height}+{x}+{y}")
+
+            # Create the application
+            app = GeneticControllerGUI(root)
+
+            # Load configuration if provided
+            if hasattr(self.args, 'config') and self.args.config:
+                try:
+                    import json
+                    with open(self.args.config, 'r') as f:
+                        config_dict = json.load(f)
+
+                    # Update config object
+                    for key, value in config_dict.items():
+                        if hasattr(app.config, key):
+                            setattr(app.config, key, value)
+
+                    app.update_gui_from_config()
+                    print(f"✅ Loaded configuration from {self.args.config}")
+                except Exception as e:
+                    print(f"⚠️  Failed to load configuration: {e}")
+
+            # Setup cleanup handler
+            def on_closing():
+                if app.is_running:
+                    if messagebox.askyesno("Quit", "Evolution is running. Stop and quit?"):
+                        app.should_stop = True
+                        if app.evolution_thread and app.evolution_thread.is_alive():
+                            app.evolution_thread.join(timeout=2.0)
+                        root.destroy()
+                else:
+                    root.destroy()
+
+            root.protocol("WM_DELETE_WINDOW", on_closing)
+
+            print("✅ GUI ready!")
+            print("\n📋 Usage Instructions:")
+            print("   1. Configure parameters in the 'Configuration' tab")
+            print("   2. Use the 'Control' tab to start/stop evolution")
+            print("   3. Monitor progress in the 'Progress' tab")
+            print("   4. View results in the 'Results' tab")
+            print("\n🎯 Features:")
+            print("   • Real-time parameter adjustment")
+            print("   • Start/pause/stop controls")
+            print("   • Live progress monitoring")
+            print("   • Comprehensive search support")
+            print("   • Configuration save/load")
+            print("   • GUI animation integration")
+            print()
+
+            # Start the GUI main loop
+            root.mainloop()
+
+            print("👋 GUI closed.")
+
+        except ImportError as e:
+            print(f"❌ Import error: {e}")
+            print("GUI requires tkinter and matplotlib. Install with:")
+            print("   pip install matplotlib")
+            print("Note: tkinter is usually included with Python")
+            raise
+        except Exception as e:
+            print(f"❌ Error launching GUI: {e}")
             import traceback
             traceback.print_exc()
             raise
@@ -1448,6 +1602,9 @@ class GlitcherCLI:
             return
         elif self.args.command == "genetic":
             self.run_genetic()
+            return
+        elif self.args.command == "gui":
+            self.run_gui()
             return
 
         # Load model for other commands

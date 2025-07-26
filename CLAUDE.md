@@ -1,4 +1,8 @@
 # Glitcher Development Guide
+**AGENT INSTRUCTIONS:**
+- Never use emojis in code
+- When committing changes, ensure that the commit message is clear and concise.  you have access to gh cli tools
+- always use ssh for pushing changes.
 
 ## Installation and Setup
 ```bash
@@ -43,6 +47,18 @@ glitcher mine meta-llama/Llama-3.2-1B-Instruct --mode unicode --sample-rate 0.05
 
 # Range-based mining - Special token ranges
 glitcher mine meta-llama/Llama-3.2-1B-Instruct --mode special --sample-rate 0.2 --max-tokens-per-range 100
+
+# GUI Interface - Interactive genetic algorithm control
+glitcher gui
+
+# GUI with pre-loaded configuration
+glitcher gui --config my_config.json
+
+# Launch GUI directly via Python module
+python -m glitcher.gui_launcher
+
+# Run GUI demo with sample configuration
+python demo_gui.py
 
 # Range mining with enhanced validation
 glitcher mine meta-llama/Llama-3.2-1B-Instruct --mode range --range-start 128000 --range-end 128256 --sample-rate 1.0 --num-attempts 3
@@ -100,6 +116,55 @@ glitcher genetic meta-llama/Llama-3.2-1B-Instruct --gui --batch --generations 30
 
 # GUI showing enhanced string visualization with token positioning
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --gui --base-text "Hello world, this is a test of" --generations 40 --population-size 30
+
+# Comprehensive Wanted Token Search Examples - Full vocabulary exploration before genetic algorithm
+
+# Basic comprehensive search for any wanted token
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --base-text "The quick brown"
+
+# Comprehensive search with ASCII filtering (recommended for speed and clarity)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "world" --comprehensive-search --ascii-only --base-text "Hello"
+
+# Comprehensive search with GUI monitoring to watch progress in real-time
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "cat" --comprehensive-search --gui --base-text "The quick brown"
+
+# Comprehensive search with custom parameters for thorough analysis
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "dog" --comprehensive-search --generations 75 --population-size 40 --baseline-seeding-ratio 0.9
+
+# Fast comprehensive search with early genetic algorithm stopping
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "bird" --comprehensive-search --generations 30 --early-stopping-threshold 0.95
+
+# Comprehensive search including normal vocabulary tokens for maximum coverage
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "tree" --comprehensive-search --include-normal-tokens --ascii-only
+
+# Comprehensive search with specific target scenarios
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "sun" --comprehensive-search --base-text "The bright yellow"
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "moon" --comprehensive-search --base-text "At night the"
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "car" --comprehensive-search --base-text "I drive my red"
+
+# Comprehensive Wanted Token Search - thorough vocabulary exploration for wanted token optimization
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --base-text "The quick brown"
+
+# Comprehensive search with ASCII filtering for cleaner results
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "world" --comprehensive-search --ascii-only --base-text "Hello"
+
+# Comprehensive search with normal tokens included for broader coverage
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --include-normal-tokens --generations 50
+
+# Comprehensive search with GUI monitoring for real-time progress
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --gui --generations 30
+
+# Comprehensive search with custom genetic parameters
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "world" --comprehensive-search --generations 75 --population-size 40 --baseline-seeding-ratio 0.9
+
+# Fast comprehensive search with early stopping
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --generations 30 --early-stopping-threshold 0.95
+
+# Comprehensive search with caching disabled (always fresh search)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --no-cache
+
+# Clear comprehensive search cache before running
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "world" --comprehensive-search --clear-cache
 
 # Token Impact Baseline Analysis - Map individual token effects on target probability
 glitcher genetic meta-llama/Llama-3.2-1B-Instruct --baseline-only --base-text "The quick brown"
@@ -238,6 +303,274 @@ python demo_asr_thresholds.py meta-llama/Llama-3.2-1B-Instruct --num-attempts 5
 
 # ASR demo with specific tokens and custom parameters
 python demo_asr_thresholds.py meta-llama/Llama-3.2-1B-Instruct --token-ids 89472,127438,85069 --num-attempts 10 --max-tokens 100
+```
+
+## GUI Controller Interface
+
+### Overview
+The Glitcher GUI Controller provides a comprehensive graphical user interface for controlling and monitoring genetic algorithm evolution experiments. It offers real-time parameter adjustment, process control, and interactive visualization.
+
+### Launching the GUI Controller
+
+```bash
+# Launch GUI with default settings
+glitcher gui
+
+# Launch GUI with pre-loaded configuration
+glitcher gui --config my_config.json
+
+# Launch GUI directly via Python module
+python -m glitcher.gui_launcher
+
+# Run GUI demo with sample configuration and setup
+python demo_gui.py
+```
+
+### GUI Features
+
+#### Real-time Process Control
+- **Start/Pause/Stop**: Full control over evolution process
+- **Parameter Adjustment**: Modify settings during runtime
+- **Progress Monitoring**: Live updates on evolution progress
+- **Real-time Metrics**: Current generation, fitness scores, probability reduction
+
+#### Configuration Management
+- **Tabbed Interface**: Organized parameter categories
+- **Save/Load Configurations**: Persistent configuration files
+- **Reset to Defaults**: Quick parameter reset
+- **Parameter Validation**: Input validation and error handling
+
+#### Interactive Monitoring
+- **Live Progress Display**: Real-time generation progress
+- **Best Individual Tracking**: Current best token combinations
+- **Evolution Log**: Detailed activity logging
+- **Results Analysis**: Comprehensive results display
+
+#### Integration Features
+- **GUI Animation Support**: Optional real-time visualization
+- **Configuration Import/Export**: JSON-based configuration files
+- **Token File Management**: Easy token file selection and browsing
+- **Multi-threading**: Non-blocking UI during evolution
+
+### GUI Interface Tabs
+
+#### 1. Configuration Tab
+Configure all evolution parameters:
+
+**Model Configuration**
+- Model name/path selection
+- Token file path and browsing
+- Device and quantization settings
+
+**Text Configuration**
+- Base text input
+- Target token specification
+- Wanted token specification
+
+**Evolution Parameters**
+- Population size (10-200)
+- Generation count (10-1000)
+- Max tokens per combination (1-10)
+- Mutation rate (0.0-1.0)
+- Crossover rate (0.0-1.0)
+- Elite size (1-20)
+- Early stopping threshold (0.0-1.0)
+
+**Validation Parameters**
+- ASR threshold (0.0-1.0)
+- Number of attempts (1-10)
+- Validation token count (10-1000)
+
+**Mode Flags**
+- ASCII-only filtering
+- Enhanced validation
+- Comprehensive search
+- Include normal tokens
+- Baseline seeding
+- Sequence diversity
+- Exact token count
+- GUI animation
+
+**Advanced Parameters**
+- Baseline seeding ratio (0.0-1.0)
+- Sequence diversity ratio (0.0-1.0)
+
+#### 2. Control Tab
+Real-time process control:
+
+**Status Display**
+- Current process status
+- Evolution state indicator
+
+**Control Buttons**
+- Start Evolution (green button)
+- Pause/Resume (toggle)
+- Stop Evolution (red button)
+
+**Progress Tracking**
+- Generation progress bar
+- Current generation counter
+- Progress percentage
+
+**Current Best Display**
+- Best individual tokens
+- Fitness score
+- Probability reduction
+- Token decoded text
+
+#### 3. Progress Tab
+Live monitoring and metrics:
+
+**Real-time Metrics Panel**
+- Current generation number
+- Best fitness score
+- Average population fitness
+- Probability reduction percentage
+
+**Evolution Log**
+- Timestamped activity log
+- Error messages and warnings
+- Process status updates
+- Performance metrics
+
+#### 4. Results Tab
+Comprehensive results analysis:
+
+**Final Results Display**
+- Complete evolution summary
+- Best individual details
+- Token combination analysis
+- Performance statistics
+
+**Results Management**
+- Save results to file
+- Clear results display
+- Export functionality
+
+### Configuration File Format
+
+The GUI uses JSON configuration files with the following structure:
+
+```json
+{
+  "model_name": "meta-llama/Llama-3.2-1B-Instruct",
+  "base_text": "The quick brown",
+  "target_token": "",
+  "wanted_token": "fox",
+  "token_file": "glitch_tokens.json",
+  
+  "population_size": 50,
+  "generations": 100,
+  "max_tokens": 3,
+  "mutation_rate": 0.1,
+  "crossover_rate": 0.7,
+  "elite_size": 5,
+  "early_stopping_threshold": 0.999,
+  
+  "asr_threshold": 0.5,
+  "num_attempts": 3,
+  "validation_tokens": 50,
+  
+  "ascii_only": true,
+  "enhanced_validation": true,
+  "comprehensive_search": false,
+  "include_normal_tokens": false,
+  "baseline_seeding": true,
+  "sequence_diversity": true,
+  "exact_token_count": true,
+  "enable_shuffle_mutation": false,
+  
+  "baseline_seeding_ratio": 0.7,
+  "sequence_diversity_ratio": 0.3,
+  
+  "output_file": "genetic_results.json",
+  "baseline_output": "token_impact_baseline.json",
+  "show_gui_animation": true
+}
+```
+
+### GUI Usage Workflow
+
+#### Basic Workflow
+1. **Launch GUI**: `glitcher gui` or `python demo_gui.py`
+2. **Configure Parameters**: Adjust settings in Configuration tab
+3. **Start Evolution**: Use Control tab to begin process
+4. **Monitor Progress**: Watch real-time updates in Progress tab
+5. **Analyze Results**: Review final results in Results tab
+
+#### Advanced Workflow
+1. **Load Configuration**: Use saved configuration file
+2. **Fine-tune Parameters**: Adjust specific settings as needed
+3. **Enable Advanced Features**: Comprehensive search, GUI animation
+4. **Run Evolution**: Start with pause/resume capability
+5. **Export Results**: Save configuration and results for later analysis
+
+### GUI Requirements
+
+```bash
+# Core dependencies
+pip install torch transformers
+
+# GUI dependencies (tkinter usually included with Python)
+pip install matplotlib  # For GUI animation support
+
+# Optional but recommended
+pip install accelerate bitsandbytes  # For model optimization
+```
+
+### GUI Best Practices
+
+#### Configuration Management
+- **Save Configurations**: Always save working configurations
+- **Use Descriptive Names**: Name configuration files clearly
+- **Version Control**: Keep track of configuration changes
+- **Backup Important Settings**: Maintain copies of successful configurations
+
+#### Process Control
+- **Monitor Progress**: Watch evolution metrics during runs
+- **Use Pause Wisely**: Pause to adjust parameters if needed
+- **Plan Stop Points**: Know when to stop evolution early
+- **Save Intermediate Results**: Export results at key milestones
+
+#### Performance Optimization
+- **Start Small**: Begin with smaller populations and fewer generations
+- **Scale Gradually**: Increase parameters based on initial results
+- **Use ASCII Filtering**: Enable for cleaner, faster results
+- **Enable Caching**: Use comprehensive search caching for efficiency
+
+#### Troubleshooting
+- **Check Dependencies**: Ensure all required packages are installed
+- **Verify Token Files**: Confirm token files exist and are valid
+- **Monitor Memory**: Watch system resources during evolution
+- **Review Logs**: Check evolution log for error messages
+
+### GUI Demo and Examples
+
+#### Quick Start Demo
+```bash
+# Run the interactive demo with sample configuration
+python demo_gui.py
+
+# This creates:
+# - sample_gui_config.json (sample configuration)
+# - glitch_tokens.json (sample tokens, if not exists)
+```
+
+#### Configuration Examples
+```bash
+# Create custom configuration for specific use case
+glitcher gui --config research_config.json
+
+# Example research configuration
+{
+  "model_name": "meta-llama/Llama-3.2-3B-Instruct",
+  "base_text": "The scientific method",
+  "wanted_token": "hypothesis",
+  "comprehensive_search": true,
+  "generations": 200,
+  "population_size": 100,
+  "asr_threshold": 0.8
+}
 ```
 
 ## ASR (Attack Success Rate) Guidelines
@@ -390,6 +723,135 @@ When using token impact baseline analysis, results show individual token effecti
 - **ASCII-Only Filtering**: `--ascii-only` (exclude Unicode and special characters for cleaner results)
 - **ASCII + Quick**: `--ascii-only --generations 30` (fast ASCII-only exploration)
 - **ASCII + Batch**: `--ascii-only --batch` (comprehensive ASCII-only testing)
+- **Comprehensive Wanted Search**: `--wanted-token "target" --comprehensive-search` (thorough vocabulary exploration for wanted token)
+- **Fast Comprehensive**: `--wanted-token "target" --comprehensive-search --ascii-only` (comprehensive search with ASCII filtering)
+- **Visual Comprehensive**: `--wanted-token "target" --comprehensive-search --gui` (comprehensive search with real-time monitoring)
+
+## Comprehensive Wanted Token Search
+
+### Overview
+The `--comprehensive-search` flag enables thorough exploration of the entire model vocabulary to find the most effective tokens for increasing the probability of a specified `--wanted-token`. This feature performs systematic testing before starting the genetic algorithm evolution.
+
+### Key Features
+- **Full Vocabulary Coverage**: Tests all available tokens in the model vocabulary (can be limited with max_tokens)
+- **Optimized Batching**: Uses efficient batch processing for faster execution
+- **Multiple Position Testing**: Tests tokens in different positions (prefix, suffix, colon-separated) for maximum impact
+- **Smart Prioritization**: Automatically reorders available tokens to prioritize high-impact discoveries
+- **Early Stopping**: Automatically stops when finding sufficient excellent tokens (>90% normalized impact)
+- **Enhanced Progress Tracking**: Detailed progress logging with impact statistics
+- **Intelligent Caching**: Results are automatically cached for instant subsequent runs with same parameters
+- **GUI Responsiveness**: Real-time progress updates prevent GUI freezing during long searches
+
+### Usage Patterns
+```bash
+# Basic comprehensive search for wanted token
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search
+
+# Comprehensive search with ASCII filtering (recommended for cleaner results)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "world" --comprehensive-search --ascii-only
+
+# Comprehensive search with visual monitoring
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --gui
+
+# Fast comprehensive search with early genetic evolution
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --generations 30
+```
+
+### When to Use Comprehensive Search
+- **New Wanted Tokens**: When exploring tokens not in your existing glitch token database
+- **Systematic Analysis**: When you need thorough coverage of vocabulary space for research
+- **High-Impact Discovery**: When seeking the absolute best tokens for wanted token manipulation
+- **Research Baselines**: When establishing comprehensive baselines for wanted token effects
+
+### Performance Characteristics
+- **Full Vocabulary**: May test 50k-100k+ tokens depending on model (slower but thorough)
+- **ASCII Filtering**: Reduces token count by ~70% while maintaining quality (recommended)
+- **Batch Processing**: 16 tokens per batch by default for optimal GPU utilization
+- **Early Stopping**: Automatically stops after finding 50+ excellent tokens (>90% impact)
+- **Smart Reordering**: High-impact tokens are prioritized for genetic algorithm initialization
+- **Caching**: First run takes 5-10 minutes, subsequent runs with same parameters are instant
+
+### Output Examples
+```
+# First run (full search)
+🔍 Comprehensive wanted token search: testing 45,231 tokens for 'fox'...
+🚀 Using optimized batch processing (batch_size=16) for faster execution
+🔍 Progress: 5,000/45,231 (11.1%) | Best impact: 0.234567 | Excellent tokens found: 12
+🎯 Early stopping: found 50 excellent tokens (>90% impact)
+🏆 Top 20 tokens for wanted 'fox':
+  1. Token  12345 'Red                 ' Impact: 0.456789 (78.9%) Prob: 0.0123 → 0.4691 ⭐
+  2. Token  67890 'quick               ' Impact: 0.234567 (91.2%) Prob: 0.0123 → 0.2469 🔥
+✅ Comprehensive search results cached to: cache/comprehensive_search/comprehensive_search_abc123.json
+
+# GUI during comprehensive search shows live progress
+🔍 Comprehensive Search: 24.4% (2,000/8,196 tokens) | Best Impact: 0.034819 | Excellent: 0
+🔍 Comprehensive Search: 48.8% (4,000/8,196 tokens) | Best Impact: 0.034819 | Excellent: 0
+
+# Subsequent runs (cached)
+Using cached comprehensive search results for wanted token 'fox'
+Loaded comprehensive search results from cache (8196 tokens, 0.5 hours old)
+Reordered available tokens using cached results: 24 high-impact tokens prioritized
+```
+
+### Best Practices for Comprehensive Search
+- **Start with ASCII**: Use `--ascii-only` for faster, cleaner results
+- **Monitor Progress**: Use `--gui` to watch real-time progress and impact discovery with responsive updates
+- **Combine with Genetic**: Let comprehensive search feed into genetic algorithm for optimal results
+- **Save Results**: Use `--baseline-output` to preserve comprehensive search findings
+- **Performance Tuning**: For very large vocabularies, consider limiting with max_tokens parameter
+- **Use Caching**: Let results cache automatically for instant subsequent runs with same parameters
+- **Cache Management**: Use `--clear-cache` when you want fresh results, `--no-cache` to disable caching entirely
+- **GUI Responsiveness**: GUI remains responsive during long searches with live progress updates
+
+### Advanced Comprehensive Search Examples
+```bash
+# Research-grade comprehensive analysis with full documentation
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "science" --comprehensive-search --ascii-only --baseline-output comprehensive_science_analysis.json --generations 100
+
+# High-performance comprehensive search with optimized parameters
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "technology" --comprehensive-search --include-normal-tokens --population-size 60 --generations 80 --baseline-seeding-ratio 0.95
+
+# Comparative comprehensive analysis across different base texts
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "love" --comprehensive-search --base-text "I feel"
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "love" --comprehensive-search --base-text "She shows"
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "love" --comprehensive-search --base-text "They express"
+
+# Comprehensive search with maximum exploration settings
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "intelligence" --comprehensive-search --include-normal-tokens --generations 150 --population-size 80 --no-sequence-diversity --baseline-seeding-ratio 1.0
+
+# Cache management examples
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "cat" --comprehensive-search --clear-cache  # Fresh search, clear old cache
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "dog" --comprehensive-search --no-cache    # Disable caching entirely
+```
+
+### Comprehensive Search Caching
+
+#### Overview
+Comprehensive search results are automatically cached to avoid repeating expensive vocabulary scans. Cache files are stored in `cache/comprehensive_search/` and are automatically validated against search parameters.
+
+#### Caching Benefits
+- **Instant Results**: Subsequent runs with same parameters load cached results instantly
+- **Parameter Validation**: Cache automatically invalidates if model, base text, or wanted token changes
+- **Storage Efficient**: Only stores impact metrics, not full model outputs
+- **Time Savings**: Eliminates 5-10 minute wait times for large vocabulary scans
+
+#### Cache Management Commands
+```bash
+# Use cached results (default behavior)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search
+
+# Clear cache before running (forces fresh search)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --clear-cache
+
+# Disable caching completely (always fresh search)
+glitcher genetic meta-llama/Llama-3.2-1B-Instruct --wanted-token "fox" --comprehensive-search --no-cache
+```
+
+#### Cache Behavior
+- **Automatic Validation**: Cache is invalidated if model name, base text, wanted token, or baseline probability changes
+- **Unique Keys**: Each combination of parameters gets its own cache file
+- **Token Prioritization**: Cached results still reorder available tokens for genetic algorithm optimization
+- **Age Tracking**: Cache files include timestamps for optional expiration (not enforced by default)
 
 ## Token Impact Baseline Usage Patterns
 
@@ -501,7 +963,7 @@ When diversity injection is triggered, the algorithm uses multiple sequence-focu
 
 1. **Sequence Variations (25%)**: Creates permutations of top-performing token combinations
 2. **Cross-Combination Reordering (25%)**: Combines tokens from multiple top performers and shuffles order
-3. **Reverse Sequences (25%)**: Tests reverse order of best combinations  
+3. **Reverse Sequences (25%)**: Tests reverse order of best combinations
 4. **Mutation + Shuffle (25%)**: Applies mutations then shuffles for new sequences
 
 ### Sequence Diversity Benefits
