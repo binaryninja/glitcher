@@ -1,0 +1,34 @@
+{
+  "glitch_tokens": [
+    {
+      "id": 12345,
+      "text": "SampleToken1",
+      "entropy": 0.1234,
+      "target_prob": 0.001
+    },
+    {
+      "id": 67890,
+      "text": "SampleToken2",
+      "entropy": 0.2345,
+      "target_prob": 0.002
+    },
+    {
+      "id": 11111,
+      "text": "TestToken",
+      "entropy": 0.3456,
+      "target_prob": 0.003
+    },
+    {
+      "id": 22222,
+      "text": "GlitchToken",
+      "entropy": 0.4567,
+      "target_prob": 0.004
+    },
+    {
+      "id": 33333,
+      "text": "ExampleToken",
+      "entropy": 0.5678,
+      "target_prob": 0.005
+    }
+  ]
+}

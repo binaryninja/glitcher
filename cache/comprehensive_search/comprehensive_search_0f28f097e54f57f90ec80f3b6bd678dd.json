@@ -1,0 +1,708 @@
+{
+  "timestamp": 1753535030.902137,
+  "model_name": "meta-llama/Llama-3.2-1B-Instruct",
+  "base_text": "The quick brown",
+  "wanted_token": " cat",
+  "wanted_token_id": 8415,
+  "baseline_wanted_probability": 6.556510925292969e-07,
+  "search_parameters": {
+    "max_tokens": null,
+    "batch_size": 16,
+    "available_tokens_count": 99
+  },
+  "results": {
+    "79826": {
+      "token_text": " BCHP",
+      "wanted_impact": 0.002480804920196533,
+      "wanted_normalized": 0.002480806546740056,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0024814605712890625
+    },
+    "124454": {
+      "token_text": " Uygu",
+      "wanted_impact": 0.0011733174324035645,
+      "wanted_normalized": 0.0011733182016909253,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0011739730834960938
+    },
+    "123997": {
+      "token_text": "alardan",
+      "wanted_impact": 0.0010131001472473145,
+      "wanted_normalized": 0.0010131008114879683,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0010137557983398438
+    },
+    "81998": {
+      "token_text": "ablytyped",
+      "wanted_impact": 0.0007398724555969238,
+      "wanted_normalized": 0.0007398729406954258,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0007405281066894531
+    },
+    "108577": {
+      "token_text": "ilmektedir",
+      "wanted_impact": 0.000475466251373291,
+      "wanted_normalized": 0.00047546656311346256,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0004761219024658203
+    },
+    "72710": {
+      "token_text": " -->\r\n\r\n",
+      "wanted_impact": 0.00042182207107543945,
+      "wanted_normalized": 0.00042182234764372254,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00042247772216796875
+    },
+    "87332": {
+      "token_text": ";\r\n\r\n\r\n\r\n",
+      "wanted_impact": 0.0003781914710998535,
+      "wanted_normalized": 0.0003781917190616673,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0003788471221923828
+    },
+    "109680": {
+      "token_text": " byli",
+      "wanted_impact": 0.0003591179847717285,
+      "wanted_normalized": 0.00035911822022798197,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0003597736358642578
+    },
+    "109046": {
+      "token_text": " eoqkrvldkf",
+      "wanted_impact": 0.00034433603286743164,
+      "wanted_normalized": 0.00034433625863187584,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00034499168395996094
+    },
+    "98797": {
+      "token_text": "APolynomial",
+      "wanted_impact": 0.00033527612686157227,
+      "wanted_normalized": 0.0003352763466858753,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00033593177795410156
+    },
+    "49453": {
+      "token_text": "EDIATEK",
+      "wanted_impact": 0.0003095269203186035,
+      "wanted_normalized": 0.0003095271232604001,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0003101825714111328
+    },
+    "71390": {
+      "token_text": " PodsDummy",
+      "wanted_impact": 0.0003090500831604004,
+      "wanted_normalized": 0.00030905028578955793,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0003097057342529297
+    },
+    "99037": {
+      "token_text": "\"};\r\n",
+      "wanted_impact": 0.0002937912940979004,
+      "wanted_normalized": 0.00029379148672260965,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0002944469451904297
+    },
+    "79423": {
+      "token_text": " thuisontvangst",
+      "wanted_impact": 0.00028759241104125977,
+      "wanted_normalized": 0.0002875925996016619,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00028824806213378906
+    },
+    "116815": {
+      "token_text": " obvyk",
+      "wanted_impact": 0.00028401613235473633,
+      "wanted_normalized": 0.0002840163185703459,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0002846717834472656
+    },
+    "89475": {
+      "token_text": "elementGuidId",
+      "wanted_impact": 0.0002701878547668457,
+      "wanted_normalized": 0.00027018803191592404,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.000270843505859375
+    },
+    "79883": {
+      "token_text": "\tTokenNameIdentifier",
+      "wanted_impact": 0.0002658963203430176,
+      "wanted_normalized": 0.00026589649467834484,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0002665519714355469
+    },
+    "73433": {
+      "token_text": "'\";\r\n",
+      "wanted_impact": 0.00024753808975219727,
+      "wanted_normalized": 0.00024753825205092267,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00024819374084472656
+    },
+    "42953": {
+      "token_text": "--;\r\n",
+      "wanted_impact": 0.00023442506790161133,
+      "wanted_normalized": 0.000234425221602764,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00023508071899414062
+    },
+    "84459": {
+      "token_text": ":\";\r\n",
+      "wanted_impact": 0.00018924474716186523,
+      "wanted_normalized": 0.0001892448712404718,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00018990039825439453
+    },
+    "95779": {
+      "token_text": " {\r\n\r\n\r\n",
+      "wanted_impact": 0.0001888871192932129,
+      "wanted_normalized": 0.00018888724313734023,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0001895427703857422
+    },
+    "79142": {
+      "token_text": "\">';\r\n",
+      "wanted_impact": 0.00018292665481567383,
+      "wanted_normalized": 0.00018292677475181354,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00018358230590820312
+    },
+    "97581": {
+      "token_text": " JSName",
+      "wanted_impact": 0.00018006563186645508,
+      "wanted_normalized": 0.00018006574992676075,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00018072128295898438
+    },
+    "51717": {
+      "token_text": " prostituerte",
+      "wanted_impact": 0.00017505884170532227,
+      "wanted_normalized": 0.00017505895648291833,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00017571449279785156
+    },
+    "117159": {
+      "token_text": " +**************",
+      "wanted_impact": 0.0001716017723083496,
+      "wanted_normalized": 0.00017160188481931288,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0001722574234008789
+    },
+    "72031": {
+      "token_text": "?>\">\r\n",
+      "wanted_impact": 0.0001690983772277832,
+      "wanted_normalized": 0.00016909848809739167,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0001697540283203125
+    },
+    "73018": {
+      "token_text": " StreamLazy",
+      "wanted_impact": 0.0001671910285949707,
+      "wanted_normalized": 0.00016719113821402315,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0001678466796875
+    },
+    "127671": {
+      "token_text": " vystav",
+      "wanted_impact": 0.0001576542854309082,
+      "wanted_normalized": 0.00015765438879718045,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0001583099365234375
+    },
+    "89471": {
+      "token_text": "useRal",
+      "wanted_impact": 0.00015288591384887695,
+      "wanted_normalized": 0.00015288601408875913,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00015354156494140625
+    },
+    "53355": {
+      "token_text": "igrationBuilder",
+      "wanted_impact": 0.0001456141471862793,
+      "wanted_normalized": 0.00014561424265841657,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0001462697982788086
+    },
+    "101673": {
+      "token_text": "ektedir",
+      "wanted_impact": 0.0001448988914489746,
+      "wanted_normalized": 0.00014489898645215338,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0001455545425415039
+    },
+    "86849": {
+      "token_text": "\tRuntimeObject",
+      "wanted_impact": 0.00013631582260131836,
+      "wanted_normalized": 0.00013631591197699498,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00013697147369384766
+    },
+    "84676": {
+      "token_text": " wannonce",
+      "wanted_impact": 0.00013571977615356445,
+      "wanted_normalized": 0.0001357198651384423,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00013637542724609375
+    },
+    "83706": {
+      "token_text": ">\"\r\n",
+      "wanted_impact": 0.00013500452041625977,
+      "wanted_normalized": 0.0001350046089321791,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00013566017150878906
+    },
+    "28288": {
+      "token_text": "';\r\n\r\n",
+      "wanted_impact": 0.00012630224227905273,
+      "wanted_normalized": 0.00012630232508931016,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00012695789337158203
+    },
+    "91198": {
+      "token_text": "externalActionCode",
+      "wanted_impact": 0.0001233220100402832,
+      "wanted_normalized": 0.00012332209089654684,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0001239776611328125
+    },
+    "71819": {
+      "token_text": "numerusform",
+      "wanted_impact": 0.00012093782424926758,
+      "wanted_normalized": 0.00012093790354233616,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00012159347534179688
+    },
+    "114767": {
+      "token_text": "iyesi",
+      "wanted_impact": 0.0001188516616821289,
+      "wanted_normalized": 0.00011885173960740183,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.0001195073127746582
+    },
+    "81259": {
+      "token_text": "artisanlib",
+      "wanted_impact": 0.00011110305786132812,
+      "wanted_normalized": 0.00011110313070621715,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00011175870895385742
+    },
+    "76271": {
+      "token_text": "\tNdrFcShort",
+      "wanted_impact": 0.00010770559310913086,
+      "wanted_normalized": 0.00010770566372646695,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00010836124420166016
+    },
+    "31836": {
+      "token_text": ">\r\r\n",
+      "wanted_impact": 0.00010734796524047852,
+      "wanted_normalized": 0.00010734803562333535,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00010800361633300781
+    },
+    "89673": {
+      "token_text": " //{\r\n",
+      "wanted_impact": 0.00010389089584350586,
+      "wanted_normalized": 0.00010389096395972988,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 0.00010454654693603516
+    },
+    "124393": {
+      "token_text": "sahuje",
+      "wanted_impact": 9.906291961669922e-05,
+      "wanted_normalized": 9.906298456745328e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 9.971857070922852e-05
+    },
+    "70784": {
+      "token_text": "Japgolly",
+      "wanted_impact": 9.751319885253906e-05,
+      "wanted_normalized": 9.751326278721634e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 9.816884994506836e-05
+    },
+    "76371": {
+      "token_text": "LANGADM",
+      "wanted_impact": 9.745359420776367e-05,
+      "wanted_normalized": 9.745365810336108e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 9.810924530029297e-05
+    },
+    "94497": {
+      "token_text": "!\";\r\n",
+      "wanted_impact": 9.739398956298828e-05,
+      "wanted_normalized": 9.739405341950581e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 9.804964065551758e-05
+    },
+    "31960": {
+      "token_text": "quotelev",
+      "wanted_impact": 9.375810623168945e-05,
+      "wanted_normalized": 9.375816770433454e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 9.441375732421875e-05
+    },
+    "22307": {
+      "token_text": "\";\r\n\r\n",
+      "wanted_impact": 8.726119995117188e-05,
+      "wanted_normalized": 8.726125716411047e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 8.791685104370117e-05
+    },
+    "64424": {
+      "token_text": "\">\r\r\n",
+      "wanted_impact": 8.660554885864258e-05,
+      "wanted_normalized": 8.660560564170254e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 8.726119995117188e-05
+    },
+    "89472": {
+      "token_text": "useRalative",
+      "wanted_impact": 8.547306060791016e-05,
+      "wanted_normalized": 8.547311664845247e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 8.612871170043945e-05
+    },
+    "123745": {
+      "token_text": " zahrn",
+      "wanted_impact": 8.398294448852539e-05,
+      "wanted_normalized": 8.39829995520708e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 8.463859558105469e-05
+    },
+    "80370": {
+      "token_text": " ForCanBeConvertedToF",
+      "wanted_impact": 8.07642936706543e-05,
+      "wanted_normalized": 8.07643466238864e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 8.14199447631836e-05
+    },
+    "106535": {
+      "token_text": " uygulam",
+      "wanted_impact": 7.849931716918945e-05,
+      "wanted_normalized": 7.849936863738626e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 7.915496826171875e-05
+    },
+    "80612": {
+      "token_text": "MethodBeat",
+      "wanted_impact": 7.766485214233398e-05,
+      "wanted_normalized": 7.766490306341252e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 7.832050323486328e-05
+    },
+    "88542": {
+      "token_text": " */\r\n\r\n\r\n",
+      "wanted_impact": 7.730722427368164e-05,
+      "wanted_normalized": 7.730727496028093e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 7.796287536621094e-05
+    },
+    "80369": {
+      "token_text": " ForCanBeConverted",
+      "wanted_impact": 7.730722427368164e-05,
+      "wanted_normalized": 7.730727496028093e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 7.796287536621094e-05
+    },
+    "85069": {
+      "token_text": "PostalCodesNL",
+      "wanted_impact": 6.842613220214844e-05,
+      "wanted_normalized": 6.842617706584618e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.908178329467773e-05
+    },
+    "55716": {
+      "token_text": "?>\r\n\r\n",
+      "wanted_impact": 6.812810897827148e-05,
+      "wanted_normalized": 6.812815364656985e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.878376007080078e-05
+    },
+    "64448": {
+      "token_text": "?>\r\n\r\n",
+      "wanted_impact": 6.812810897827148e-05,
+      "wanted_normalized": 6.812815364656985e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.878376007080078e-05
+    },
+    "79740": {
+      "token_text": " Hexatrigesimal",
+      "wanted_impact": 6.717443466186523e-05,
+      "wanted_normalized": 6.717447870488559e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.783008575439453e-05
+    },
+    "99874": {
+      "token_text": " MessageLookup",
+      "wanted_impact": 6.67572021484375e-05,
+      "wanted_normalized": 6.675724591789873e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.74128532409668e-05
+    },
+    "79008": {
+      "token_text": " \"\";\r\n\r\n",
+      "wanted_impact": 6.556510925292969e-05,
+      "wanted_normalized": 6.556515224079339e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.622076034545898e-05
+    },
+    "38335": {
+      "token_text": "\">\r\n\r\n",
+      "wanted_impact": 6.276369094848633e-05,
+      "wanted_normalized": 6.276373209959585e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.341934204101562e-05
+    },
+    "126445": {
+      "token_text": " belirlen",
+      "wanted_impact": 6.210803985595703e-05,
+      "wanted_normalized": 6.210808057718792e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.276369094848633e-05
+    },
+    "110410": {
+      "token_text": " seviy",
+      "wanted_impact": 6.175041198730469e-05,
+      "wanted_normalized": 6.175045247405632e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.240606307983398e-05
+    },
+    "55722": {
+      "token_text": " },\r\n\r\n",
+      "wanted_impact": 6.157159805297852e-05,
+      "wanted_normalized": 6.157163842249052e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 6.222724914550781e-05
+    },
+    "58508": {
+      "token_text": ":-------------</",
+      "wanted_impact": 5.930662155151367e-05,
+      "wanted_normalized": 5.930666043599038e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 5.996227264404297e-05
+    },
+    "47073": {
+      "token_text": "webElementXpaths",
+      "wanted_impact": 5.751848220825195e-05,
+      "wanted_normalized": 5.751851992033238e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 5.817413330078125e-05
+    },
+    "71664": {
+      "token_text": "\tNdrFc",
+      "wanted_impact": 5.728006362915039e-05,
+      "wanted_normalized": 5.7280101184911314e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 5.793571472167969e-05
+    },
+    "94727": {
+      "token_text": " //\r\n\r\n",
+      "wanted_impact": 5.364418029785156e-05,
+      "wanted_normalized": 5.364421546974004e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 5.429983139038086e-05
+    },
+    "70316": {
+      "token_text": "erusform",
+      "wanted_impact": 5.358457565307617e-05,
+      "wanted_normalized": 5.3584610785884774e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 5.424022674560547e-05
+    },
+    "97558": {
+      "token_text": "JSGlobalScope",
+      "wanted_impact": 5.2928924560546875e-05,
+      "wanted_normalized": 5.2928959263476844e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 5.358457565307617e-05
+    },
+    "107572": {
+      "token_text": "ecektir",
+      "wanted_impact": 5.14984130859375e-05,
+      "wanted_normalized": 5.149844685095044e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 5.21540641784668e-05
+    },
+    "112907": {
+      "token_text": "uyordu",
+      "wanted_impact": 4.953145980834961e-05,
+      "wanted_normalized": 4.953149228372664e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 5.0187110900878906e-05
+    },
+    "109045": {
+      "token_text": "krvldkf",
+      "wanted_impact": 4.9114227294921875e-05,
+      "wanted_normalized": 4.9114259496739774e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 4.976987838745117e-05
+    },
+    "97784": {
+      "token_text": " JSBracketAccess",
+      "wanted_impact": 4.7147274017333984e-05,
+      "wanted_normalized": 4.714730492951597e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 4.780292510986328e-05
+    },
+    "90412": {
+      "token_text": "selectorMethod",
+      "wanted_impact": 4.500150680541992e-05,
+      "wanted_normalized": 4.500153631072637e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 4.565715789794922e-05
+    },
+    "114178": {
+      "token_text": " jednodu",
+      "wanted_impact": 4.464387893676758e-05,
+      "wanted_normalized": 4.464390820759477e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 4.5299530029296875e-05
+    },
+    "110024": {
+      "token_text": " CLIIIK",
+      "wanted_impact": 4.029273986816406e-05,
+      "wanted_normalized": 4.02927662861603e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 4.094839096069336e-05
+    },
+    "120232": {
+      "token_text": " ovliv",
+      "wanted_impact": 3.993511199951172e-05,
+      "wanted_normalized": 3.9935138183028696e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 4.0590763092041016e-05
+    },
+    "99944": {
+      "token_text": " davidjl",
+      "wanted_impact": 3.707408905029297e-05,
+      "wanted_normalized": 3.70741133579759e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.7729740142822266e-05
+    },
+    "80371": {
+      "token_text": " ForCanBeConvertedToForeach",
+      "wanted_impact": 3.55839729309082e-05,
+      "wanted_normalized": 3.5583996261594226e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.62396240234375e-05
+    },
+    "84576": {
+      "token_text": " AppMethodBeat",
+      "wanted_impact": 3.546476364135742e-05,
+      "wanted_normalized": 3.5464786893883696e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.612041473388672e-05
+    },
+    "108980": {
+      "token_text": " smlou",
+      "wanted_impact": 3.4868717193603516e-05,
+      "wanted_normalized": 3.486874005533103e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.552436828613281e-05
+    },
+    "87829": {
+      "token_text": " }\r\r\n",
+      "wanted_impact": 3.409385681152344e-05,
+      "wanted_normalized": 3.409387916521256e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.4749507904052734e-05
+    },
+    "60934": {
+      "token_text": " typingsSlinky",
+      "wanted_impact": 3.2901763916015625e-05,
+      "wanted_normalized": 3.2901785488107225e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.355741500854492e-05
+    },
+    "73016": {
+      "token_text": " EnumerableStream",
+      "wanted_impact": 3.24249267578125e-05,
+      "wanted_normalized": 3.242494801726509e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.30805778503418e-05
+    },
+    "67444": {
+      "token_text": "CppTypeDefinitionSizes",
+      "wanted_impact": 3.1948089599609375e-05,
+      "wanted_normalized": 3.194811054642296e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.260374069213867e-05
+    },
+    "47072": {
+      "token_text": "webElementX",
+      "wanted_impact": 3.147125244140625e-05,
+      "wanted_normalized": 3.147127307558083e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.212690353393555e-05
+    },
+    "109414": {
+      "token_text": " zdravot",
+      "wanted_impact": 3.11732292175293e-05,
+      "wanted_normalized": 3.1173249656304494e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.1828880310058594e-05
+    },
+    "95664": {
+      "token_text": "ETweet",
+      "wanted_impact": 3.081560134887695e-05,
+      "wanted_normalized": 3.081562155317289e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.147125244140625e-05
+    },
+    "72740": {
+      "token_text": " typingsJapgolly",
+      "wanted_impact": 2.950429916381836e-05,
+      "wanted_normalized": 2.9504318508357022e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 3.0159950256347656e-05
+    },
+    "51574": {
+      "token_text": " {\r\r\n",
+      "wanted_impact": 2.9265880584716797e-05,
+      "wanted_normalized": 2.9265899772935956e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 2.9921531677246094e-05
+    },
+    "110655": {
+      "token_text": " zprac",
+      "wanted_impact": 2.849102020263672e-05,
+      "wanted_normalized": 2.849103888281749e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 2.9146671295166016e-05
+    },
+    "104121": {
+      "token_text": "iyordu",
+      "wanted_impact": 2.8312206268310547e-05,
+      "wanted_normalized": 2.831222483125169e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 2.8967857360839844e-05
+    },
+    "123510": {
+      "token_text": " kuchy",
+      "wanted_impact": 2.765655517578125e-05,
+      "wanted_normalized": 2.7656573308843756e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 2.8312206268310547e-05
+    },
+    "89473": {
+      "token_text": "useRalativeImagePath",
+      "wanted_impact": 2.4974346160888672e-05,
+      "wanted_normalized": 2.4974362535356754e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 2.562999725341797e-05
+    },
+    "99326": {
+      "token_text": " Prostitutas",
+      "wanted_impact": 2.110004425048828e-05,
+      "wanted_normalized": 2.1100058084764417e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 2.1755695343017578e-05
+    },
+    "82929": {
+      "token_text": "CppMethodIntialized",
+      "wanted_impact": 1.3947486877441406e-05,
+      "wanted_normalized": 1.394749602213241e-05,
+      "wanted_prob_before": 6.556510925292969e-07,
+      "wanted_prob_after": 1.4603137969970703e-05
+    }
+  }
+}

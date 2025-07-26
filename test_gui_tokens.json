@@ -1,0 +1,19 @@
+{
+  "glitch_tokens": [
+    {
+      "id": 12345,
+      "text": "TestToken1",
+      "entropy": 0.1234
+    },
+    {
+      "id": 67890,
+      "text": "TestToken2",
+      "entropy": 0.2345
+    },
+    {
+      "id": 11111,
+      "text": "TestToken3",
+      "entropy": 0.3456
+    }
+  ]
+}

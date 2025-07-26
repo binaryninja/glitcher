@@ -1,180 +1,176 @@
 {
   "model_name": "meta-llama/Llama-3.2-1B-Instruct",
   "base_text": "The quick brown",
-  "target_token_id": 39935,
-  "target_token_text": " fox",
-  "baseline_probability": 0.94873046875,
+  "target_token_id": 15361,
+  "target_token_text": "fox",
+  "baseline_probability": 0.91015625,
   "ga_parameters": {
-    "population_size": 50,
+    "population_size": 10,
     "max_generations": 500,
-    "mutation_rate": 0.03,
-    "crossover_rate": 0.9,
-    "max_tokens_per_individual": 4
+    "mutation_rate": 0.1,
+    "crossover_rate": 0.7,
+    "max_tokens_per_individual": 3
   },
   "results": [
     {
       "tokens": [
-        123997,
-        70316,
+        79883,
+        123745,
         124393
       ],
       "token_texts": [
-        "alardan",
-        "erusform",
+        "\tTokenNameIdentifier",
+        " zahrn",
         "sahuje"
       ],
-      "fitness": 0.744140625,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.20458984375,
-      "reduction_percentage": 78.4354091610911
+      "fitness": 0.49385136877514446,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.01119232177734375,
+      "reduction_percentage": 98.77028567596567
     },
     {
       "tokens": [
-        123997,
-        104121,
-        70316
-      ],
-      "token_texts": [
-        "alardan",
-        "iyordu",
-        "erusform"
-      ],
-      "fitness": 0.7410888671875,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.2076416015625,
-      "reduction_percentage": 78.11374163664436
-    },
-    {
-      "tokens": [
-        123997
-      ],
-      "token_texts": [
-        "alardan"
-      ],
-      "fitness": 0.567138671875,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.381591796875,
-      "reduction_percentage": 59.77869274318065
-    },
-    {
-      "tokens": [
-        123997,
-        42953,
-        108577,
+        79883,
+        123745,
         124393
       ],
       "token_texts": [
-        "alardan",
-        "--;\r\n",
-        "ilmektedir",
+        "\tTokenNameIdentifier",
+        " zahrn",
         "sahuje"
       ],
-      "fitness": 0.451171875,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.49755859375,
-      "reduction_percentage": 47.55532681420484
+      "fitness": 0.49385136877514446,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.01119232177734375,
+      "reduction_percentage": 98.77028567596567
     },
     {
       "tokens": [
-        80612,
-        70316,
+        79883,
+        123745,
         124393
       ],
       "token_texts": [
-        "MethodBeat",
-        "erusform",
+        "\tTokenNameIdentifier",
+        " zahrn",
         "sahuje"
       ],
-      "fitness": 0.37109375,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.57763671875,
-      "reduction_percentage": 39.114770972722596
+      "fitness": 0.49385136877514446,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.01119232177734375,
+      "reduction_percentage": 98.77028567596567
     },
     {
       "tokens": [
-        80612,
-        70316,
-        123997
+        79883,
+        123745,
+        124393
       ],
       "token_texts": [
-        "MethodBeat",
-        "erusform",
-        "alardan"
+        "\tTokenNameIdentifier",
+        " zahrn",
+        "sahuje"
       ],
-      "fitness": 0.3232421875,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.62548828125,
-      "reduction_percentage": 34.07102418939784
+      "fitness": 0.49385136877514446,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.01119232177734375,
+      "reduction_percentage": 98.77028567596567
     },
     {
       "tokens": [
+        79883,
+        123745,
+        124393
+      ],
+      "token_texts": [
+        "\tTokenNameIdentifier",
+        " zahrn",
+        "sahuje"
+      ],
+      "fitness": 0.49385136877514446,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.01119232177734375,
+      "reduction_percentage": 98.77028567596567
+    },
+    {
+      "tokens": [
+        79883,
+        123745,
+        124393
+      ],
+      "token_texts": [
+        "\tTokenNameIdentifier",
+        " zahrn",
+        "sahuje"
+      ],
+      "fitness": 0.49385136877514446,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.01119232177734375,
+      "reduction_percentage": 98.77028567596567
+    },
+    {
+      "tokens": [
+        79883,
+        123745,
+        124393
+      ],
+      "token_texts": [
+        "\tTokenNameIdentifier",
+        " zahrn",
+        "sahuje"
+      ],
+      "fitness": 0.49385136877514446,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.01119232177734375,
+      "reduction_percentage": 98.77028567596567
+    },
+    {
+      "tokens": [
+        79883,
+        123745,
+        124393
+      ],
+      "token_texts": [
+        "\tTokenNameIdentifier",
+        " zahrn",
+        "sahuje"
+      ],
+      "fitness": 0.49385136877514446,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.01119232177734375,
+      "reduction_percentage": 98.77028567596567
+    },
+    {
+      "tokens": [
+        123745,
         124393,
-        104121,
-        70316,
-        123997
+        79883
       ],
       "token_texts": [
+        " zahrn",
         "sahuje",
-        "iyordu",
-        "erusform",
-        "alardan"
+        "\tTokenNameIdentifier"
       ],
-      "fitness": 0.28271484375,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.666015625,
-      "reduction_percentage": 29.799279464745236
+      "fitness": 0.19903457318268392,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.5478515625,
+      "reduction_percentage": 39.8068669527897
     },
     {
       "tokens": [
-        123997,
-        107572,
-        124393,
-        108577
+        123745,
+        79883,
+        38335
       ],
       "token_texts": [
-        "alardan",
-        "ecektir",
-        "sahuje",
-        "ilmektedir"
+        " zahrn",
+        "\tTokenNameIdentifier",
+        "\">\r\n\r\n"
       ],
-      "fitness": 0.27294921875,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.67578125,
-      "reduction_percentage": 28.769943386515695
-    },
-    {
-      "tokens": [
-        124393,
-        104121,
-        107572,
-        123997
-      ],
-      "token_texts": [
-        "sahuje",
-        "iyordu",
-        "ecektir",
-        "alardan"
-      ],
-      "fitness": 0.22998046875,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.71875,
-      "reduction_percentage": 24.240864642305713
-    },
-    {
-      "tokens": [
-        71664,
-        70316,
-        123997
-      ],
-      "token_texts": [
-        "\tNdrFc",
-        "erusform",
-        "alardan"
-      ],
-      "fitness": 0.21533203125,
-      "baseline_prob": 0.94873046875,
-      "modified_prob": 0.7333984375,
-      "reduction_percentage": 22.696860524961398
+      "fitness": 0.012339204805701054,
+      "baseline_prob": 0.91015625,
+      "modified_prob": 0.8876953125,
+      "reduction_percentage": 2.467811158798283
     }
   ]
 }

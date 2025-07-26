@@ -15,8 +15,90 @@ from typing import Dict, Any, Optional, Callable
 from dataclasses import dataclass
 import time
 
+# Matplotlib integration for plotting
+try:
+    import matplotlib
+    matplotlib.use('TkAgg')  # Use Tkinter backend
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
+    Figure = None
+    FigureCanvasTkAgg = None
+
 from .reducer import GeneticProbabilityReducer
 from .gui_animator import EnhancedGeneticAnimator, GeneticAnimationCallback
+
+
+class GUICallback:
+    """
+    Callback interface for genetic algorithm integration with GUI.
+
+    This class provides the interface between the genetic algorithm
+    and the GUI controller, handling data updates and lifecycle events.
+    """
+
+    def __init__(self, gui_controller):
+        """
+        Initialize the GUI callback.
+
+        Args:
+            gui_controller: The GUI controller instance
+        """
+        self.gui_controller = gui_controller
+        self.tokenizer = None
+
+    def on_evolution_start(self, baseline_data):
+        """Called when evolution starts."""
+        self.gui_controller.baseline_probability = baseline_data.get('target_prob', 0.0)
+        self.gui_controller.root.after(0, lambda: self.gui_controller.log_message("Evolution started"))
+
+    def set_tokenizer(self, tokenizer):
+        """Set the tokenizer for token decoding."""
+        self.tokenizer = tokenizer
+        if hasattr(self.gui_controller, 'reducer') and self.gui_controller.reducer:
+            self.gui_controller.reducer.tokenizer = tokenizer
+
+    def on_generation_complete(self, generation, population, best_individual, diversity, stagnation):
+        """Called when a generation completes."""
+        try:
+            # Check for pause/stop controls
+            import time
+            while self.gui_controller.is_paused and not self.gui_controller.should_stop:
+                time.sleep(0.1)
+
+            if self.gui_controller.should_stop:
+                # Signal to stop evolution - this will cause an exception that stops the loop
+                raise KeyboardInterrupt("Evolution stopped by user")
+
+            # Calculate progress percentage
+            progress = (generation / self.gui_controller.config.generations) * 100 if self.gui_controller.config.generations > 0 else 0
+
+            # Calculate fitness metrics
+            best_fitness = best_individual.fitness if best_individual else 0.0
+
+            # Calculate average fitness from population
+            if population and len(population) > 0:
+                avg_fitness = sum(ind.fitness for ind in population) / len(population)
+            else:
+                avg_fitness = 0.0
+
+            # Update progress display in main thread
+            def update_gui():
+                self.gui_controller._update_progress(generation, progress, best_fitness, avg_fitness, best_individual)
+
+            self.gui_controller.root.after(0, update_gui)
+
+        except KeyboardInterrupt:
+            # Re-raise to stop evolution
+            raise
+        except Exception as e:
+            self.gui_controller.root.after(0, lambda: self.gui_controller.log_message(f"Error updating progress: {e}"))
+
+    def on_evolution_complete(self, results):
+        """Called when evolution completes."""
+        self.gui_controller.root.after(0, lambda: self.gui_controller._on_evolution_complete(results))
 
 
 @dataclass
@@ -66,7 +148,7 @@ class GeneticControllerGUI:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Glitcher Genetic Algorithm Controller")
-        self.root.geometry("1200x800")
+        self.root.geometry("1400x900")
 
         # State management
         self.config = GeneticConfig()
@@ -77,7 +159,18 @@ class GeneticControllerGUI:
         self.is_paused = False
         self.should_stop = False
 
-        # Create GUI
+        # Data for plotting and visualization
+        self.generation_history = []
+        self.fitness_history = []
+        self.avg_fitness_history = []
+        self.current_best_individual = None
+        self.baseline_probability = None
+
+        # Matplotlib components
+        self.fig = None
+        self.ax_fitness = None
+        self.canvas = None
+
         self.setup_gui()
         self.update_gui_from_config()
 
@@ -308,12 +401,20 @@ class GeneticControllerGUI:
         style.configure('Red.TButton', foreground='red')
 
     def setup_progress_tab(self):
-        """Setup progress monitoring tab"""
+        """Setup progress monitoring tab with enhanced visualization"""
         progress_frame = ttk.Frame(self.notebook)
         self.notebook.add(progress_frame, text="Progress")
 
+        # Create main paned window for layout
+        main_paned = ttk.PanedWindow(progress_frame, orient='horizontal')
+        main_paned.pack(fill='both', expand=True, padx=5, pady=5)
+
+        # Left panel for metrics and plots
+        left_frame = ttk.Frame(main_paned)
+        main_paned.add(left_frame, weight=3)
+
         # Real-time metrics
-        metrics_group = ttk.LabelFrame(progress_frame, text="Real-time Metrics", padding=10)
+        metrics_group = ttk.LabelFrame(left_frame, text="Real-time Metrics", padding=10)
         metrics_group.pack(fill='x', pady=5)
 
         metrics_frame = ttk.Frame(metrics_group)
@@ -339,11 +440,60 @@ class GeneticControllerGUI:
         self.reduction_var = tk.StringVar(value="0.0%")
         ttk.Label(metrics_frame, textvariable=self.reduction_var, font=('Arial', 10, 'bold')).grid(row=1, column=3, sticky='w', padx=5)
 
+        # Fitness evolution plot
+        if MATPLOTLIB_AVAILABLE:
+            plot_group = ttk.LabelFrame(left_frame, text="Fitness Evolution", padding=10)
+            plot_group.pack(fill='both', expand=True, pady=5)
+
+            self.fig = Figure(figsize=(8, 4), dpi=100)
+            self.ax_fitness = self.fig.add_subplot(111)
+            self.ax_fitness.set_title('Fitness Evolution Over Generations')
+            self.ax_fitness.set_xlabel('Generation')
+            self.ax_fitness.set_ylabel('Fitness')
+            self.ax_fitness.grid(True, alpha=0.3)
+
+            self.canvas = FigureCanvasTkAgg(self.fig, plot_group)
+            self.canvas.draw()
+            self.canvas.get_tk_widget().pack(fill='both', expand=True)
+        else:
+            # Fallback when matplotlib is not available
+            plot_group = ttk.LabelFrame(left_frame, text="Fitness Evolution (matplotlib not available)", padding=10)
+            plot_group.pack(fill='both', expand=True, pady=5)
+
+            warning_text = scrolledtext.ScrolledText(plot_group, height=6, state='disabled',
+                                                   font=('Courier', 9), bg='#f0f0f0')
+            warning_text.pack(fill='both', expand=True)
+
+            warning_text.config(state='normal')
+            warning_text.insert(1.0, "⚠️  Matplotlib not available\n\n")
+            warning_text.insert(tk.END, "To see fitness evolution plots, install matplotlib:\n")
+            warning_text.insert(tk.END, "pip install matplotlib\n\n")
+            warning_text.insert(tk.END, "Fitness data will still be shown in the metrics above.")
+            warning_text.config(state='disabled')
+
+        # Right panel for detailed information
+        right_frame = ttk.Frame(main_paned)
+        main_paned.add(right_frame, weight=2)
+
+        # Best individual details
+        best_group = ttk.LabelFrame(right_frame, text="Best Individual", padding=10)
+        best_group.pack(fill='x', pady=5)
+
+        self.best_text = scrolledtext.ScrolledText(best_group, height=8, state='disabled', font=('Courier', 9))
+        self.best_text.pack(fill='x')
+
+        # Context strings display
+        context_group = ttk.LabelFrame(right_frame, text="Input Strings & Context", padding=10)
+        context_group.pack(fill='both', expand=True, pady=5)
+
+        self.context_text = scrolledtext.ScrolledText(context_group, state='disabled', font=('Courier', 9))
+        self.context_text.pack(fill='both', expand=True)
+
         # Log display
-        log_group = ttk.LabelFrame(progress_frame, text="Evolution Log", padding=10)
+        log_group = ttk.LabelFrame(right_frame, text="Evolution Log", padding=10)
         log_group.pack(fill='both', expand=True, pady=5)
 
-        self.log_text = scrolledtext.ScrolledText(log_group, state='disabled')
+        self.log_text = scrolledtext.ScrolledText(log_group, height=6, state='disabled', font=('Courier', 8))
         self.log_text.pack(fill='both', expand=True)
 
     def setup_results_tab(self):
@@ -544,6 +694,46 @@ class GeneticControllerGUI:
         self.progress_bar['value'] = 0
         self.progress_var.set("Generation: 0/0")
 
+        # Reset plotting data
+        self.generation_history = []
+        self.fitness_history = []
+        self.avg_fitness_history = []
+        self.current_best_individual = None
+        self.baseline_probability = None
+
+        # Reset metric displays
+        self.current_generation_var.set("0")
+        self.best_fitness_var.set("0.000")
+        self.avg_fitness_var.set("0.000")
+        self.reduction_var.set("0.0%")
+
+        # Clear matplotlib plot
+        if MATPLOTLIB_AVAILABLE and self.ax_fitness:
+            self.ax_fitness.clear()
+            self.ax_fitness.set_title('Fitness Evolution Over Generations')
+            self.ax_fitness.set_xlabel('Generation')
+            self.ax_fitness.set_ylabel('Fitness')
+            self.ax_fitness.grid(True, alpha=0.3)
+            if self.canvas:
+                try:
+                    self.canvas.draw()
+                except RuntimeError:
+                    # Ignore threading errors during canvas draw
+                    pass
+
+        # Clear text displays
+        if hasattr(self, 'best_text'):
+            self.best_text.config(state='normal')
+            self.best_text.delete(1.0, tk.END)
+            self.best_text.insert(1.0, "No evolution data yet...")
+            self.best_text.config(state='disabled')
+
+        if hasattr(self, 'context_text'):
+            self.context_text.config(state='normal')
+            self.context_text.delete(1.0, tk.END)
+            self.context_text.insert(1.0, "Evolution context will appear here...")
+            self.context_text.config(state='disabled')
+
     def _run_evolution(self):
         """Run the genetic algorithm evolution in a separate thread"""
         try:
@@ -574,26 +764,30 @@ class GeneticControllerGUI:
             self.reducer.use_exact_token_count = self.config.exact_token_count
             self.reducer.enable_shuffle_mutation = self.config.enable_shuffle_mutation
 
-            # Set token file path for loading
-            self.reducer.token_file = self.config.token_file
-            self.reducer.ascii_only = self.config.ascii_only
-            self.reducer.enhanced_validation = self.config.enhanced_validation
-            self.reducer.comprehensive_search = self.config.comprehensive_search
-            self.reducer.include_normal_tokens = self.config.include_normal_tokens
-            self.reducer.output_file = self.config.output_file
-            self.reducer.baseline_output = self.config.baseline_output
+            # Set additional parameters as attributes (if supported)
+            if hasattr(self.reducer, 'token_file'):
+                self.reducer.token_file = self.config.token_file
+            if hasattr(self.reducer, 'ascii_only'):
+                self.reducer.ascii_only = self.config.ascii_only
+            if hasattr(self.reducer, 'enhanced_validation'):
+                self.reducer.enhanced_validation = self.config.enhanced_validation
+            if hasattr(self.reducer, 'comprehensive_search'):
+                self.reducer.comprehensive_search = self.config.comprehensive_search
+            if hasattr(self.reducer, 'include_normal_tokens'):
+                self.reducer.include_normal_tokens = self.config.include_normal_tokens
+            if hasattr(self.reducer, 'output_file'):
+                self.reducer.output_file = self.config.output_file
+            if hasattr(self.reducer, 'baseline_output'):
+                self.reducer.baseline_output = self.config.baseline_output
 
-            # Setup animation if requested
-            if self.config.show_gui_animation:
-                self.animator = EnhancedGeneticAnimator(
-                    base_text=self.config.base_text,
-                    target_token=self.config.target_token,
-                    wanted_token=self.config.wanted_token
-                )
-                self.reducer.animation_callback = GeneticAnimationCallback(self.animator)
+            # Setup GUI callback for evolution updates
+            gui_callback = GUICallback(self)
+            if hasattr(self.reducer, 'gui_callback'):
+                self.reducer.gui_callback = gui_callback
 
-            # Setup custom callback for GUI updates
-            self.reducer.gui_callback = self._on_generation_update
+            # Disable separate animation to avoid threading conflicts with GUI
+            # The GUI has its own integrated visualization
+            self.animator = None
 
             self.root.after(0, lambda: self.status_label.config(text="Running"))
             self.root.after(0, lambda: self.log_message("Evolution started"))
@@ -608,147 +802,212 @@ class GeneticControllerGUI:
             self.root.after(0, lambda: self._on_evolution_error(e))
 
     def _run_evolution_with_controls(self):
-        """Run evolution with pause/stop control support"""
-        # Custom evolution loop that respects pause/stop
+        """Run evolution using the reducer's built-in run_evolution method"""
+        if not self.reducer:
+            raise ValueError("Reducer not initialized")
+
+        self.root.after(0, lambda: self.log_message("Loading model..."))
         self.reducer.load_model()
 
         # Load glitch tokens from file
         self.root.after(0, lambda: self.log_message(f"Loading glitch tokens from: {self.config.token_file}"))
-        self.reducer.load_glitch_tokens(
-            token_file=self.config.token_file,
-            ascii_only=self.config.ascii_only
-        )
-
-        # Get baseline probability
-        baseline_prob_result = self.reducer.get_baseline_probability()
-        # baseline_prob_result is a tuple: (target_id, target_prob, wanted_id, wanted_prob)
-        if isinstance(baseline_prob_result, tuple) and len(baseline_prob_result) >= 2:
-            target_id, target_prob, wanted_id, wanted_prob = baseline_prob_result
-            baseline_prob = target_prob  # Use target probability
+        if hasattr(self.reducer, 'load_glitch_tokens'):
+            self.reducer.load_glitch_tokens(
+                token_file=self.config.token_file,
+                ascii_only=self.config.ascii_only
+            )
         else:
-            baseline_prob = baseline_prob_result if not isinstance(baseline_prob_result, tuple) else 0.0
-        baseline_msg = f"Baseline probability: {baseline_prob:.6f}"
-        self.root.after(0, lambda msg=baseline_msg: self.log_message(msg))
+            self.root.after(0, lambda: self.log_message("Warning: load_glitch_tokens method not available"))
 
-        # Run comprehensive search if enabled
-        if self.config.comprehensive_search and self.config.wanted_token:
-            self.root.after(0, lambda: self.log_message("Running comprehensive wanted token search..."))
-            try:
-                comprehensive_results = self.reducer.comprehensive_wanted_token_search()
-                search_msg = f"Comprehensive search found {len(comprehensive_results)} effective tokens"
-                self.root.after(0, lambda msg=search_msg: self.log_message(msg))
-            except Exception as e:
-                error_msg = f"Comprehensive search failed: {e}"
-                self.root.after(0, lambda msg=error_msg: self.log_message(msg))
+        # Use the reducer's built-in evolution method which handles callbacks properly
+        self.root.after(0, lambda: self.log_message("Starting evolution..."))
 
-        # Run baseline analysis if enabled
-        if self.config.baseline_seeding:
-            self.root.after(0, lambda: self.log_message("Running token impact baseline analysis..."))
-            try:
-                baseline_results = self.reducer.baseline_token_impacts()
-                if baseline_results and len(baseline_results) > 0:
-                    # baseline_results is a list of tuples - get the impact score safely
-                    first_result = baseline_results[0]
-                    if isinstance(first_result, (list, tuple)) and len(first_result) > 1:
-                        top_impact = first_result[1]
-                    else:
-                        top_impact = 0.0
-                    impact_msg = f"Baseline analysis complete, top impact: {top_impact:.3f}"
-                    self.root.after(0, lambda msg=impact_msg: self.log_message(msg))
-                else:
-                    self.root.after(0, lambda: self.log_message("Baseline analysis complete, no results"))
-            except Exception as e:
-                error_msg = f"Baseline analysis failed: {e}"
-                self.root.after(0, lambda msg=error_msg: self.log_message(msg))
+        # Disable tqdm progress bars for better GUI integration
+        import os
+        original_tqdm_disable = os.environ.get('TQDM_DISABLE', '')
+        os.environ['TQDM_DISABLE'] = '1'
 
-        # Initialize population
-        self.root.after(0, lambda: self.log_message("Initializing population..."))
-        population = self.reducer.create_initial_population()
+        try:
+            # The reducer's run_evolution method handles all the evolution logic
+            # and will call our GUI callback for progress updates
+            results = self.reducer.run_evolution()
 
-        best_individual = None
-        best_fitness = 0
-        stagnation_count = 0
-        generation = 0
+            # Process results
+            if results and len(results) > 0:
+                best_individual = max(results, key=lambda x: x.fitness)
+                return {
+                    'best_individual': best_individual,
+                    'final_population': results,
+                    'generations_completed': self.config.generations,
+                    'best_fitness': best_individual.fitness
+                }
+            else:
+                return {
+                    'best_individual': None,
+                    'final_population': [],
+                    'generations_completed': 0,
+                    'best_fitness': 0.0
+                }
 
-        for generation in range(self.config.generations):
-            # Check for stop/pause
-            while self.is_paused and not self.should_stop:
-                time.sleep(0.1)
-
-            if self.should_stop:
-                self.root.after(0, lambda: self.log_message("Evolution stopped by user"))
-                break
-
-            # Evolve generation
-            try:
-                population = self.reducer.evolve_generation(population)
-            except Exception as e:
-                error_msg = f"Evolution error: {e}"
-                self.root.after(0, lambda msg=error_msg: self.log_message(msg))
-                break
-
-            # Find best individual
-            if population:
-                current_best = max(population, key=lambda x: x.fitness)
-                if current_best.fitness > best_fitness:
-                    best_individual = current_best
-                    best_fitness = current_best.fitness
-                    stagnation_count = 0
-                else:
-                    stagnation_count += 1
-
-                # Update GUI
-                progress = (generation + 1) / self.config.generations * 100
-                avg_fitness = sum(ind.fitness for ind in population) / len(population)
-                current_gen = generation + 1
-                current_best = best_individual
-                self.root.after(0, lambda g=current_gen, p=progress, bf=best_fitness, af=avg_fitness, bi=current_best:
-                              self._update_progress(g, p, bf, af, bi))
-
-                # Check early stopping
-                if best_fitness >= self.config.early_stopping_threshold:
-                    stop_msg = f"Early stopping at generation {generation+1}, threshold reached"
-                    self.root.after(0, lambda msg=stop_msg: self.log_message(msg))
-                    break
-
-        return {
-            'best_individual': best_individual,
-            'final_population': population,
-            'generations_completed': generation + 1 if not self.should_stop else generation,
-            'baseline_probability': baseline_prob
-        }
+        except KeyboardInterrupt:
+            self.root.after(0, lambda: self.log_message("Evolution stopped by user"))
+            return {
+                'best_individual': None,
+                'final_population': [],
+                'generations_completed': 0,
+                'best_fitness': 0.0,
+                'stopped_early': True
+            }
+        except Exception as e:
+            self.root.after(0, lambda: self.log_message(f"Evolution error: {e}"))
+            raise e
+        finally:
+            # Restore original tqdm setting
+            if original_tqdm_disable:
+                os.environ['TQDM_DISABLE'] = original_tqdm_disable
+            else:
+                os.environ.pop('TQDM_DISABLE', None)
 
     def _on_generation_update(self, generation, population, best_individual):
-        """Callback for generation updates"""
-        if hasattr(self, 'animator') and self.animator:
-            # Update animator if available
-            pass
+        """Legacy callback for generation updates - now handled by GUICallback"""
+        # This method is kept for compatibility but the new GUICallback class
+        # handles the actual updates through on_generation_complete
+        pass
 
     def _update_progress(self, generation, progress, best_fitness, avg_fitness, best_individual):
-        """Update progress display"""
+        """Update progress display with enhanced visualization"""
         self.progress_bar['value'] = progress
         self.progress_var.set(f"Generation: {generation}/{self.config.generations}")
         self.current_generation_var.set(str(generation))
         self.best_fitness_var.set(f"{best_fitness:.3f}")
         self.avg_fitness_var.set(f"{avg_fitness:.3f}")
 
+        # Store data for plotting
+        self.generation_history.append(generation)
+        self.fitness_history.append(best_fitness)
+        self.avg_fitness_history.append(avg_fitness)
+        self.current_best_individual = best_individual
+
         if best_individual:
             reduction = best_fitness * 100
             self.reduction_var.set(f"{reduction:.1f}%")
 
-            # Update best individual display
-            self.best_text.config(state='normal')
-            self.best_text.delete(1.0, tk.END)
-            self.best_text.insert(1.0, f"Tokens: {best_individual.tokens}\n")
-            if hasattr(self.reducer, 'tokenizer'):
+            # Update best individual display with detailed information
+            self._update_best_individual_display(best_individual, reduction)
+
+            # Update context display
+            self._update_context_display(best_individual)
+
+        # Update fitness plot
+        self._update_fitness_plot()
+
+    def _update_best_individual_display(self, best_individual, reduction):
+        """Update the detailed best individual display"""
+        self.best_text.config(state='normal')
+        self.best_text.delete(1.0, tk.END)
+
+        display_text = f"🏆 Best Individual Details:\n\n"
+        display_text += f"Token IDs: {best_individual.tokens}\n\n"
+
+        if hasattr(self.reducer, 'tokenizer') and self.reducer.tokenizer:
+            try:
+                token_texts = [self.reducer.tokenizer.decode([token_id]) for token_id in best_individual.tokens]
+                display_text += f"Token Texts: {token_texts}\n\n"
+                # Show individual token breakdown
+                display_text += "Token Breakdown:\n"
+                for i, (token_id, token_text) in enumerate(zip(best_individual.tokens, token_texts)):
+                    display_text += f"  {i+1}. '{token_text}' (ID: {token_id})\n"
+                display_text += "\n"
+            except Exception as e:
+                display_text += f"Token decode error: {e}\n\n"
+
+        display_text += f"Fitness Score: {best_individual.fitness:.6f}\n"
+        display_text += f"Probability Reduction: {reduction:.2f}%\n\n"
+
+        # Show probability transformation if available
+        if hasattr(best_individual, 'target_prob_before') and hasattr(best_individual, 'target_prob_after'):
+            display_text += f"Probability Change:\n"
+            display_text += f"  Before: {best_individual.target_prob_before:.6f}\n"
+            display_text += f"  After:  {best_individual.target_prob_after:.6f}\n"
+            display_text += f"  Change: {(best_individual.target_prob_before - best_individual.target_prob_after):.6f}"
+
+        self.best_text.insert(1.0, display_text)
+        self.best_text.config(state='disabled')
+
+    def _update_context_display(self, best_individual):
+        """Update the context and input strings display"""
+        self.context_text.config(state='normal')
+        self.context_text.delete(1.0, tk.END)
+
+        context_text = "📝 Input Strings for LLM:\n\n"
+
+        # Show baseline input
+        baseline_text = self.config.base_text
+        context_text += f"BASELINE INPUT:\n'{baseline_text}'\n\n"
+
+        # Show evolved input if we have tokenizer
+        if hasattr(self.reducer, 'tokenizer') and self.reducer.tokenizer and best_individual:
+            try:
+                token_texts = [self.reducer.tokenizer.decode([token_id]) for token_id in best_individual.tokens]
+                evolved_prefix = "".join(token_texts)
+                full_evolved_string = f"{evolved_prefix}{baseline_text}"
+                context_text += f"EVOLVED INPUT:\n'{full_evolved_string}'\n\n"
+                context_text += f"Token Prefix: '{evolved_prefix}'\n"
+                context_text += f"Base Text: '{baseline_text}'\n\n"
+            except Exception as e:
+                context_text += f"Error constructing evolved string: {e}\n\n"
+
+        # Show target/wanted token info
+        if self.config.target_token:
+            context_text += f"🎯 Target Token: '{self.config.target_token}'\n"
+        if self.config.wanted_token:
+            context_text += f"⭐ Wanted Token: '{self.config.wanted_token}'\n"
+
+        # Show baseline probability if available
+        if self.baseline_probability is not None:
+            context_text += f"\n📊 Baseline Probability: {self.baseline_probability:.6f}\n"
+
+        self.context_text.insert(1.0, context_text)
+        self.context_text.config(state='disabled')
+
+    def _update_fitness_plot(self):
+        """Update the fitness evolution plot"""
+        if not MATPLOTLIB_AVAILABLE or not self.ax_fitness:
+            return
+
+        try:
+            self.ax_fitness.clear()
+            self.ax_fitness.set_title('Fitness Evolution Over Generations')
+            self.ax_fitness.set_xlabel('Generation')
+            self.ax_fitness.set_ylabel('Fitness')
+            self.ax_fitness.grid(True, alpha=0.3)
+
+            if len(self.generation_history) > 1:
+                # Plot best fitness
+                self.ax_fitness.plot(self.generation_history, self.fitness_history,
+                                   'b-', linewidth=2, label='Best Fitness', marker='o', markersize=3)
+
+                # Plot average fitness
+                self.ax_fitness.plot(self.generation_history, self.avg_fitness_history,
+                                   'r--', linewidth=1, label='Avg Fitness', alpha=0.7)
+
+                self.ax_fitness.legend()
+
+                # Set reasonable axis limits
+                if self.fitness_history:
+                    max_fitness = max(self.fitness_history)
+                    min_fitness = min(self.fitness_history)
+                    margin = (max_fitness - min_fitness) * 0.1 if max_fitness > min_fitness else 0.1
+                    self.ax_fitness.set_ylim(min_fitness - margin, max_fitness + margin)
+
+            if self.canvas:
                 try:
-                    token_texts = [self.reducer.tokenizer.decode([token_id]) for token_id in best_individual.tokens]
-                    self.best_text.insert(tk.END, f"Decoded: {token_texts}\n")
-                except:
+                    self.canvas.draw()
+                except RuntimeError:
+                    # Ignore threading errors during canvas draw
                     pass
-            self.best_text.insert(tk.END, f"Fitness: {best_individual.fitness:.6f}\n")
-            self.best_text.insert(tk.END, f"Reduction: {reduction:.2f}%")
-            self.best_text.config(state='disabled')
+        except Exception as e:
+            print(f"Error updating fitness plot: {e}")
 
     def _on_evolution_complete(self, results):
         """Handle evolution completion"""
@@ -761,9 +1020,9 @@ class GeneticControllerGUI:
         # Reset UI state
         self._reset_ui_state()
 
-        # Keep animator alive if it exists
-        if hasattr(self, 'animator') and self.animator:
-            self.animator.mark_complete()
+        # Animator disabled to prevent threading conflicts with GUI
+        # Results are displayed in the integrated GUI instead
+        pass
 
     def _on_evolution_error(self, error):
         """Handle evolution error"""
@@ -792,7 +1051,7 @@ class GeneticControllerGUI:
             self.results_text.insert(tk.END, f"Best Individual:\n")
             self.results_text.insert(tk.END, f"  Token IDs: {best_individual.tokens}\n")
 
-            if hasattr(self.reducer, 'tokenizer'):
+            if hasattr(self.reducer, 'tokenizer') and self.reducer.tokenizer:
                 try:
                     token_texts = [self.reducer.tokenizer.decode([token_id]) for token_id in best_individual.tokens]
                     self.results_text.insert(tk.END, f"  Token Texts: {token_texts}\n")
