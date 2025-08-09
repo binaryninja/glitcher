@@ -44,7 +44,8 @@ class BuiltInTemplate:
         self.user_format = None    # Not used for built-in templates
         self.assistant_format = None  # Not used for built-in templates
         self.system = None
-        self.stop_word = '<|eot_id|>'  # Default for Llama models
+        name_lower = model_name.lower()
+        self.stop_word = '<|eot_id|>' if 'llama' in name_lower else None
 
     def format_chat(self, system_message: str, user_message: str) -> str:
         """Format a chat using the built-in template"""
@@ -143,10 +144,11 @@ _TEMPLATES = {
 
 def get_template_for_model(model_name: str, tokenizer=None) -> Union[Template, BuiltInTemplate]:
     """Get the appropriate chat template for a model"""
-    # If tokenizer is provided and has a built-in chat template, use that for instruct models
+    # If tokenizer is provided and has a built-in chat template, use that for instruct-like models
     if tokenizer is not None and hasattr(tokenizer, 'chat_template') and tokenizer.chat_template is not None:
-        # Check if this is an instruct model
-        if "instruct" in model_name.lower() or "chat" in model_name.lower():
+        lower_name = model_name.lower()
+        # Include gpt-oss family in built-in template usage
+        if ("instruct" in lower_name or "chat" in lower_name or "gpt-oss" in lower_name or "gptoss" in lower_name):
             return BuiltInTemplate(tokenizer, model_name)
 
     # Only take the last part of the path and normalize
@@ -245,7 +247,13 @@ def initialize_model_and_tokenizer(
         print(f"Loading nowllm-0829 Mixtral fine-tune with {quant_type} precision")
 
     # Load model with the specified quantization
-    if quant_type == 'bfloat16':
+    if quant_type == 'auto':
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            device_map=device_map,
+            torch_dtype="auto",
+        )
+    elif quant_type == 'bfloat16':
         model = AutoModelForCausalLM.from_pretrained(
             model_path,
             device_map=device_map,
@@ -722,8 +730,8 @@ def mine_glitch_tokens(
         if isinstance(chat_template, BuiltInTemplate):
             formatted_input = chat_template.format_chat(system_message, user_prompt)
         else:
-            formatted_user = user_format.format(content=user_prompt)
-            formatted_input = (system_format.format(content=system_message) if system_format else "") + formatted_user + assistant_prefill
+            formatted_user = (user_format or "User: {content}\nAssistant: ").format(content=user_prompt)
+            formatted_input = (system_format.format(content=system_message) if system_format else "") + formatted_user + (assistant_prefill or "")
 
         # Log the current token and formatted input
         with open(log_file, 'a') as f:
@@ -804,7 +812,7 @@ def mine_glitch_tokens(
                 if isinstance(chat_template, BuiltInTemplate):
                     formatted_input = chat_template.format_chat(system_message, user_prompt)
                 else:
-                    formatted_input = (system_format.format(content=system_message) if system_format else "") + user_format.format(content=user_prompt) + assistant_prefill
+                    formatted_input = (system_format.format(content=system_message) if system_format else "") + (user_format or "User: {content}\nAssistant: ").format(content=user_prompt) + (assistant_prefill or "")
                 input_ids = tokenizer(formatted_input, return_tensors="pt").to(device)
 
                 outputs = model(input_ids=input_ids.input_ids)

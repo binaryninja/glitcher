@@ -57,11 +57,11 @@ def initialize_model_and_tokenizer(model_path: str, device: str = "auto", quant_
     tokenizer = AutoTokenizer.from_pretrained(model_path)
 
     # Load model with the specified quantization
-    if quant_type == 'bfloat16':
+    if quant_type in ('bfloat16', 'auto'):
         model = AutoModelForCausalLM.from_pretrained(
             model_path,
             device_map=device_map,
-            torch_dtype=torch.bfloat16,
+            torch_dtype=(torch.bfloat16 if quant_type == 'bfloat16' else 'auto'),
         )
     elif quant_type == 'float16':
         model = AutoModelForCausalLM.from_pretrained(
@@ -90,8 +90,9 @@ def get_template_for_model(model_name: str, tokenizer=None):
     """Get appropriate template for model."""
     # Try to use built-in chat template if available
     if tokenizer is not None and hasattr(tokenizer, 'chat_template') and tokenizer.chat_template is not None:
-        # Check if this is an instruct model
-        if "instruct" in model_name.lower() or "chat" in model_name.lower():
+        # Check if this is an instruct/chat or gpt-oss model
+        lower_name = model_name.lower()
+        if ("instruct" in lower_name or "chat" in lower_name or "gpt-oss" in lower_name or "gptoss" in lower_name):
             return BuiltInTemplate(tokenizer)
 
     return SimpleTemplate()
@@ -107,7 +108,7 @@ class TransformersProvider(BaseProvider):
         Args:
             model_path: Path to the model (HuggingFace model ID or local path)
             device: Device to use ("auto", "cuda", "cpu", etc.)
-            quant_type: Quantization type ("int4", "int8", "float16", "bfloat16")
+            quant_type: Quantization type ("auto", "int4", "int8", "float16", "bfloat16")
             **kwargs: Additional arguments
         """
         # Call parent with dummy API key since we don't need one for local models

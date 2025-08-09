@@ -109,7 +109,7 @@ class GlitcherCLI:
         )
         mine_parser.add_argument(
             "--quant-type", type=str, default="bfloat16",
-            choices=["bfloat16", "float16", "int8", "int4"],
+            choices=["auto", "bfloat16", "float16", "int8", "int4"],
             help="Quantization type (default: bfloat16)"
         )
         mine_parser.add_argument(
@@ -177,7 +177,7 @@ class GlitcherCLI:
         )
         test_parser.add_argument(
             "--quant-type", type=str, default="bfloat16",
-            choices=["bfloat16", "float16", "int8", "int4"],
+            choices=["auto", "bfloat16", "float16", "int8", "int4"],
             help="Quantization type (default: bfloat16)"
         )
         test_parser.add_argument(
@@ -222,7 +222,7 @@ class GlitcherCLI:
         )
         compare_parser.add_argument(
             "--quant-type", type=str, default="bfloat16",
-            choices=["bfloat16", "float16", "int8", "int4"],
+            choices=["auto", "bfloat16", "float16", "int8", "int4"],
             help="Quantization type (default: bfloat16)"
         )
         compare_parser.add_argument(
