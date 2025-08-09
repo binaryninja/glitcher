@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import json
 import warnings
 import os
-from .model import get_template_for_model, glitch_verify_message1, glitch_verify_message2, glitch_verify_message3
+from .model import get_template_for_model, glitch_verify_message1, glitch_verify_message2, glitch_verify_message3, build_harmony_prefill, parse_harmony_final
 
 from typing import Any
 
@@ -137,11 +137,12 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
 
                     # Build Harmony conversation and render prefill ids
                     encoding = load_harmony_encoding(HarmonyEncodingName.HARMONY_GPT_OSS)
+                    developer_instructions = f"Reasoning: {os.environ.get('GLITCHER_REASONING_LEVEL', 'medium')}\n\n{system_message_h}"
                     convo = Conversation.from_messages([
                         Message.from_role_and_content(Role.SYSTEM, SystemContent.new()),
                         Message.from_role_and_content(
                             Role.DEVELOPER,
-                            DeveloperContent.new().with_instructions(system_message_h)
+                            DeveloperContent.new().with_instructions(developer_instructions)
                         ),
                         Message.from_role_and_content(Role.USER, user_prompt_h),
                     ])

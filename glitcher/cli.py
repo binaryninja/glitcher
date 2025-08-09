@@ -132,6 +132,11 @@ class GlitcherCLI:
             "--asr-threshold", type=float, default=0.5,
             help="ASR threshold for considering token a glitch (default: 0.5)"
         )
+        mine_parser.add_argument(
+            "--reasoning-level", type=str, default="medium",
+            choices=["none", "medium", "deep"],
+            help="Reasoning level for Harmony-enabled models (default: medium)"
+        )
 
         # Range mining options
         mine_parser.add_argument(
@@ -532,6 +537,9 @@ class GlitcherCLI:
     def load_model(self):
         """Load the model and tokenizer."""
         print(f"Loading model: {self.args.model_path}")
+        # Thread reasoning level to model via environment for Harmony-based prompts
+        if hasattr(self.args, "reasoning_level") and self.args.reasoning_level:
+            os.environ["GLITCHER_REASONING_LEVEL"] = self.args.reasoning_level
         self.model, self.tokenizer = initialize_model_and_tokenizer(
             model_path=self.args.model_path,
             device=self.args.device,

@@ -4,11 +4,111 @@ Core functionality for glitch token mining and testing
 """
 
 import time
+import os
 import torch
 import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers.utils.quantization_config import BitsAndBytesConfig
 from typing import List, Tuple, Dict, Any, Optional, Union
+
+# Harmony support (runtime import to avoid hard dependency here)
+HARMONY_AVAILABLE = False
+HarmonyEncodingName = None
+load_harmony_encoding = None
+Conversation = None
+Message = None
+Role = None
+SystemContent = None
+DeveloperContent = None
+
+try:
+    _harmony = __import__(
+        "openai_harmony",
+        fromlist=[
+            "HarmonyEncodingName",
+            "load_harmony_encoding",
+            "Conversation",
+            "Message",
+            "Role",
+            "SystemContent",
+            "DeveloperContent",
+        ],
+    )
+    HarmonyEncodingName = getattr(_harmony, "HarmonyEncodingName", None)
+    load_harmony_encoding = getattr(_harmony, "load_harmony_encoding", None)
+    Conversation = getattr(_harmony, "Conversation", None)
+    Message = getattr(_harmony, "Message", None)
+    Role = getattr(_harmony, "Role", None)
+    SystemContent = getattr(_harmony, "SystemContent", None)
+    DeveloperContent = getattr(_harmony, "DeveloperContent", None)
+    HARMONY_AVAILABLE = all([
+        HarmonyEncodingName,
+        load_harmony_encoding,
+        Conversation,
+        Message,
+        Role,
+        SystemContent,
+        DeveloperContent,
+    ])
+except Exception:
+    HARMONY_AVAILABLE = False
+
+
+def _is_gpt_oss_name(name: str) -> bool:
+    """Detect gpt-oss family by model name"""
+    return "gpt-oss" in name.lower() or "gptoss" in name.lower()
+
+
+def build_harmony_prefill(system_message: str, user_prompt: str, tokenizer, model):
+    """
+    Build Harmony prefill ids and stop token ids for gpt-oss with configurable reasoning level.
+
+    Returns: (prefill_ids, stop_ids, prefill_text, encoding)
+    """
+    if not HARMONY_AVAILABLE:
+        return [], [], "", None
+
+    reasoning_level = os.environ.get("GLITCHER_REASONING_LEVEL", "medium")
+    encoding = load_harmony_encoding(HarmonyEncodingName.HARMONY_GPT_OSS)
+
+    # Put reasoning level into developer instructions ahead of the policy/system guidance
+    developer_instructions = f"Reasoning: {reasoning_level}\n\n{system_message}"
+
+    convo = Conversation.from_messages([
+        Message.from_role_and_content(Role.SYSTEM, SystemContent.new()),
+        Message.from_role_and_content(
+            Role.DEVELOPER,
+            DeveloperContent.new().with_instructions(developer_instructions),
+        ),
+        Message.from_role_and_content(Role.USER, user_prompt),
+    ])
+
+    prefill_ids = encoding.render_conversation_for_completion(convo, Role.ASSISTANT)
+    stop_ids = encoding.stop_tokens_for_assistant_actions()
+    prefill_text = tokenizer.decode(prefill_ids)
+
+    return prefill_ids, stop_ids, prefill_text, encoding
+
+
+def parse_harmony_final(new_token_ids: List[int], tokenizer, encoding) -> str:
+    """
+    Parse Harmony completion tokens and return only final channel text.
+    Falls back to string splitting if structured parsing fails.
+    """
+    if HARMONY_AVAILABLE and encoding is not None:
+        try:
+            entries = encoding.parse_messages_from_completion_tokens(new_token_ids, Role.ASSISTANT)
+            parsed = [m.to_dict() for m in entries]
+            finals = [m.get("content", "") for m in parsed if str(m.get("channel", "")).lower() == "final"]
+            if finals:
+                return finals[-1]
+        except Exception:
+            pass
+
+    # Fallback: heuristic split by Harmony markers
+    full_decoded = tokenizer.decode(new_token_ids)
+    tail = full_decoded.split("<|channel|>final<|message|>")[-1]
+    return tail.split("<|end|>")[0].strip() if "<|end|>" in tail else tail.strip()
 
 
 def entropy(probs):
@@ -527,26 +627,32 @@ def chat_token(model_path, token_id, max_size=10, device="auto", quant_type="bfl
 
             formatted_prompt = formatted_system + formatted_user + assistant_prefill
 
-        # Tokenize input
-        inputs = tokenizer(formatted_prompt, return_tensors="pt").to(model.device)
+        # Build inputs and stop tokens (Harmony for gpt-oss, otherwise tokenizer path)
+        if _is_gpt_oss_name(model.config._name_or_path) and HARMONY_AVAILABLE:
+            prefill_ids, stop_token_ids, formatted_prompt, _enc = build_harmony_prefill(
+                system_message, user_prompt, tokenizer, model
+            )
+            inputs = {"input_ids": torch.tensor([prefill_ids], device=model.device)}
+        else:
+            # Tokenize input
+            inputs = tokenizer(formatted_prompt, return_tensors="pt").to(model.device)
 
-        # Set up proper stop tokens based on chat template
-        stop_token_ids = [tokenizer.eos_token_id]
-        if hasattr(tokenizer, 'get_added_vocab'):
-            # Add model-specific stop tokens
-            if chat_template.template_name in ['llama3', 'llama32']:
-                eot_token_id = tokenizer.get_added_vocab().get('<|eot_id|>')
-                if eot_token_id:
-                    stop_token_ids.append(eot_token_id)
-            elif chat_template.stop_word:
-                # Try to get the stop word token ID
-                try:
-                    stop_word_ids = tokenizer.encode(chat_template.stop_word, add_special_tokens=False)
-                    if stop_word_ids:
-                        stop_token_ids.extend(stop_word_ids)
-                except:
-                    pass
-
+            # Set up proper stop tokens based on chat template
+            stop_token_ids = [tokenizer.eos_token_id]
+            if hasattr(tokenizer, 'get_added_vocab'):
+                # Add model-specific stop tokens
+                if chat_template.template_name in ['llama3', 'llama32']:
+                    eot_token_id = tokenizer.get_added_vocab().get('<|eot_id|>')
+                    if eot_token_id:
+                        stop_token_ids.append(eot_token_id)
+                elif chat_template.stop_word:
+                    # Try to get the stop word token ID
+                    try:
+                        stop_word_ids = tokenizer.encode(chat_template.stop_word, add_special_tokens=False)
+                        if stop_word_ids:
+                            stop_token_ids.extend(stop_word_ids)
+                    except:
+                        pass
 
 
         generation_kwargs = {
@@ -576,9 +682,12 @@ def chat_token(model_path, token_id, max_size=10, device="auto", quant_type="bfl
         max_prob = first_token_probs[max_prob_index].item()
 
         # Decode only the newly generated tokens (excluding the input prompt)
-        input_length = inputs.input_ids.shape[1]
+        input_length = inputs["input_ids"].shape[1] if isinstance(inputs, dict) else inputs.input_ids.shape[1]
         generated_tokens = outputs.sequences[0][input_length:]
-        generated_text = tokenizer.decode(generated_tokens, skip_special_tokens=True)
+        if _is_gpt_oss_name(model.config._name_or_path) and HARMONY_AVAILABLE:
+            generated_text = parse_harmony_final(generated_tokens.tolist(), tokenizer, _enc if '_enc' in locals() else None)
+        else:
+            generated_text = tokenizer.decode(generated_tokens, skip_special_tokens=True)
 
         # Prepare result
         result = {
@@ -727,7 +836,11 @@ def mine_glitch_tokens(
         user_prompt = f"Please respond with exactly this: '{token}'"
 
         # Format input using appropriate template
-        if isinstance(chat_template, BuiltInTemplate):
+        if _is_gpt_oss_name(model.config._name_or_path) and HARMONY_AVAILABLE:
+            # Build Harmony-based prefill for gpt-oss with reasoning control
+            _prefill_ids, _stop_ids, _prefill_text, _enc = build_harmony_prefill(system_message, user_prompt, tokenizer, model)
+            formatted_input = _prefill_text
+        elif isinstance(chat_template, BuiltInTemplate):
             formatted_input = chat_template.format_chat(system_message, user_prompt)
         else:
             formatted_user = (user_format or "User: {content}\nAssistant: ").format(content=user_prompt)
@@ -809,7 +922,10 @@ def mine_glitch_tokens(
                 user_prompt = f"Please respond with exactly this: '{token}'"
 
                 # Format input using appropriate template
-                if isinstance(chat_template, BuiltInTemplate):
+                if _is_gpt_oss_name(model.config._name_or_path) and HARMONY_AVAILABLE:
+                    _prefill_ids, _stop_ids, _prefill_text, _enc = build_harmony_prefill(system_message, user_prompt, tokenizer, model)
+                    formatted_input = _prefill_text
+                elif isinstance(chat_template, BuiltInTemplate):
                     formatted_input = chat_template.format_chat(system_message, user_prompt)
                 else:
                     formatted_input = (system_format.format(content=system_message) if system_format else "") + (user_format or "User: {content}\nAssistant: ").format(content=user_prompt) + (assistant_prefill or "")
