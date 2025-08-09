@@ -215,19 +215,28 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                         else:
                             generated_text = _to_text([m.get("content", "") for m in parsed if m.get("content")])
 
-                        # Enhance token presence checks to account for exact and whitespace-preserving variants
+                        # Dual presence check: token id OR text presence
                         norm_generated = generated_text
                         exact_token = token
                         stripped_token = token.strip()
-                        # Some Harmony outputs may normalize spaces; check both exact and stripped variants,
-                        # but also prefer exact match when leading space is significant.
-                        token_text_found = (exact_token in norm_generated) or (stripped_token and stripped_token in norm_generated)
-                        token_found_in_sequence = token_text_found
+                        # Check by text presence (exact and stripped) and by raw token id presence in completion ids
+                        text_present = (exact_token in norm_generated) or (stripped_token and stripped_token in norm_generated)
+                        id_present = token_id in new_tokens.tolist()
+                        token_text_found = text_present
+                        token_found_in_sequence = id_present or text_present
                     except Exception:
                         # Fallback: split decoded text by Harmony channel markers
                         full_decoded = tokenizer.decode(generated_ids[0])
                         tail = full_decoded.split("<|channel|>final<|message|>")[-1]
                         generated_text = tail.split("<|end|>")[0].strip() if "<|end|>" in tail else tail.strip()
+                        # Dual presence check in fallback as well
+                        norm_generated = generated_text
+                        exact_token = token
+                        stripped_token = token.strip()
+                        text_present = (exact_token in norm_generated) or (stripped_token and stripped_token in norm_generated)
+                        id_present = token_id in new_tokens.tolist()
+                        token_text_found = text_present
+                        token_found_in_sequence = id_present or text_present
 
                     # For gpt-oss, restrict checks to final channel content
                     token_text_found = token.strip() in generated_text
@@ -289,12 +298,11 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                     # Convert to text for analysis
                     generated_text = tokenizer.decode(new_tokens, skip_special_tokens=True)
 
-                    # Check if target token appears in the generated sequence
-                    token_found_in_sequence = token_id in new_tokens.tolist()
-
-                    # Also check if the token text appears in the generated text
-                    # This handles cases where the token might be generated as part of a larger token
-                    token_text_found = token.strip() in generated_text
+                    # Dual presence check: by id and by text (exact and stripped)
+                    exact_token = token
+                    stripped_token = token.strip()
+                    token_text_found = (exact_token in generated_text) or (stripped_token and stripped_token in generated_text)
+                    token_found_in_sequence = (token_id in new_tokens.tolist()) or token_text_found
 
                     # Get the first few tokens for analysis
                     first_5_tokens = new_tokens[:5].tolist()
