@@ -186,12 +186,43 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                     try:
                         entries = encoding.parse_messages_from_completion_tokens(new_tokens.tolist(), Role.ASSISTANT)
                         parsed = [m.to_dict() for m in entries]
+
+                        # Helper to flatten structured Harmony content to plain text
+                        def _to_text(content):
+                            if isinstance(content, str):
+                                return content
+                            if isinstance(content, list):
+                                parts = []
+                                for c in content:
+                                    if isinstance(c, dict):
+                                        t = c.get("text") or c.get("content") or ""
+                                        if isinstance(t, (list, dict)):
+                                            parts.append(_to_text(t))
+                                        else:
+                                            parts.append(str(t))
+                                    else:
+                                        parts.append(_to_text(c))
+                                return "".join(parts)
+                            if isinstance(content, dict):
+                                t = content.get("text") or content.get("content") or ""
+                                return _to_text(t) if isinstance(t, (list, dict)) else str(t)
+                            return str(content)
+
                         # Prefer final channel content; fallback to concatenated content
                         final_texts = [m.get("content", "") for m in parsed if str(m.get("channel", "")).lower() == "final"]
                         if final_texts:
-                            generated_text = final_texts[-1]
+                            generated_text = _to_text(final_texts[-1])
                         else:
-                            generated_text = " ".join(m.get("content", "") for m in parsed if m.get("content"))
+                            generated_text = _to_text([m.get("content", "") for m in parsed if m.get("content")])
+
+                        # Enhance token presence checks to account for exact and whitespace-preserving variants
+                        norm_generated = generated_text
+                        exact_token = token
+                        stripped_token = token.strip()
+                        # Some Harmony outputs may normalize spaces; check both exact and stripped variants,
+                        # but also prefer exact match when leading space is significant.
+                        token_text_found = (exact_token in norm_generated) or (stripped_token and stripped_token in norm_generated)
+                        token_found_in_sequence = token_text_found
                     except Exception:
                         # Fallback: split decoded text by Harmony channel markers
                         full_decoded = tokenizer.decode(generated_ids[0])
