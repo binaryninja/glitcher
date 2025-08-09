@@ -20,6 +20,7 @@ Message = None
 Role = None
 SystemContent = None
 DeveloperContent = None
+ReasoningEffort = None
 
 try:
     _harmony = __import__(
@@ -32,6 +33,7 @@ try:
             "Role",
             "SystemContent",
             "DeveloperContent",
+            "ReasoningEffort",
         ],
     )
     HarmonyEncodingName = getattr(_harmony, "HarmonyEncodingName", None)
@@ -41,6 +43,7 @@ try:
     Role = getattr(_harmony, "Role", None)
     SystemContent = getattr(_harmony, "SystemContent", None)
     DeveloperContent = getattr(_harmony, "DeveloperContent", None)
+    ReasoningEffort = getattr(_harmony, "ReasoningEffort", None)
     HARMONY_AVAILABLE = all([
         HarmonyEncodingName,
         load_harmony_encoding,
@@ -49,6 +52,7 @@ try:
         Role,
         SystemContent,
         DeveloperContent,
+        ReasoningEffort,
     ])
 except Exception:
     HARMONY_AVAILABLE = False
@@ -72,13 +76,37 @@ def build_harmony_prefill(system_message: str, user_prompt: str, tokenizer, mode
     encoding = load_harmony_encoding(HarmonyEncodingName.HARMONY_GPT_OSS)
 
     # Put reasoning level into developer instructions ahead of the policy/system guidance
-    developer_instructions = f"Reasoning: {reasoning_level}\n\n{system_message}"
+    # Build SystemContent with identity, dates, required channels, and reasoning effort
+    # Map GLITCHER_REASONING_LEVEL -> ReasoningEffort enum (none->LOW, medium->MEDIUM, deep->HIGH)
+    level = (reasoning_level or "medium").strip().lower()
+    _RE = ReasoningEffort if ("ReasoningEffort" in globals() and ReasoningEffort) else getattr(globals().get("_harmony", None), "ReasoningEffort", None)
+    if _RE is not None:
+        level_map = {
+            "none": getattr(_RE, "LOW", None),
+            "medium": getattr(_RE, "MEDIUM", None),
+            "deep": getattr(_RE, "HIGH", None),
+            # allow synonyms
+            "low": getattr(_RE, "LOW", None),
+            "high": getattr(_RE, "HIGH", None),
+        }
+        reasoning_effort = level_map.get(level, level_map["medium"])
+    else:
+        reasoning_effort = None
 
+    system_content = SystemContent.new() \
+        .with_model_identity("You are ChatGPT, a large language model trained by OpenAI.") \
+        .with_knowledge_cutoff("2024-06") \
+        .with_conversation_start_date(time.strftime("%Y-%m-%d")) \
+        .with_required_channels(["analysis", "commentary", "final"])
+    if reasoning_effort is not None:
+        system_content = system_content.with_reasoning_effort(reasoning_effort)
+
+    # Developer message carries the actual instructions/policy text
     convo = Conversation.from_messages([
-        Message.from_role_and_content(Role.SYSTEM, SystemContent.new()),
+        Message.from_role_and_content(Role.SYSTEM, system_content),
         Message.from_role_and_content(
             Role.DEVELOPER,
-            DeveloperContent.new().with_instructions(developer_instructions),
+            DeveloperContent.new().with_instructions(system_message),
         ),
         Message.from_role_and_content(Role.USER, user_prompt),
     ])
