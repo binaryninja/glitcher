@@ -864,9 +864,12 @@ def mine_glitch_tokens(
         user_prompt = f"Please respond with exactly this: '{token}'"
 
         # Format input using appropriate template
+        input_ids_for_forward = None
         if _is_gpt_oss_name(model.config._name_or_path) and HARMONY_AVAILABLE:
-            # Build Harmony-based prefill for gpt-oss with reasoning control
             _prefill_ids, _stop_ids, _prefill_text, _enc = build_harmony_prefill(system_message, user_prompt, tokenizer, model)
+            # For gpt-oss, probe after the final channel header so the next-token is content, not the channel marker
+            content_header_ids = tokenizer.encode("<|channel|>final<|message|>", add_special_tokens=False)
+            input_ids_for_forward = _prefill_ids + content_header_ids
             formatted_input = _prefill_text
         elif isinstance(chat_template, BuiltInTemplate):
             formatted_input = chat_template.format_chat(system_message, user_prompt)
@@ -885,7 +888,7 @@ def mine_glitch_tokens(
             }) + "\n")
 
         # Find position of the token in the input
-        input_ids = tokenizer.encode(formatted_input)
+        input_ids = input_ids_for_forward if 'input_ids_for_forward' in locals() and input_ids_for_forward is not None else tokenizer.encode(formatted_input)
         # Try to find position after the quote - use single quote now instead of double
         quote_indices = [i for i, id in enumerate(input_ids) if tokenizer.decode([id]) == "'"]
         if len(quote_indices) >= 2:
@@ -950,16 +953,23 @@ def mine_glitch_tokens(
                 user_prompt = f"Please respond with exactly this: '{token}'"
 
                 # Format input using appropriate template
+                input_ids_for_forward = None
                 if _is_gpt_oss_name(model.config._name_or_path) and HARMONY_AVAILABLE:
                     _prefill_ids, _stop_ids, _prefill_text, _enc = build_harmony_prefill(system_message, user_prompt, tokenizer, model)
+                    # For gpt-oss, probe after the final channel header so the next-token is content
+                    content_header_ids = tokenizer.encode("<|channel|>final<|message|>", add_special_tokens=False)
+                    input_ids_for_forward = _prefill_ids + content_header_ids
                     formatted_input = _prefill_text
                 elif isinstance(chat_template, BuiltInTemplate):
                     formatted_input = chat_template.format_chat(system_message, user_prompt)
                 else:
                     formatted_input = (system_format.format(content=system_message) if system_format else "") + (user_format or "User: {content}\nAssistant: ").format(content=user_prompt) + (assistant_prefill or "")
-                input_ids = tokenizer(formatted_input, return_tensors="pt").to(device)
+                if input_ids_for_forward is not None:
+                    input_ids = {"input_ids": torch.tensor([input_ids_for_forward], device=device)}
+                else:
+                    input_ids = tokenizer(formatted_input, return_tensors="pt").to(device)
 
-                outputs = model(input_ids=input_ids.input_ids)
+                outputs = model(input_ids=(input_ids["input_ids"] if isinstance(input_ids, dict) else input_ids.input_ids))
                 next_token_logits = outputs.logits[:, -1, :]
                 next_token_probs = F.softmax(next_token_logits, dim=-1)
                 entropy_value = entropy(next_token_probs)
