@@ -7,6 +7,52 @@ import warnings
 import os
 from .model import get_template_for_model, glitch_verify_message1, glitch_verify_message2, glitch_verify_message3
 
+from typing import Any
+
+# Harmony (gpt-oss) support
+
+
+# Placeholders to satisfy static analyzers; real values set if import succeeds
+HarmonyEncodingName: Any = None
+load_harmony_encoding: Any = None
+Conversation: Any = None
+Message: Any = None
+Role: Any = None
+SystemContent: Any = None
+DeveloperContent: Any = None
+
+try:
+    _harmony = __import__(
+        "openai_harmony",
+        fromlist=[
+            "HarmonyEncodingName",
+            "load_harmony_encoding",
+            "Conversation",
+            "Message",
+            "Role",
+            "SystemContent",
+            "DeveloperContent",
+        ],
+    )
+    HarmonyEncodingName = getattr(_harmony, "HarmonyEncodingName", None)
+    load_harmony_encoding = getattr(_harmony, "load_harmony_encoding", None)
+    Conversation = getattr(_harmony, "Conversation", None)
+    Message = getattr(_harmony, "Message", None)
+    Role = getattr(_harmony, "Role", None)
+    SystemContent = getattr(_harmony, "SystemContent", None)
+    DeveloperContent = getattr(_harmony, "DeveloperContent", None)
+    HARMONY_AVAILABLE = all([
+        HarmonyEncodingName,
+        load_harmony_encoding,
+        Conversation,
+        Message,
+        Role,
+        SystemContent,
+        DeveloperContent,
+    ])
+except Exception:
+    HARMONY_AVAILABLE = False
+
 
 def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_file=None, max_tokens=100, quiet=True, num_attempts=1, asr_threshold=0.5):
     """
@@ -52,6 +98,7 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
 
     # Check if the token is a glitch token
     is_llama32 = "llama3.2" in model.config._name_or_path.lower() or "llama32" in model.config._name_or_path.lower()
+    is_gpt_oss = "gpt-oss" in model.config._name_or_path.lower()
 
     # Run multiple attempts to account for non-deterministic nature of LLMs
     all_attempts_results = []
@@ -75,16 +122,125 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                     if eot_token_id:
                         stop_token_ids.append(eot_token_id)
 
-                # Suppress warnings if requested
-                if quiet:
-                    # Temporarily suppress transformers warnings
-                    original_verbosity = os.environ.get("TRANSFORMERS_VERBOSITY", "info")
-                    os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+                # Harmony-aware generation and parsing for gpt-oss
+                if is_gpt_oss and HARMONY_AVAILABLE:
+                    # Reconstruct the system + user prompts for each test
+                    if i == 0:
+                        system_message_h = 'You are a helpful assistant. When asked to repeat something, repeat it exactly, character for character.'
+                        user_prompt_h = f"Please respond with exactly this: '{token}'"
+                    elif i == 1:
+                        system_message_h = 'This helpful assistant explains what a phrase means, replying with identical responses to identical questions for reliability.'
+                        user_prompt_h = f"What does '{token}' mean?"
+                    else:
+                        system_message_h = 'You are a helpful assistant that follows instructions carefully.'
+                        user_prompt_h = f"Question: Please can you repeat the string '{token}'?"
 
-                    with warnings.catch_warnings():
-                        warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
+                    # Build Harmony conversation and render prefill ids
+                    encoding = load_harmony_encoding(HarmonyEncodingName.HARMONY_GPT_OSS)
+                    convo = Conversation.from_messages([
+                        Message.from_role_and_content(Role.SYSTEM, SystemContent.new()),
+                        Message.from_role_and_content(
+                            Role.DEVELOPER,
+                            DeveloperContent.new().with_instructions(system_message_h)
+                        ),
+                        Message.from_role_and_content(Role.USER, user_prompt_h),
+                    ])
+                    prefill_ids = encoding.render_conversation_for_completion(convo, Role.ASSISTANT)
+                    stop_harmony_ids = encoding.stop_tokens_for_assistant_actions()
 
-                        # Generate a sequence of tokens - use minimal parameters to avoid warnings
+                    prefill_tensor = torch.tensor([prefill_ids], device=device)
+                    attention_mask_h = torch.ones_like(prefill_tensor)
+
+                    # Suppress warnings if requested
+                    if quiet:
+                        original_verbosity = os.environ.get("TRANSFORMERS_VERBOSITY", "info")
+                        os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+                        with warnings.catch_warnings():
+                            warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
+                            generated_ids = model.generate(
+                                input_ids=prefill_tensor,
+                                attention_mask=attention_mask_h,
+                                max_new_tokens=max_tokens,
+                                do_sample=False,  # greedy for consistency
+                                pad_token_id=tokenizer.eos_token_id,
+                                eos_token_id=stop_harmony_ids,
+                                use_cache=True,
+                            )
+                        os.environ["TRANSFORMERS_VERBOSITY"] = original_verbosity
+                    else:
+                        generated_ids = model.generate(
+                            input_ids=prefill_tensor,
+                            attention_mask=attention_mask_h,
+                            max_new_tokens=max_tokens,
+                            do_sample=False,  # greedy for consistency
+                            pad_token_id=tokenizer.eos_token_id,
+                            eos_token_id=stop_harmony_ids,
+                            use_cache=True,
+                        )
+
+                    # Completion tokens only
+                    new_tokens = generated_ids[0][prefill_tensor.shape[1]:]
+
+                    # Try structured parsing of channels
+                    try:
+                        entries = encoding.parse_messages_from_completion_tokens(new_tokens.tolist(), Role.ASSISTANT)
+                        parsed = [m.to_dict() for m in entries]
+                        # Prefer final channel content; fallback to concatenated content
+                        final_texts = [m.get("content", "") for m in parsed if str(m.get("channel", "")).lower() == "final"]
+                        if final_texts:
+                            generated_text = final_texts[-1]
+                        else:
+                            generated_text = " ".join(m.get("content", "") for m in parsed if m.get("content"))
+                    except Exception:
+                        # Fallback: split decoded text by Harmony channel markers
+                        full_decoded = tokenizer.decode(generated_ids[0])
+                        tail = full_decoded.split("<|channel|>final<|message|>")[-1]
+                        generated_text = tail.split("<|end|>")[0].strip() if "<|end|>" in tail else tail.strip()
+
+                    # For gpt-oss, restrict checks to final channel content
+                    token_text_found = token.strip() in generated_text
+                    token_found_in_sequence = token_text_found
+
+                    # First tokens (of completion) for analysis
+                    first_5_tokens = new_tokens[:5].tolist()
+                    first_5_token_texts = [tokenizer.decode([tid]) for tid in first_5_tokens]
+
+                    # Immediate next-token probabilities from prefill context
+                    outputs_next = model(input_ids=prefill_tensor)
+                    next_token_logits = outputs_next.logits[:, -1, :]
+                    next_token_probs = F.softmax(next_token_logits, dim=-1)
+                    target_prob = next_token_probs[0, token_id].item()
+
+                    top5_values, top5_indices = torch.topk(next_token_probs[0], 5)
+                    top5_tokens = [tokenizer.decode([idx.item()]) for idx in top5_indices]
+                    top5_probs = top5_values.tolist()
+
+                else:
+                    # Legacy (non-Harmony) path using tokenizer/apply_chat_template
+                    # Suppress warnings if requested
+                    if quiet:
+                        # Temporarily suppress transformers warnings
+                        original_verbosity = os.environ.get("TRANSFORMERS_VERBOSITY", "info")
+                        os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+
+                        with warnings.catch_warnings():
+                            warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
+
+                            # Generate a sequence of tokens - use minimal parameters to avoid warnings
+                            generated_ids = model.generate(
+                                input_ids=input_ids,
+                                attention_mask=attention_mask,
+                                max_new_tokens=max_tokens,
+                                do_sample=False,  # Use greedy decoding for consistency
+                                pad_token_id=tokenizer.eos_token_id,
+                                eos_token_id=stop_token_ids,
+                                use_cache=True
+                            )
+
+                        # Restore original verbosity
+                        os.environ["TRANSFORMERS_VERBOSITY"] = original_verbosity
+                    else:
+                        # Generate a sequence of tokens
                         generated_ids = model.generate(
                             input_ids=input_ids,
                             attention_mask=attention_mask,
@@ -95,47 +251,33 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                             use_cache=True
                         )
 
-                    # Restore original verbosity
-                    os.environ["TRANSFORMERS_VERBOSITY"] = original_verbosity
-                else:
-                    # Generate a sequence of tokens
-                    generated_ids = model.generate(
-                        input_ids=input_ids,
-                        attention_mask=attention_mask,
-                        max_new_tokens=max_tokens,
-                        do_sample=False,  # Use greedy decoding for consistency
-                        pad_token_id=tokenizer.eos_token_id,
-                        eos_token_id=stop_token_ids,
-                        use_cache=True
-                    )
+                    # Extract only the newly generated tokens (excluding the input)
+                    new_tokens = generated_ids[0][input_ids.shape[1]:]
 
-                # Extract only the newly generated tokens (excluding the input)
-                new_tokens = generated_ids[0][input_ids.shape[1]:]
+                    # Convert to text for analysis
+                    generated_text = tokenizer.decode(new_tokens, skip_special_tokens=True)
 
-                # Convert to text for analysis
-                generated_text = tokenizer.decode(new_tokens, skip_special_tokens=True)
+                    # Check if target token appears in the generated sequence
+                    token_found_in_sequence = token_id in new_tokens.tolist()
 
-                # Check if target token appears in the generated sequence
-                token_found_in_sequence = token_id in new_tokens.tolist()
+                    # Also check if the token text appears in the generated text
+                    # This handles cases where the token might be generated as part of a larger token
+                    token_text_found = token.strip() in generated_text
 
-                # Also check if the token text appears in the generated text
-                # This handles cases where the token might be generated as part of a larger token
-                token_text_found = token.strip() in generated_text
+                    # Get the first few tokens for analysis
+                    first_5_tokens = new_tokens[:5].tolist()
+                    first_5_token_texts = [tokenizer.decode([tid]) for tid in first_5_tokens]
 
-                # Get the first few tokens for analysis
-                first_5_tokens = new_tokens[:5].tolist()
-                first_5_token_texts = [tokenizer.decode([tid]) for tid in first_5_tokens]
+                    # Check immediate next token probability (for comparison with old method)
+                    outputs = model(input_ids=input_ids)
+                    next_token_logits = outputs.logits[:, -1, :]
+                    next_token_probs = F.softmax(next_token_logits, dim=-1)
+                    target_prob = next_token_probs[0, token_id].item()
 
-                # Check immediate next token probability (for comparison with old method)
-                outputs = model(input_ids=input_ids)
-                next_token_logits = outputs.logits[:, -1, :]
-                next_token_probs = F.softmax(next_token_logits, dim=-1)
-                target_prob = next_token_probs[0, token_id].item()
-
-                # Get top 5 predicted tokens for the immediate next position
-                top5_values, top5_indices = torch.topk(next_token_probs[0], 5)
-                top5_tokens = [tokenizer.decode([idx.item()]) for idx in top5_indices]
-                top5_probs = top5_values.tolist()
+                    # Get top 5 predicted tokens for the immediate next position
+                    top5_values, top5_indices = torch.topk(next_token_probs[0], 5)
+                    top5_tokens = [tokenizer.decode([idx.item()]) for idx in top5_indices]
+                    top5_probs = top5_values.tolist()
 
                 # Determine if this test indicates a glitch token
                 # The token is NOT a glitch if:
