@@ -30,9 +30,9 @@ from .genetic import GeneticProbabilityReducer, GeneticBatchRunner, EnhancedGene
 try:
     import sys
     import os
-    parent_dir = os.path.dirname(os.path.dirname(__file__))
-    if parent_dir not in sys.path:
-        sys.path.insert(0, parent_dir)
+    scripts_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "scripts")
+    if scripts_dir not in sys.path:
+        sys.path.insert(0, scripts_dir)
     from range_mining import range_based_mining
 except ImportError:
     range_based_mining = None

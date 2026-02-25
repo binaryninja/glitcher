@@ -22,7 +22,7 @@ from glitcher.model import (
 )
 
 # Constants
-MIXTRAL_MODEL_PATH = "/home/dyn/models/o/nowllm-0829"
+MIXTRAL_MODEL_PATH = os.environ.get("GLITCHER_MODEL_PATH", "meta-llama/Llama-3.2-1B-Instruct")
 TEST_TOKENS = [1000, 2000, 3000, 5000]  # Sample token IDs for testing
 
 class MixtralIntegrationTest:

@@ -16,7 +16,7 @@ from glitcher.model import initialize_model_and_tokenizer, get_template_for_mode
 
 def test_model_loading():
     """Test basic model loading and tokenization"""
-    model_path = "/home/dyn/models/o/nowllm-0829"
+    model_path = os.environ.get("GLITCHER_MODEL_PATH", "meta-llama/Llama-3.2-1B-Instruct")
 
     print(f"Loading model from: {model_path}")
     print("=" * 60)

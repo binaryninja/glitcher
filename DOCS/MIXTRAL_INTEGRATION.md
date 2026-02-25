@@ -6,7 +6,7 @@ Successfully integrated support for the Mixtral fine-tune model `nowllm-0829` in
 
 ## Model Details
 
-- **Model Path**: `/home/dyn/models/o/nowllm-0829`
+- **Model Path**: `$GLITCHER_MODEL_PATH`
 - **Model Type**: `MixtralForCausalLM`
 - **Tokenizer**: `LlamaTokenizerFast` 
 - **Vocabulary Size**: 32,000 tokens
@@ -45,28 +45,28 @@ if "nowllm-0829" in model_path:
 ### Basic Mining
 ```bash
 # Recommended: Use int4 quantization for memory efficiency
-glitcher mine /home/dyn/models/o/nowllm-0829 --num-iterations 50 --batch-size 8 --k 32 --quant-type int4
+glitcher mine $GLITCHER_MODEL_PATH --num-iterations 50 --batch-size 8 --k 32 --quant-type int4
 
 # Enhanced mining with validation
-glitcher mine /home/dyn/models/o/nowllm-0829 --num-iterations 50 --validation-tokens 100 --num-attempts 3 --quant-type int4
+glitcher mine $GLITCHER_MODEL_PATH --num-iterations 50 --validation-tokens 100 --num-attempts 3 --quant-type int4
 ```
 
 ### Token Testing
 ```bash
 # Test specific tokens
-glitcher test /home/dyn/models/o/nowllm-0829 --token-ids 1000,2000,3000 --quant-type int4
+glitcher test $GLITCHER_MODEL_PATH --token-ids 1000,2000,3000 --quant-type int4
 
 # Enhanced validation testing
-glitcher test /home/dyn/models/o/nowllm-0829 --token-ids 1000,2000,3000 --enhanced --num-attempts 3 --quant-type int4
+glitcher test $GLITCHER_MODEL_PATH --token-ids 1000,2000,3000 --enhanced --num-attempts 3 --quant-type int4
 ```
 
 ### Genetic Algorithm
 ```bash
 # Genetic algorithm with GUI
-glitcher genetic /home/dyn/models/o/nowllm-0829 --gui --base-text "The quick brown" --generations 50 --quant-type int4
+glitcher genetic $GLITCHER_MODEL_PATH --gui --base-text "The quick brown" --generations 50 --quant-type int4
 
 # Batch genetic experiments
-glitcher genetic /home/dyn/models/o/nowllm-0829 --batch --token-file glitch_tokens.json --generations 30 --quant-type int4
+glitcher genetic $GLITCHER_MODEL_PATH --batch --token-file glitch_tokens.json --generations 30 --quant-type int4
 ```
 
 ## Performance Characteristics
@@ -137,7 +137,7 @@ This formatting significantly improves prediction quality compared to raw text i
 ### For Production Mining
 ```bash
 # Recommended mining configuration
-glitcher mine /home/dyn/models/o/nowllm-0829 \
+glitcher mine $GLITCHER_MODEL_PATH \
     --num-iterations 100 \
     --batch-size 8 \
     --k 32 \
@@ -149,7 +149,7 @@ glitcher mine /home/dyn/models/o/nowllm-0829 \
 ### For Research
 ```bash
 # High-confidence research mining
-glitcher mine /home/dyn/models/o/nowllm-0829 \
+glitcher mine $GLITCHER_MODEL_PATH \
     --num-iterations 200 \
     --batch-size 4 \
     --k 64 \

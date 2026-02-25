@@ -379,7 +379,7 @@ def demonstrate_asr_thresholds(model_path: str, token_id: int):
 def main():
     """Main demonstration function"""
     # Configuration
-    MIXTRAL_MODEL_PATH = "/home/dyn/models/o/nowllm-0829"
+    MIXTRAL_MODEL_PATH = os.environ.get("GLITCHER_MODEL_PATH", "meta-llama/Llama-3.2-1B-Instruct")
     TEST_TOKENS = [1000, 2000, 3000, 5000, 10000]  # Sample tokens for testing
 
     print("🎪 GLITCHER VALIDATION SYSTEM COMPREHENSIVE DEMO")

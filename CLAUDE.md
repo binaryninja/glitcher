@@ -46,14 +46,23 @@ Use `glitcher <subcommand> --help` for full parameter documentation.
 
 ### Running tests
 
+Tests are standalone scripts (not pytest-compatible). Run them directly with `python`:
+
 ```bash
-pytest tests/unit/                    # Unit tests (no GPU required)
-pytest tests/integration/             # Integration tests (requires GPU + model)
-pytest tests/                         # All organized tests
-python -m pytest tests/unit/test_genetic_probabilities.py  # Single test file
+# Unit tests (require GPU + model)
+python tests/unit/test_genetic_probabilities.py meta-llama/Llama-3.2-1B-Instruct
+python tests/unit/test_glitch_error_detection.py
+python tests/unit/test_next_token_probability.py meta-llama/Llama-3.2-1B-Instruct
+python tests/unit/test_proper_context.py meta-llama/Llama-3.2-1B-Instruct
+
+# Integration tests (require GPU + model)
+python tests/integration/test_enhanced_classification.py
+python tests/integration/test_genetic_integration.py
+python tests/integration/test_report_generator.py
+python tests/integration/test_reports.py
 ```
 
-Note: many test files also exist in the project root (e.g., `test_comprehensive_search.py`) and under `poc/` - these are standalone scripts run directly with `python`, not via pytest.
+Note: many test files also exist in the project root (e.g., `test_comprehensive_search.py`) and under `poc/` - these are standalone scripts run directly with `python`.
 
 ### Linting
 

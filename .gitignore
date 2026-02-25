@@ -53,4 +53,5 @@ Thumbs.db
 comprehensive_genetic_test_results.png
 
 # Misc artifacts
+*.ahc
 =*
