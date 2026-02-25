@@ -12,9 +12,6 @@ import time
 from pathlib import Path
 from typing import Optional
 
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
-
 from glitcher.model import (
     mine_glitch_tokens,
     strictly_glitch_verify,
@@ -1504,7 +1501,7 @@ class GlitcherCLI:
         try:
             import tkinter as tk
             from tkinter import messagebox
-            from .genetic.gui_controller import GeneticControllerGUI, GeneticConfig
+            from .genetic.gui_controller import GeneticControllerGUI
 
             print("🚀 Launching Glitcher GUI...")
 

@@ -6,15 +6,13 @@ This module provides tests for email extraction functionality, checking how
 glitch tokens affect email parsing, validation, and JSON extraction tasks.
 """
 
-import time
-from typing import List, Dict, Any, Optional, Tuple
-from ..classification.types import ClassificationTest, GlitchCategory, TestResult, TestConfig
+from typing import List, Dict, Any, Optional
+from ..classification.types import ClassificationTest, GlitchCategory, TestConfig
 from ..utils import (
     get_logger,
     is_valid_email_token,
     validate_extracted_email_data,
     create_test_email_address,
-    extract_and_parse_json,
     JSONExtractor
 )
 

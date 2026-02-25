@@ -8,9 +8,8 @@ and other data formats that may be affected by glitch tokens.
 
 import re
 import string
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Optional, Dict, Any
 from .logging_utils import get_logger
-from .json_utils import extract_and_parse_json
 
 logger = get_logger(__name__)
 

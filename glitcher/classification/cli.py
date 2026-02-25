@@ -10,11 +10,11 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 from .glitch_classifier import GlitchClassifier
 from .types import TestConfig, GlitchCategory
-from ..utils import setup_logger, get_logger
+from ..utils import setup_logger
 
 
 def create_parser() -> argparse.ArgumentParser:

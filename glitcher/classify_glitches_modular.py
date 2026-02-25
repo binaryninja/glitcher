@@ -9,14 +9,11 @@ while taking advantage of the improved code organization.
 
 import argparse
 import json
-import os
-import time
-from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 
 from .classification.glitch_classifier import GlitchClassifier
-from .classification.types import GlitchCategory, TestConfig
-from .utils import setup_logger, get_logger
+from .classification.types import TestConfig
+from .utils import get_logger
 
 # For backward compatibility, expose the original classes
 TqdmLoggingHandler = None  # Will be imported from utils if needed

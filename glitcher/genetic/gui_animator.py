@@ -18,15 +18,13 @@ Author: Claude
 Date: 2024
 """
 
-import time
 import threading
-from typing import List, Dict, Any, Optional, Tuple, Union
+from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
-import numpy as np
 
 
 @dataclass

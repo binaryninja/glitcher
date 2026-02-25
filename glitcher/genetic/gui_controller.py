@@ -10,8 +10,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog, scrolledtext
 import threading
 import json
-import os
-from typing import Dict, Any, Optional, Callable
+import os  # noqa: F401 (used in _run_evolution_with_controls)
+from typing import Optional, Callable
 from dataclasses import dataclass
 import time
 
@@ -28,7 +28,7 @@ except ImportError:
     FigureCanvasTkAgg = None
 
 from .reducer import GeneticProbabilityReducer
-from .gui_animator import EnhancedGeneticAnimator, GeneticAnimationCallback
+from .gui_animator import EnhancedGeneticAnimator
 
 
 class GUICallback:
@@ -94,7 +94,7 @@ class GUICallback:
             # Re-raise to stop evolution
             raise
         except Exception as e:
-            self.gui_controller.root.after(0, lambda: self.gui_controller.log_message(f"Error updating progress: {e}"))
+            self.gui_controller.root.after(0, lambda e=e: self.gui_controller.log_message(f"Error updating progress: {e}"))
 
     def on_evolution_complete(self, results):
         """Called when evolution completes."""
@@ -816,7 +816,7 @@ class GeneticControllerGUI:
             self.root.after(0, lambda: self._on_evolution_complete(results))
 
         except Exception as e:
-            self.root.after(0, lambda: self._on_evolution_error(e))
+            self.root.after(0, lambda e=e: self._on_evolution_error(e))
 
     def _run_evolution_with_controls(self):
         """Run evolution using the reducer's built-in run_evolution method"""
@@ -876,7 +876,7 @@ class GeneticControllerGUI:
                 'stopped_early': True
             }
         except Exception as e:
-            self.root.after(0, lambda: self.log_message(f"Evolution error: {e}"))
+            self.root.after(0, lambda e=e: self.log_message(f"Evolution error: {e}"))
             raise e
         finally:
             # Restore original tqdm setting

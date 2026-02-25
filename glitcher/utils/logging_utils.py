@@ -7,7 +7,6 @@ the classification system, including tqdm-compatible logging.
 """
 
 import logging
-import sys
 from pathlib import Path
 from typing import Optional
 from tqdm import tqdm

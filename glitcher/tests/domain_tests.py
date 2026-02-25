@@ -6,15 +6,13 @@ This module provides tests for domain extraction functionality, checking how
 glitch tokens affect domain parsing from log files and validation tasks.
 """
 
-import time
-from typing import List, Dict, Any, Optional, Tuple
-from ..classification.types import ClassificationTest, GlitchCategory, TestResult, TestConfig
+from typing import List, Dict, Any, Optional
+from ..classification.types import ClassificationTest, GlitchCategory, TestConfig
 from ..utils import (
     get_logger,
     is_valid_domain_token,
     validate_extracted_domain_data,
     create_test_domain_name,
-    extract_and_parse_json,
     JSONExtractor
 )
 

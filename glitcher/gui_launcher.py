@@ -7,7 +7,6 @@ graphical user interface, allowing interactive control of evolution experiments.
 """
 
 import sys
-import os
 import tkinter as tk
 from tkinter import messagebox
 
@@ -16,17 +15,17 @@ def check_dependencies():
     missing_deps = []
 
     try:
-        import torch
+        import torch  # noqa: F401
     except ImportError:
         missing_deps.append("torch")
 
     try:
-        import transformers
+        import transformers  # noqa: F401
     except ImportError:
         missing_deps.append("transformers")
 
     try:
-        import matplotlib
+        import matplotlib  # noqa: F401
     except ImportError:
         missing_deps.append("matplotlib (optional, for GUI animation)")
 

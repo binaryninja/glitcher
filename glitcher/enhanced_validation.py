@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import json
 import warnings
 import os
-from .model import get_template_for_model, glitch_verify_message1, glitch_verify_message2, glitch_verify_message3, build_harmony_prefill, parse_harmony_final
+from .model import get_template_for_model, glitch_verify_message1, glitch_verify_message2, glitch_verify_message3
 
 from typing import Any
 

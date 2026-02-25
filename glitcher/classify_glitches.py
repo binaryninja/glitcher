@@ -5,17 +5,12 @@ Glitch token classifier - Tests and categorizes glitch tokens by their effects
 
 import argparse
 import json
-import os
 import time
-from pathlib import Path
 import logging
 from typing import List, Dict, Any, Optional, Tuple
 import re
-import string
 
 import torch
-import torch.nn.functional as F
-from transformers import AutoTokenizer, AutoModelForCausalLM
 from tqdm import tqdm
 
 # ---------------------------------------------------------------------------
@@ -34,7 +29,6 @@ LOCAL_PART_RE = re.compile(rf'^{_LOCAL_ATOM}(?:\.{_LOCAL_ATOM})*$')
 from glitcher.model import (
     initialize_model_and_tokenizer,
     get_template_for_model,
-    chat_token,
     BuiltInTemplate
 )
 

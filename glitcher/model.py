@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers.utils.quantization_config import BitsAndBytesConfig
-from typing import List, Tuple, Dict, Any, Optional, Union
+from typing import List, Tuple, Any, Optional, Union
 
 # Harmony support (runtime import to avoid hard dependency here)
 HARMONY_AVAILABLE = False

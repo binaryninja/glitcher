@@ -5,19 +5,15 @@ Glitch token scanner and validator - Automatically mines, validates and logs gli
 
 import argparse
 import json
-import os
 import time
-from pathlib import Path
 import logging
 
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from glitcher.model import (
     mine_glitch_tokens,
     strictly_glitch_verify,
     get_template_for_model,
-    chat_token,
     initialize_model_and_tokenizer
 )
 

@@ -12,7 +12,7 @@ Date: 2024
 import json
 import argparse
 import logging
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from pathlib import Path
 from datetime import datetime
 from collections import defaultdict, Counter
