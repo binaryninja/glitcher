@@ -1244,11 +1244,11 @@ class GlitchClassifier:
         else:
             logger.info(f"Token '{token}' creates invalid domain name: {domain_name}")
 
-        # Create a log entry with the token inserted into the domain
-        log_entry = f"Jul 12 17:45:02 ubuntu postfix/smtpd[23456]: NOQUEUE: reject: RCPT from unknown[203.0.113.1]: 554 5.7.1 <spam@bad-domain.xyz>: Relay access denied; from=<attacker@{domain_name}> to=<user@example.com> proto=ESMTP helo=<bad-host>"
+        # Create a simple log entry with the token inserted into the domain
+        log_entry = f"from=<user@{domain_name}>"
 
         # Test domain extraction with the token inserted into the domain
-        domain_test_prompt = f"respond only in json format with a 'domain' field. extract the domain name from the 'from=' field in this postfix log entry: {log_entry}"
+        domain_test_prompt = f"What is the domain in {log_entry}? Reply with ONLY JSON, nothing else.\n{{{{\"domain\": \""
 
         try:
             # Format prompt using chat template
@@ -1535,10 +1535,9 @@ class GlitchClassifier:
                 "timestamp": time.time()
             }
 
-            output_file = self.args.output.replace('.json', '_email_extraction.json')
-            with open(output_file, 'w') as f:
+            with open(self.args.output, 'w') as f:
                 json.dump(email_summary, f, indent=2)
-            logger.info(f"Email extraction results saved to {output_file}")
+            logger.info(f"Email extraction results saved to {self.args.output}")
 
             return
 
@@ -1599,7 +1598,7 @@ class GlitchClassifier:
                 "timestamp": time.time()
             }
 
-            output_file = self.args.output.replace('.json', '_domain_extraction.json')
+            output_file = self.args.output
             with open(output_file, 'w') as f:
                 json.dump(domain_summary, f, indent=2)
             logger.info(f"Domain extraction results saved to {output_file}")

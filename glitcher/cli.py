@@ -971,15 +971,71 @@ class GlitcherCLI:
             print(f"Error testing token in chat: {e}")
 
     def run_validation(self):
-        """Run model validation tests"""
+        """Run model validation tests - quick smoke test of core functionality"""
+        import os
+        output_dir = getattr(self.args, 'output_dir', 'validation_results')
+        os.makedirs(output_dir, exist_ok=True)
+
         print(f"Running validation tests for model: {self.args.model_path}")
-        print("Validation tests are not yet implemented.")
-        # run_all_validation_tests(
-        #     self.args.model_path,
-        #     self.args.device,
-        #     self.args.quant_type,
-        #     self.args.output_dir
-        # )
+
+        # Load model
+        self.load_model()
+
+        # Run a quick test with a few known token IDs to validate the model works
+        test_token_ids = []
+        # Try to load from default glitch_tokens.json if it exists
+        if os.path.exists('glitch_tokens.json'):
+            try:
+                with open('glitch_tokens.json', 'r') as f:
+                    data = json.load(f)
+                if isinstance(data, dict) and 'glitch_token_ids' in data:
+                    test_token_ids = data['glitch_token_ids'][:5]
+                elif isinstance(data, list):
+                    test_token_ids = data[:5]
+            except Exception:
+                pass
+
+        if not test_token_ids:
+            # Use a few common token IDs as fallback
+            test_token_ids = [1, 2, 3]
+
+        # Run basic token tests
+        results = {
+            'model_path': self.args.model_path,
+            'device': self.args.device,
+            'quant_type': self.args.quant_type,
+            'tokens_tested': len(test_token_ids),
+            'test_results': []
+        }
+
+        chat_template = get_template_for_model(self.model.config._name_or_path, self.tokenizer)
+
+        for token_id in test_token_ids:
+            try:
+                token_text = self.tokenizer.decode([token_id])
+                is_glitch = strictly_glitch_verify(
+                    self.model, self.tokenizer, token_id, chat_template
+                )
+                results['test_results'].append({
+                    'token_id': token_id,
+                    'token_text': token_text,
+                    'is_glitch': is_glitch,
+                    'success': True
+                })
+            except Exception as e:
+                results['test_results'].append({
+                    'token_id': token_id,
+                    'error': str(e),
+                    'success': False
+                })
+
+        # Save results
+        output_file = os.path.join(output_dir, 'validation_results.json')
+        with open(output_file, 'w') as f:
+            json.dump(results, f, indent=2)
+
+        print(f"Validation complete: {len(test_token_ids)} tokens tested")
+        print(f"Results saved to {output_dir}/")
 
     def run_comparison(self):
         """Compare standard vs enhanced validation methods"""
@@ -1112,10 +1168,10 @@ class GlitcherCLI:
             import sys
             import os
 
-            # Add the parent directory to the path so we can import test_domain_extraction
-            parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            if parent_dir not in sys.path:
-                sys.path.insert(0, parent_dir)
+            # Add the tests directory to the path so we can import test_domain_extraction
+            tests_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tests')
+            if tests_dir not in sys.path:
+                sys.path.insert(0, tests_dir)
 
             from test_domain_extraction import DomainExtractionTester
 
@@ -1192,12 +1248,12 @@ class GlitcherCLI:
             if getattr(self.args, 'email_extraction_only', False):
                 print("Running email extraction tests only...")
                 summary = classifier.run_email_extraction_only(token_ids)
-                output_file = self.args.output.replace('.json', '_email_extraction.json')
+                output_file = self.args.output
 
             elif getattr(self.args, 'domain_extraction_only', False):
                 print("Running domain extraction tests only...")
                 summary = classifier.run_domain_extraction_only(token_ids)
-                output_file = self.args.output.replace('.json', '_domain_extraction.json')
+                output_file = self.args.output
 
             else:
                 # Run full classification
@@ -1403,9 +1459,9 @@ class GlitcherCLI:
                     ga.baseline_wanted_probability = wanted_prob or 0.0
                     ga.baseline_token_impacts()
                     ga.display_token_impact_results(top_n=self.args.baseline_top_n)
-                    ga.save_token_impact_results(self.args.baseline_output)
+                    ga.save_token_impact_results(self.args.output)
 
-                    print(f"\n✅ Token impact baseline results saved to {self.args.baseline_output}")
+                    print(f"\n✅ Token impact baseline results saved to {self.args.output}")
                 else:
                     # Run genetic algorithm evolution
                     print("Running genetic algorithm evolution...")

@@ -247,7 +247,10 @@ class GeneticProbabilityReducer:
                     self.glitch_tokens = data
                 elif isinstance(data, dict):
                     # Dictionary format - extract token IDs
-                    if 'classifications' in data:
+                    if 'glitch_token_ids' in data:
+                        # Format: {"glitch_token_ids": [123, 456, ...]}
+                        self.glitch_tokens = data['glitch_token_ids']
+                    elif 'classifications' in data:
                         # Format: {"classifications": [{"token_id": 123, ...}, ...]}
                         self.glitch_tokens = [t['token_id'] for t in data['classifications'] if 'token_id' in t]
                     elif 'tokens' in data:
