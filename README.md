@@ -18,8 +18,6 @@ Examples from Llama-3.2-1B-Instruct:
 
 ### Mining Quick Start
 
-TODO: Create from DOCS/MINE.md
-
 ```bash
 (base) dyn@dyn-X870E-Taichi:~/code/glitcher$ glitcher mine meta-llama/Llama-3.2-1B-Instruct   --num-iterations 20   --batch-size 16   --k 32   --num-attempts 4   --asr-threshold 0.5   --validation-tokens 1000
 ...

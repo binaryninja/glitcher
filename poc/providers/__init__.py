@@ -60,6 +60,13 @@ def _get_available_providers():
     except ImportError:
         pass
 
+    # Try to import and register OpenRouter provider
+    try:
+        from .openrouter_provider import OpenRouterProvider
+        AVAILABLE_PROVIDERS['openrouter'] = OpenRouterProvider
+    except ImportError:
+        pass
+
     return AVAILABLE_PROVIDERS
 
 
@@ -68,9 +75,9 @@ def get_provider(provider_name: str, api_key: str = None, **kwargs) -> BaseProvi
     Get a provider instance by name.
 
     Args:
-        provider_name: Name of the provider ('mistral', 'lambda', 'openai', 'anthropic', 'transformers')
+        provider_name: Name of the provider ('mistral', 'lambda', 'openai', 'anthropic', 'transformers', 'openrouter')
         api_key: API key for the provider (optional, can use env vars, not needed for transformers)
-        **kwargs: Additional provider-specific arguments (for transformers: model_path, device, quant_type)
+        **kwargs: Additional provider-specific arguments (for transformers: model_path, device, quant_type; for openrouter: site_url, site_name)
 
     Returns:
         Configured provider instance
@@ -87,7 +94,7 @@ def get_provider(provider_name: str, api_key: str = None, **kwargs) -> BaseProvi
         if not available_providers:
             raise ValueError(
                 "No providers available. Install dependencies: "
-                f"'pip install mistralai' for Mistral, 'pip install openai' for Lambda/OpenAI, 'pip install anthropic' for Anthropic, "
+                f"'pip install mistralai' for Mistral, 'pip install openai' for Lambda/OpenAI/OpenRouter, 'pip install anthropic' for Anthropic, "
                 f"'pip install transformers accelerate' for local transformers models"
             )
         raise ValueError(f"Unsupported provider '{provider_name}'. Available providers: {available}")

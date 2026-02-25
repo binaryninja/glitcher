@@ -16,6 +16,7 @@ import json
 import logging
 import argparse
 import time
+import os
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
@@ -23,9 +24,10 @@ try:
     import torch
     from transformers import AutoTokenizer, AutoModelForCausalLM
 except ImportError:
-    print("Error: Required packages not installed. Please run:")
-    print("pip install torch transformers accelerate")
-    sys.exit(1)
+    # Defer hard failures until we actually need local transformers.
+    torch = None
+    AutoTokenizer = None
+    AutoModelForCausalLM = None
 
 # Configure logging
 logging.basicConfig(
@@ -40,29 +42,78 @@ class EmailExtractionValidator:
     Validator for email extraction functionality with glitch tokens
     """
 
-    def __init__(self, model_path: str, device: str = "auto", max_tokens: int = 150):
+    def __init__(
+        self,
+        model_path: str,
+        device: str = "auto",
+        max_tokens: int = 150,
+        provider: Optional[str] = None,
+        api_key: Optional[str] = None,
+        provider_kwargs: Optional[Dict[str, Any]] = None
+    ):
         """
-        Initialize the validator
+        Initialize the validator (supports local transformers or external providers)
 
         Args:
-            model_path: Path to the model
-            device: Device to use for inference
+            model_path: Path to the model (or provider model ID)
+            device: Device to use for local inference
             max_tokens: Maximum tokens to generate
+            provider: Optional provider name (e.g., 'openrouter', 'openai', 'mistral', 'lambda', 'anthropic')
+            api_key: Optional API key for the provider (env vars can also be used)
+            provider_kwargs: Optional extra kwargs to initialize provider (e.g., site_url, site_name)
         """
         self.model_path = model_path
         self.device = device
         self.max_tokens = max_tokens
+
+        # Local model fields
         self.model = None
         self.tokenizer = None
 
+        # Provider fields
+        # Allow ENV-based activation when provider isn't passed explicitly
+        env_provider = os.environ.get("EMAIL_VALIDATOR_PROVIDER", "").strip().lower() or None
+        self.provider_name = (provider or env_provider or "").strip().lower() or None
+        self.api_key = api_key
+        self.provider_kwargs = provider_kwargs or {}
+        self.provider = None
+
     def load_model(self) -> bool:
         """
-        Load the model and tokenizer
+        Load the local model/tokenizer or initialize an external provider
 
         Returns:
             True if successful, False otherwise
         """
+        # Provider-backed mode
+        if self.provider_name:
+            try:
+                logger.info(f"Initializing provider: {self.provider_name}")
+
+                # Try multiple import paths to support different execution contexts
+                try:
+                    from glitcher.poc.providers import get_provider  # type: ignore
+                except Exception:
+                    try:
+                        from poc.providers import get_provider  # type: ignore
+                    except Exception:
+                        from providers import get_provider  # type: ignore
+
+                # Let provider handle API key via env vars if not explicitly provided
+                self.provider = get_provider(self.provider_name, api_key=self.api_key, **self.provider_kwargs)
+
+                logger.info(f"Provider initialized. Using model_id: {self.model_path}")
+                return True
+            except Exception as e:
+                logger.error(f"Failed to initialize provider '{self.provider_name}': {e}")
+                return False
+
+        # Local transformers mode
         try:
+            if AutoTokenizer is None or AutoModelForCausalLM is None or torch is None:
+                logger.error("Required packages not installed. Please run: pip install torch transformers accelerate")
+                return False
+
             logger.info(f"Loading model: {self.model_path}")
 
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
@@ -111,21 +162,47 @@ class EmailExtractionValidator:
         logger.debug(f"Expected username: {expected_username}")
 
         try:
-            # Tokenize and generate
-            inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+            # Provider-backed path (e.g., OpenRouter) or local transformers
+            if self.provider is not None:
+                # Chat-style messages for better compatibility
+                system_msg = "Respond only in strict JSON with keys: username, domain, tld."
+                user_msg = f"Extract the username, domain, and tld from this email address: {email_address}"
+                messages = [
+                    {"role": "system", "content": system_msg},
+                    {"role": "user", "content": user_msg},
+                ]
 
-            with torch.no_grad():
-                outputs = self.model.generate(
-                    **inputs,
-                    max_new_tokens=self.max_tokens,
-                    do_sample=True,
-                    temperature=0.0,
-                    pad_token_id=self.tokenizer.pad_token_id
-                )
+                try:
+                    resp = self.provider.make_request(
+                        model_id=self.model_path,
+                        messages=messages,
+                        tools=[],
+                        max_tokens=self.max_tokens,
+                        temperature=0.0
+                    )
+                    if hasattr(resp, "choices") and resp.choices:
+                        response = resp.choices[0].message.content or ""
+                    elif isinstance(resp, dict) and "response" in resp:
+                        response = str(resp.get("response", ""))
+                    else:
+                        response = str(resp)
+                except Exception as e:
+                    raise RuntimeError(f"Provider request failed: {e}")
+            else:
+                # Local transformers path
+                inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+                with torch.no_grad():
+                    outputs = self.model.generate(
+                        **inputs,
+                        max_new_tokens=self.max_tokens,
+                        do_sample=True,
+                        temperature=0.0,
+                        pad_token_id=self.tokenizer.pad_token_id
+                    )
 
-            # Decode response
-            full_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-            response = full_output[len(prompt):].strip()
+                # Decode response
+                full_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+                response = full_output[len(prompt):].strip()
 
             # Validate the response
             validation_result = self.validate_response(
@@ -396,12 +473,45 @@ class EmailExtractionValidator:
 
         return results
 
-    def run_comprehensive_test(self, token_ids: Optional[List[int]] = None) -> Dict[str, Any]:
+    def test_token_strings(self, tokens: List[str]) -> List[Dict[str, Any]]:
+        """
+        Test specific token strings. Works for both provider and local modes.
+
+        Args:
+            tokens: List of token strings to test
+
+        Returns:
+            List of test results
+        """
+        logger.info(f"Testing {len(tokens)} specific token strings")
+
+        results = []
+
+        for token in tokens:
+            try:
+                logger.info(f"Testing token string: '{token}'")
+                result = self.test_single_token(token)
+                result["token_string"] = token
+                result["is_known_glitch"] = None  # Unknown
+                results.append(result)
+            except Exception as e:
+                logger.error(f"Error testing token string '{token}': {e}")
+                results.append({
+                    "token_string": token,
+                    "error": str(e),
+                    "breaks_extraction": True,
+                    "timestamp": time.time()
+                })
+
+        return results
+
+    def run_comprehensive_test(self, token_ids: Optional[List[int]] = None, token_strings: Optional[List[str]] = None) -> Dict[str, Any]:
         """
         Run comprehensive email extraction validation
 
         Args:
-            token_ids: Optional list of specific token IDs to test
+            token_ids: Optional list of specific token IDs to test (local transformers mode only)
+            token_strings: Optional list of token strings to test (recommended for provider mode)
 
         Returns:
             Complete test results
@@ -416,27 +526,43 @@ class EmailExtractionValidator:
             "tests": {}
         }
 
-        # Test known glitch tokens
-        logger.info("\n" + "="*60)
-        logger.info("Testing Known Glitch Tokens")
-        logger.info("="*60)
-        known_glitch_results = self.test_known_glitch_tokens()
-        results["tests"]["known_glitch_tokens"] = known_glitch_results
+        # In provider mode, skip tokenizer-based tests
+        if self.provider is None:
+            # Test known glitch tokens
+            logger.info("\n" + "="*60)
+            logger.info("Testing Known Glitch Tokens")
+            logger.info("="*60)
+            known_glitch_results = self.test_known_glitch_tokens()
+            results["tests"]["known_glitch_tokens"] = known_glitch_results
 
-        # Test normal tokens
-        logger.info("\n" + "="*60)
-        logger.info("Testing Normal Tokens")
-        logger.info("="*60)
-        normal_results = self.test_normal_tokens()
-        results["tests"]["normal_tokens"] = normal_results
+            # Test normal tokens
+            logger.info("\n" + "="*60)
+            logger.info("Testing Normal Tokens")
+            logger.info("="*60)
+            normal_results = self.test_normal_tokens()
+            results["tests"]["normal_tokens"] = normal_results
+        else:
+            logger.info("\n" + "="*60)
+            logger.info("Provider mode detected - skipping tokenizer-based tests (known glitch/normal)")
+            logger.info("="*60)
 
-        # Test specific token IDs if provided
-        if token_ids:
+        # Test specific token STRINGS if provided (works with providers and local)
+        if token_strings:
+            logger.info("\n" + "="*60)
+            logger.info("Testing Specific Token Strings")
+            logger.info("="*60)
+            specific_string_results = self.test_token_strings(token_strings)
+            results["tests"]["specific_token_strings"] = specific_string_results
+
+        # Test specific token IDs if provided and local tokenizer is available
+        if token_ids and self.provider is None:
             logger.info("\n" + "="*60)
             logger.info("Testing Specific Token IDs")
             logger.info("="*60)
             specific_results = self.test_token_ids(token_ids)
             results["tests"]["specific_tokens"] = specific_results
+        elif token_ids and self.provider is not None:
+            logger.warning("Token ID testing is not supported in provider mode (no tokenizer). Provide token strings instead.")
 
         # Generate summary
         self.generate_summary(results)
@@ -511,9 +637,23 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+    # Local transformers model
     python validate_email_extraction.py meta-llama/Llama-3.2-1B-Instruct
+
+    # Test specific token IDs
     python validate_email_extraction.py meta-llama/Llama-3.2-1B-Instruct --token-ids 89472,127438
+
+    # Load token IDs from file
     python validate_email_extraction.py meta-llama/Llama-3.2-1B-Instruct --test-file tokens.json
+
+    # Use OpenRouter provider (any model from https://openrouter.ai/models)
+    python validate_email_extraction.py openai/gpt-4o --provider openrouter
+
+    # Use OpenRouter with explicit API key and attribution headers
+    python validate_email_extraction.py anthropic/claude-3.5-sonnet --provider openrouter --api-key $OPENROUTER_API_KEY --site-url https://your.site --site-name "Your App"
+
+    # Use provider via environment variable
+    EMAIL_VALIDATOR_PROVIDER=openrouter python validate_email_extraction.py openai/gpt-4o
         """
     )
 
@@ -555,6 +695,41 @@ Examples:
         help="Maximum tokens to generate (default: 150)"
     )
 
+    # Provider options
+    parser.add_argument(
+        "--provider",
+        type=str,
+        help="Provider to use (e.g., openrouter, openai, mistral, lambda, anthropic). "
+             "If omitted, local transformers are used. You can also set EMAIL_VALIDATOR_PROVIDER env var."
+    )
+
+    parser.add_argument(
+        "--api-key",
+        type=str,
+        help="API key for the provider (can also use provider-specific env vars like OPENROUTER_API_KEY)."
+    )
+
+    parser.add_argument(
+        "--site-url",
+        type=str,
+        default=None,
+        help="Optional site URL for provider attribution (e.g., OpenRouter)."
+    )
+
+    parser.add_argument(
+        "--site-name",
+        type=str,
+        default=None,
+        help="Optional site name/title for provider attribution (e.g., OpenRouter)."
+    )
+
+    parser.add_argument(
+        "--token-strings-file",
+        type=str,
+        default=None,
+        help="JSON file containing a list of token strings to test (useful for provider mode)."
+    )
+
     parser.add_argument(
         "--verbose",
         action="store_true",
@@ -573,8 +748,9 @@ def main():
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    # Get token IDs to test
+    # Get token IDs or token strings to test
     token_ids = None
+    token_strings = None
 
     if args.token_ids:
         try:
@@ -584,30 +760,67 @@ def main():
             logger.error(f"Invalid token IDs format: {e}")
             return 1
 
-    if args.test_file:
+    # Dedicated token-strings file (list[str])
+    if args.token_strings_file:
         try:
-            with open(args.test_file, 'r') as f:
+            with open(args.token_strings_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                if isinstance(data, list):
+            if isinstance(data, list) and all(isinstance(x, str) for x in data):
+                token_strings = data
+                logger.info(f"Loaded {len(token_strings)} token strings from file")
+            else:
+                logger.error("Token strings file should contain a JSON list of strings")
+                return 1
+        except Exception as e:
+            logger.error(f"Error reading token strings file: {e}")
+            return 1
+
+    # Generic test file (can be list[int] or list[str])
+    if args.test_file and not token_strings:
+        try:
+            with open(args.test_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            if isinstance(data, list) and data:
+                if all(isinstance(x, int) for x in data):
                     token_ids = data
                     logger.info(f"Loaded {len(token_ids)} token IDs from file")
+                elif all(isinstance(x, str) for x in data):
+                    token_strings = data
+                    logger.info(f"Loaded {len(token_strings)} token strings from file")
                 else:
-                    logger.error("Test file should contain a JSON list of token IDs")
+                    logger.error("Test file should contain a homogeneous JSON list of token IDs (ints) or token strings")
                     return 1
+            elif isinstance(data, list) and not data:
+                # Empty list - nothing to test
+                token_ids = []
+                token_strings = []
+                logger.info("Loaded empty token list from file")
+            else:
+                logger.error("Test file should contain a JSON list")
+                return 1
         except Exception as e:
             logger.error(f"Error reading test file: {e}")
             return 1
 
     # Initialize validator
+    provider_kwargs = {}
+    if args.site_url:
+        provider_kwargs["site_url"] = args.site_url
+    if args.site_name:
+        provider_kwargs["site_name"] = args.site_name
+
     validator = EmailExtractionValidator(
         model_path=args.model_path,
         device=args.device,
-        max_tokens=args.max_tokens
+        max_tokens=args.max_tokens,
+        provider=args.provider,
+        api_key=args.api_key,
+        provider_kwargs=provider_kwargs
     )
 
     try:
         # Run comprehensive test
-        results = validator.run_comprehensive_test(token_ids)
+        results = validator.run_comprehensive_test(token_ids=token_ids, token_strings=token_strings)
 
         if "error" in results:
             logger.error(f"Validation failed: {results['error']}")

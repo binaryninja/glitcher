@@ -1,3 +1,56 @@
+# Environment and secrets
 .env
+.env.*
+!.env.example
+
+# Python
 __pycache__/
-glitcher.egg-info/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+*.so
+
+# Mining outputs and logs
+outputs/
+cache/
+*.jsonl
+
+# Large result/data files (keep glitch_tokens.json and mining-config.json as examples)
+classified_tokens.json
+comprehensive_genetic_test_results.json
+deep_scan_level1.json
+email_extraction_*.json
+fuzz_llama.json
+genetic_results.json
+genetic_test_results.json
+token_impact_baseline.json
+glitch_progress.json
+
+# POC test result data (large JSON blobs)
+poc/prompt_injection_test_results_*.json
+poc/m-old.json
+poc/mistral_models_analysis.json
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Generated images from test runs
+comprehensive_genetic_test_results.png
+
+# Misc artifacts
+=*
