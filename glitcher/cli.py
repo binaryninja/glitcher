@@ -1500,8 +1500,17 @@ class GlitcherCLI:
                         'results': []
                     }
 
+                    # Deduplicate results by token combination
+                    seen_combinations = set()
+                    unique_population = []
+                    for individual in final_population:
+                        key = tuple(individual.tokens)
+                        if key not in seen_combinations:
+                            seen_combinations.add(key)
+                            unique_population.append(individual)
+
                     # Add top results
-                    for individual in final_population[:10]:  # Top 10 results
+                    for individual in unique_population[:10]:  # Top 10 unique results
                         token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
                         results['results'].append({
                             'tokens': individual.tokens,
@@ -1520,7 +1529,7 @@ class GlitcherCLI:
 
                     # Display top results
                     print("\nTop Results:")
-                    for i, individual in enumerate(final_population[:5], 1):
+                    for i, individual in enumerate(unique_population[:5], 1):
                         token_texts = [ga.tokenizer.decode([token_id]) for token_id in individual.tokens]
 
                         if ga.target_token_id is None and ga.wanted_token_id is not None:

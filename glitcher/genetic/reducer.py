@@ -948,10 +948,6 @@ class GeneticProbabilityReducer:
         Returns:
             Fitness score combining target reduction and wanted increase
         """
-        # Generate baseline response if not already done
-        if not hasattr(self, 'baseline_response'):
-            self.baseline_response = self._generate_response(self.base_text)
-
         # Create modified text with tokens at beginning
         if self.tokenizer is None:
             raise ValueError("Tokenizer must be loaded first")
@@ -1016,9 +1012,7 @@ class GeneticProbabilityReducer:
                 # Only target specified - focus on reduction
                 fitness = target_fitness
 
-            # Generate responses for GUI display
-            individual.baseline_response = getattr(self, 'baseline_response', '')
-            individual.current_response = self._generate_response(modified_text)
+            # Store input strings for GUI (response generation deferred to best-only)
             individual.full_input_string = formatted_input
             individual.baseline_input_string = self._format_input_for_model(self.base_text)
 
@@ -1181,7 +1175,7 @@ class GeneticProbabilityReducer:
 
     def crossover(self, parent1: Individual, parent2: Individual) -> Tuple[Individual, Individual]:
         """
-        Create offspring through crossover.
+        Create offspring through single-point crossover that preserves parent structure.
 
         Args:
             parent1: First parent
@@ -1193,28 +1187,16 @@ class GeneticProbabilityReducer:
         if random.random() > self.crossover_rate:
             return Individual(tokens=parent1.tokens.copy()), Individual(tokens=parent2.tokens.copy())
 
-        # Combine unique tokens from both parents
-        combined_tokens = list(set(parent1.tokens + parent2.tokens))
+        p1 = parent1.tokens
+        p2 = parent2.tokens
 
-        if len(combined_tokens) < 2:
-            return Individual(tokens=parent1.tokens.copy()), Individual(tokens=parent2.tokens.copy())
+        if len(p1) < 2 or len(p2) < 2:
+            return Individual(tokens=p1.copy()), Individual(tokens=p2.copy())
 
-        # Create two offspring with different token combinations
-        if self.use_exact_token_count:
-            target_size = self.max_tokens_per_individual
-        else:
-            target_size = random.randint(1, self.max_tokens_per_individual)
-
-        # Ensure we have enough tokens
-        if len(combined_tokens) >= target_size:
-            child1_tokens = random.sample(combined_tokens, target_size)
-        else:
-            child1_tokens = combined_tokens.copy()
-
-        if len(combined_tokens) >= target_size:
-            child2_tokens = random.sample(combined_tokens, target_size)
-        else:
-            child2_tokens = combined_tokens.copy()
+        # Single-point crossover: pick a cut point and swap tails
+        cut = random.randint(1, min(len(p1), len(p2)) - 1)
+        child1_tokens = p1[:cut] + p2[cut:]
+        child2_tokens = p2[:cut] + p1[cut:]
 
         child1 = Individual(tokens=child1_tokens)
         child2 = Individual(tokens=child2_tokens)
@@ -1387,20 +1369,20 @@ class GeneticProbabilityReducer:
         return population
 
     def calculate_population_diversity(self, population: List[Individual]) -> float:
-        """Calculate diversity metric for the population."""
+        """Calculate diversity metric for the population (order-sensitive)."""
         if not population:
             return 0.0
 
         unique_combinations = set()
         for individual in population:
-            combination = tuple(sorted(individual.tokens))
+            combination = tuple(individual.tokens)
             unique_combinations.add(combination)
 
         return len(unique_combinations) / len(population)
 
     def mutate(self, individual: Individual):
         """Mutate an individual by replacing tokens with enhanced strategies."""
-        if random.random() > self.mutation_rate:
+        if random.random() > self.current_mutation_rate:
             return
 
         if not individual.tokens:
@@ -1459,6 +1441,14 @@ class GeneticProbabilityReducer:
             if self.stagnation_counter >= 20:
                 population = self.inject_diversity(population, generation)
                 self.stagnation_counter = 0
+
+        # Update adaptive mutation rate (linear decay from initial to final)
+        if self.adaptive_mutation and self.max_generations > 1:
+            progress = generation / (self.max_generations - 1)
+            self.current_mutation_rate = (
+                self.initial_mutation_rate
+                + (self.final_mutation_rate - self.initial_mutation_rate) * progress
+            )
 
         # Create new population
         new_population = []
@@ -1571,6 +1561,9 @@ class GeneticProbabilityReducer:
         self.last_best_fitness = 0.0
         self.stagnation_counter = 0
 
+        # Pre-compute baseline response for GUI display
+        self.baseline_response = self._generate_response(self.base_text)
+
         # Evolution loop
         for generation in tqdm(range(self.max_generations), desc="Evolving"):
             population = self.evolve_generation(population, generation)
@@ -1580,13 +1573,19 @@ class GeneticProbabilityReducer:
                 best_individual = max(population, key=lambda x: x.fitness)
                 diversity = self.calculate_population_diversity(population)
 
-                # Decode token texts for GUI display
-                if best_individual.tokens and self.tokenizer:
-                    try:
-                        token_texts = [self.tokenizer.decode([token_id]) for token_id in best_individual.tokens]
-                        # Store in a way that GUI can access (will be passed to callback)
-                    except:
-                        token_texts = [f"Token_{token_id}" for token_id in best_individual.tokens]
+                # Generate responses only for the best individual (not during fitness eval)
+                if not best_individual.current_response and self.tokenizer:
+                    token_texts_for_resp = [
+                        self.tokenizer.decode([tid])
+                        for tid in best_individual.tokens
+                    ]
+                    joined = "".join(token_texts_for_resp)
+                    if self.is_instruct_model:
+                        modified = f"{joined} {self.base_text}".strip()
+                    else:
+                        modified = f"({joined}): {self.base_text}"
+                    best_individual.baseline_response = getattr(self, 'baseline_response', '')
+                    best_individual.current_response = self._generate_response(modified)
 
                 self.gui_callback.on_generation_complete(generation, population, best_individual, diversity, self.stagnation_counter)
 
@@ -1666,10 +1665,16 @@ class GeneticProbabilityReducer:
 
         print()
 
-        for i, individual in enumerate(population[:top_n]):
-            if individual.fitness <= 0:
-                continue
+        # Deduplicate by token combination
+        seen = set()
+        unique_results = []
+        for individual in population:
+            key = tuple(individual.tokens)
+            if key not in seen and individual.fitness > 0:
+                seen.add(key)
+                unique_results.append(individual)
 
+        for i, individual in enumerate(unique_results[:top_n]):
             token_texts = [self.tokenizer.decode([tid]) for tid in individual.tokens]
             token_repr = [repr(text) for text in token_texts]
 
