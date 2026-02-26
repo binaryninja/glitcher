@@ -275,8 +275,14 @@ def get_template_for_model(model_name: str, tokenizer=None) -> Union[Template, B
     # If tokenizer is provided and has a built-in chat template, use that for instruct-like models
     if tokenizer is not None and hasattr(tokenizer, 'chat_template') and tokenizer.chat_template is not None:
         lower_name = model_name.lower()
-        # Include gpt-oss family in built-in template usage
-        if ("instruct" in lower_name or "chat" in lower_name or "gpt-oss" in lower_name or "gptoss" in lower_name):
+        # Use the tokenizer's built-in chat template for any model that
+        # looks like an instruct/chat model OR ships with a chat template.
+        # Many "base" models (e.g. Qwen3-8B) include a chat template and
+        # expect it to be used.
+        is_instruct = any(kw in lower_name for kw in [
+            "instruct", "chat", "gpt-oss", "gptoss",
+        ])
+        if is_instruct or tokenizer.chat_template:
             return BuiltInTemplate(tokenizer, model_name)
 
     # Only take the last part of the path and normalize

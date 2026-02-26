@@ -7,7 +7,9 @@ setup(
     packages=find_packages(),
     install_requires=[
         # Core ML dependencies
-        "torch==2.7.1",
+        # RTX 50-series (Blackwell/sm_120) requires nightly torch with cu128:
+        #   pip install --pre torch --index-url https://download.pytorch.org/whl/nightly/cu128
+        "torch>=2.7.1",
         "transformers>=4.30.0",
         "accelerate>=0.20.0",
 

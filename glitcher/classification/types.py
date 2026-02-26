@@ -209,7 +209,7 @@ class TestConfig:
 
     def __init__(
         self,
-        max_tokens: int = 200,
+        max_tokens: int = 512,
         temperature: float = 0.0,
         timeout: float = 30.0,
         enable_debug: bool = False,
