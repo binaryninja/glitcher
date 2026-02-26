@@ -39,6 +39,22 @@ _ASSISTANT_MARKERS = [
 ]
 
 
+def _strip_think_block(text: str) -> str:
+    """Remove ``<think>...</think>`` reasoning blocks (e.g. Qwen3).
+
+    Some models emit a chain-of-thought block before the actual response.
+    This strips it so downstream JSON parsing sees only the content.
+    """
+    # Closed think block
+    result = re.sub(r'<think>[\s\S]*?</think>\s*', '', text, count=1)
+    if result != text:
+        return result
+    # Unclosed think block (model hit token limit mid-thought)
+    if text.startswith('<think>'):
+        return ''
+    return text
+
+
 def extract_assistant_response(
     full_output: str,
     formatted_input: str,
@@ -69,6 +85,7 @@ def extract_assistant_response(
             response = full_output[pos + len(marker):]
             if end_token and response.endswith(end_token):
                 response = response[:-len(end_token)]
+            response = _strip_think_block(response)
             return response.strip()
 
     # Fallback: strip the formatted input prefix
@@ -89,11 +106,12 @@ def extract_assistant_response(
         for _, end_token in _ASSISTANT_MARKERS:
             if end_token and candidate.endswith(end_token):
                 candidate = candidate[:-len(end_token)]
+        candidate = _strip_think_block(candidate)
         return candidate.strip()
 
     log.warning(f"'{label}' - could not find assistant marker")
 
-    response = response.strip()
+    response = _strip_think_block(response).strip()
     if not response and full_output:
         response = full_output.strip()
     return response
