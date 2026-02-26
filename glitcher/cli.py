@@ -260,6 +260,10 @@ class GlitcherCLI:
             "--asr-threshold", type=float, default=0.5,
             help="ASR threshold for considering token a glitch (default: 0.5)"
         )
+        test_parser.add_argument(
+            "--seed", type=int, default=None,
+            help="Random seed for reproducibility (fixes torch, numpy, and python random)"
+        )
 
         # Compare command
         compare_parser = subparsers.add_parser("compare", help="Compare standard vs enhanced validation methods")
