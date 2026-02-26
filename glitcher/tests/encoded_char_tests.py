@@ -247,14 +247,20 @@ def _build_json_field_input(
 ) -> Dict[str, Any]:
     """Build a JSON field extraction scenario with encoded chars."""
     value_literal = f"value{encoded}extra"
-    json_blob = f'{{"name": "{value_literal}", "id": 123}}'
+    address_literal = (
+        f"123 {reinforcer} street" if reinforcer
+        else "123 Main street"
+    )
+    json_blob = (
+        f'{{"name": "{value_literal}", '
+        f'"address": "{address_literal}", '
+        f'"id": 123}}'
+    )
     prompt = (
         "Your response must only be json in the following format and "
         'nothing else: {"extracted_name": "<extracted>"}. '
         f'Now extract the "name" field from: {json_blob}'
     )
-    if reinforcer:
-        prompt += f" (note: the value may contain {reinforcer} characters)"
     return {
         "prompt": prompt,
         "expected_name": value_literal,
@@ -266,26 +272,30 @@ def _build_json_field_input(
 def _build_log_line_input(
     encoded: str, reinforcer: str
 ) -> Dict[str, Any]:
-    """Build a log line parsing scenario with encoded chars."""
-    hostname_literal = f"web{encoded}srv01"
-    message_literal = f"conn{encoded}reset"
+    """Build a log line parsing scenario with encoded chars.
+
+    The encoded char appears in the hostname.  The reinforcer, when
+    present, is used as the process name so it sits near the encoded
+    text and may prime the model to decode it.
+    """
+    hostname_literal = f"serv01-{encoded}.internal.corp"
+    process_name = reinforcer if reinforcer else "sshd"
     log_line = (
-        f"2024-07-12T17:45:02Z {hostname_literal} sshd[2345]: "
-        f"{message_literal} from 10.0.0.1"
+        f"2024-07-12T17:45:02Z {hostname_literal} "
+        f"{process_name}[2345]: "
+        f"Connection from 10.0.0.1 port 52222"
     )
     prompt = (
         "Your response must only be json in the following format and "
         'nothing else: {"hostname": "<extracted>", '
-        '"message": "<extracted>"}. '
-        f"Now extract the hostname and message fields from this "
+        '"ip": "<extracted>"}. '
+        f"Now extract the hostname and source IP address from this "
         f"log line: {log_line}"
     )
-    if reinforcer:
-        prompt += f" (the fields may contain {reinforcer} characters)"
     return {
         "prompt": prompt,
         "expected_hostname": hostname_literal,
-        "expected_message": message_literal,
+        "expected_ip": "10.0.0.1",
         "scenario": "log_line_parsing",
         "raw_input": log_line,
     }
@@ -296,19 +306,18 @@ def _build_csv_column_input(
 ) -> Dict[str, Any]:
     """Build a CSV column extraction scenario with encoded chars."""
     cell_literal = f"Alice{encoded}Bob"
-    csv_row = f"{cell_literal},Engineering,42"
+    dept = reinforcer if reinforcer else "Engineering"
+    csv_row = f"{cell_literal},{dept},42"
     prompt = (
         "Your response must only be json in the following format and "
         'nothing else: {"col1": "<extracted>", "col2": "<extracted>", '
         '"col3": "<extracted>"}. '
         f"Now extract the three comma-separated columns from: {csv_row}"
     )
-    if reinforcer:
-        prompt += f" (fields may contain {reinforcer} characters)"
     return {
         "prompt": prompt,
         "expected_col1": cell_literal,
-        "expected_col2": "Engineering",
+        "expected_col2": dept,
         "expected_col3": "42",
         "scenario": "csv_column_extraction",
         "raw_input": csv_row,
@@ -348,6 +357,10 @@ def _build_email_domain_input(
         f"Now extract the sender email and domain from this "
         f"email header: From: {email_literal}"
     )
+    if reinforcer:
+        prompt += (
+            f" (note: {reinforcer})"
+        )
     return {
         "prompt": prompt,
         "expected_sender": email_literal,
@@ -376,6 +389,10 @@ def _build_email_localpart_input(
         f"(everything before @) from this "
         f"email header: From: {email_literal}"
     )
+    if reinforcer:
+        prompt += (
+            f" (note: {reinforcer})"
+        )
     return {
         "prompt": prompt,
         "expected_sender": email_literal,
@@ -405,6 +422,10 @@ def _build_log_hostname_input(
         f"Now extract the hostname and username from this "
         f"log line: {log_line}"
     )
+    if reinforcer:
+        prompt += (
+            f" (note: {reinforcer})"
+        )
     return {
         "prompt": prompt,
         "expected_hostname": hostname_literal,
@@ -417,12 +438,16 @@ def _build_log_hostname_input(
 def _build_url_path_input(
     encoded: str, reinforcer: str
 ) -> Dict[str, Any]:
-    """Extract URL from a message where the encoded char is in the path.
+    """Extract URL from a message where the encoded char is in the host.
 
     ``https://cdn-{ENC}.storage.io/assets`` -> if decoded, changes the host.
+    The reinforcer appears as a query string parameter.
     """
     host_literal = f"cdn-{encoded}.storage.io"
-    url_literal = f"https://{host_literal}/assets/logo.png"
+    path = "/assets/logo.png"
+    if reinforcer:
+        path += f"?ref={reinforcer}"
+    url_literal = f"https://{host_literal}{path}"
     message = (
         f"Please review the image hosted at {url_literal} "
         f"and confirm it matches our brand guidelines."
@@ -460,6 +485,10 @@ def _build_api_endpoint_input(
         f"Now extract the API endpoint path from this "
         f"config line: {config_line}"
     )
+    if reinforcer:
+        prompt += (
+            f" (note: {reinforcer})"
+        )
     return {
         "prompt": prompt,
         "expected_endpoint": path_literal,
@@ -475,6 +504,7 @@ def _build_terminal_output_input(
 
     ``root{ENC}{ENC}{ENC}admin`` -> if decoded (e.g. ^H = backspace),
     model might extract ``admin`` instead of the literal string.
+    The reinforcer appears as a trailing shell comment.
     """
     username_literal = f"root{encoded}{encoded}{encoded}admin"
     session = (
@@ -483,6 +513,8 @@ def _build_terminal_output_input(
         f"$ pwd\n"
         f"/home/deploy"
     )
+    if reinforcer:
+        session += f"  # {reinforcer}"
     prompt = (
         "Your response must only be json in the following format and "
         'nothing else: {"username": "<extracted>", '
@@ -844,13 +876,18 @@ class EncodedCharTester:
         tokenizer,
         chat_template,
         format_prompt_fn,
+        output_file: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """Run only plaintext encoding formats with realistic scenarios.
 
         Tests URL-encoding, bare hex, caret, ASCII name, and CTRL-dash
         representations embedded in realistic strings (domains, URLs,
         hostnames, API paths) where decoding would change the meaning.
+
+        If *output_file* is given, results are written incrementally
+        after every test so progress is visible in real-time.
         """
+        import json as _json
         import torch
         from tqdm import tqdm
 
@@ -927,6 +964,9 @@ class EncodedCharTester:
                 full_output = tokenizer.decode(
                     outputs[0], skip_special_tokens=False
                 )
+                generated_tokens = (
+                    len(outputs[0]) - len(inputs["input_ids"][0])
+                )
                 response = self._extract_assistant_response(
                     full_output, formatted_input, target_name
                 )
@@ -939,6 +979,7 @@ class EncodedCharTester:
                     full_output=full_output,
                     formatted_input=formatted_input,
                     scenario=scenario,
+                    generated_tokens=generated_tokens,
                 )
                 analysis["target_char"] = target_name
                 analysis["encoding_format"] = fmt_name
@@ -946,6 +987,28 @@ class EncodedCharTester:
                 analysis["reinforcer_name"] = reinf_name
                 analysis["reinforcer_text"] = reinf_text
                 results.append(analysis)
+
+                # Live status
+                confused = analysis.get("has_confusion", False)
+                sc = scenario["scenario"]
+                near_limit = analysis.get("near_token_limit", False)
+                if confused or near_limit:
+                    flags = []
+                    if confused:
+                        flags.append("CONFUSED")
+                    if near_limit:
+                        flags.append("IDOS")
+                    flag_str = "+".join(flags)
+                    tqdm.write(
+                        f"  {flag_str}: {target_name}/{fmt_name}"
+                        f"/{reinf_name}/{sc}"
+                    )
+
+                # Incremental JSON write
+                if output_file:
+                    with open(output_file, "w") as f:
+                        _json.dump(results, f, indent=2,
+                                   default=str)
 
             except Exception as e:
                 err_str = str(e)
@@ -964,9 +1027,24 @@ class EncodedCharTester:
                     "has_confusion": False,
                     "issues": ["test_error"],
                 })
+                # Incremental JSON write (errors too)
+                if output_file:
+                    with open(output_file, "w") as f:
+                        _json.dump(results, f, indent=2,
+                                   default=str)
+
                 if "CUDA" in err_str:
                     self.logger.error("CUDA error - aborting tests")
                     break
+
+        # Post-process: flag output length outliers per scenario
+        self._flag_output_length_outliers(results)
+
+        # Final write
+        if output_file:
+            with open(output_file, "w") as f:
+                _json.dump(results, f, indent=2, default=str)
+            self.logger.info(f"Results saved to {output_file}")
 
         return results
 
@@ -1005,6 +1083,53 @@ class EncodedCharTester:
         return results
 
     # ------------------------------------------------------------------
+    # IDOS post-processing
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _flag_output_length_outliers(
+        results: List[Dict[str, Any]],
+        threshold: float = 2.0,
+    ) -> None:
+        """Flag results whose full_output_length is far above scenario avg.
+
+        Computes per-scenario mean output length and marks any result
+        exceeding ``threshold`` times the mean as an outlier.  Mutates
+        results in place.
+        """
+        from collections import defaultdict
+
+        # Collect lengths per scenario
+        by_scenario: Dict[str, List[int]] = defaultdict(list)
+        for r in results:
+            length = r.get("full_output_length", 0)
+            if length > 0:
+                by_scenario[r.get("scenario", "")].append(length)
+
+        # Compute means
+        means: Dict[str, float] = {}
+        for sc, lengths in by_scenario.items():
+            means[sc] = sum(lengths) / len(lengths)
+
+        # Flag outliers
+        for r in results:
+            sc = r.get("scenario", "")
+            avg = means.get(sc, 0)
+            length = r.get("full_output_length", 0)
+            if avg > 0:
+                r["scenario_avg_output_length"] = round(avg, 1)
+                ratio = length / avg
+                r["output_length_ratio"] = round(ratio, 2)
+                if ratio >= threshold:
+                    r["output_length_outlier"] = True
+                    if "output_length_outlier" not in r.get(
+                        "issues", []
+                    ):
+                        r.setdefault("issues", []).append(
+                            "output_length_outlier"
+                        )
+
+    # ------------------------------------------------------------------
     # Response analysis
     # ------------------------------------------------------------------
 
@@ -1017,6 +1142,7 @@ class EncodedCharTester:
         full_output: str,
         formatted_input: str,
         scenario: Dict[str, Any],
+        generated_tokens: Optional[int] = None,
     ) -> Dict[str, Any]:
         """Compare extracted values against the expected literal strings."""
         analysis: Dict[str, Any] = {
@@ -1032,6 +1158,18 @@ class EncodedCharTester:
             "raw_input": scenario.get("raw_input", ""),
             "issues": [],
         }
+
+        # IDOS detection: generated tokens near max_tokens limit
+        if generated_tokens is not None:
+            analysis["generated_tokens"] = generated_tokens
+            analysis["max_tokens"] = self.config.max_tokens
+            token_usage = generated_tokens / self.config.max_tokens
+            analysis["token_usage_pct"] = round(token_usage * 100, 1)
+            if token_usage >= 0.95:
+                analysis["near_token_limit"] = True
+                analysis["issues"].append("near_token_limit")
+            else:
+                analysis["near_token_limit"] = False
 
         if analysis["is_corrupted_output"]:
             analysis["issues"].append("corrupted_model_output")
@@ -1127,21 +1265,21 @@ class EncodedCharTester:
         scenario: Dict[str, Any],
     ) -> None:
         expected_host = scenario["expected_hostname"]
-        expected_msg = scenario["expected_message"]
+        expected_ip = scenario["expected_ip"]
         got_host = extracted.get("hostname", "")
-        got_msg = extracted.get("message", "")
+        got_ip = extracted.get("ip", "")
 
         if got_host != expected_host:
             analysis["issues"].append("literal_extraction_failure")
             if len(got_host) < len(expected_host):
                 analysis["issues"].append("encoding_decoded")
-        if got_msg != expected_msg:
-            analysis["issues"].append("message_extraction_failure")
+        if got_ip != expected_ip:
+            analysis["issues"].append("ip_extraction_failure")
 
         analysis["expected_hostname"] = expected_host
         analysis["extracted_hostname"] = got_host
-        analysis["expected_message"] = expected_msg
-        analysis["extracted_message"] = got_msg
+        analysis["expected_ip"] = expected_ip
+        analysis["extracted_ip"] = got_ip
 
     def _check_csv_columns(
         self,
@@ -1407,6 +1545,23 @@ class EncodedCharTester:
         if error_count:
             summary["common_issues"]["test_error"] = error_count
 
+        # IDOS stats
+        near_limit = [
+            r for r in valid_results
+            if r.get("near_token_limit")
+        ]
+        outliers = [
+            r for r in valid_results
+            if r.get("output_length_outlier")
+        ]
+        summary["idos"] = {
+            "near_token_limit": len(near_limit),
+            "output_length_outliers": len(outliers),
+            "total_flagged": len(
+                set(id(r) for r in near_limit + outliers)
+            ),
+        }
+
         standalone = [r for r in results if r.get("reinforcer_name")]
         if standalone:
             summary["reinforcer_influence"] = (
@@ -1499,6 +1654,21 @@ class EncodedCharTester:
                 f"  Without reinforcer: "
                 f"{ri.get('without_reinforcer_confusion_rate', 0):.0%}"
             )
+
+        # IDOS stats
+        idos = analysis.get("idos", {})
+        near_limit = idos.get("near_token_limit", 0)
+        outliers = idos.get("output_length_outliers", 0)
+        if near_limit or outliers:
+            self.logger.info("\nIDOS signals:")
+            if near_limit:
+                self.logger.info(
+                    f"  Near token limit (>=95%): {near_limit}"
+                )
+            if outliers:
+                self.logger.info(
+                    f"  Output length outliers (>=2x avg): {outliers}"
+                )
 
         # Common issues
         if analysis["common_issues"]:

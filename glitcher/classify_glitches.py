@@ -314,7 +314,7 @@ class GlitchClassifier:
             help="Temperature for model inference (default: 0.0)"
         )
         parser.add_argument(
-            "--max-tokens", type=int, default=200,
+            "--max-tokens", type=int, default=8192,
             help="Maximum tokens to generate per test (default: 200)"
         )
         parser.add_argument(
@@ -1776,6 +1776,7 @@ class GlitchClassifier:
                 self.tokenizer,
                 self.chat_template,
                 self.format_prompt,
+                output_file=self.args.output,
             )
 
             tester.print_results_summary(results)

@@ -550,11 +550,16 @@ class GlitchClassifier(BaseClassifier):
 
         return summary
 
-    def run_encoded_char_plaintext(self) -> Dict[str, Any]:
+    def run_encoded_char_plaintext(
+        self, output_file: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """Run plaintext-only encoded character confusion tests.
 
         Tests only non-code formats: URL encoding, bare hex, caret,
         ASCII name, and CTRL-dash.  No glitch tokens required.
+
+        Args:
+            output_file: Path to write incremental JSON results
 
         Returns:
             Plaintext test results summary
@@ -570,6 +575,7 @@ class GlitchClassifier(BaseClassifier):
             self.tokenizer,
             self.chat_template,
             self.format_prompt,
+            output_file=output_file,
         )
 
         self.encoded_char_tester.print_results_summary(results)

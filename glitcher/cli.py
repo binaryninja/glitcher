@@ -341,8 +341,8 @@ class GlitcherCLI:
             help="Temperature for model inference (default: 0.0)"
         )
         classify_parser.add_argument(
-            "--max-tokens", type=int, default=200,
-            help="Maximum tokens to generate per test (default: 200)"
+            "--max-tokens", type=int, default=8192,
+            help="Maximum tokens to generate per test (default: 8192)"
         )
         classify_parser.add_argument(
             "--debug-responses", action="store_true",
@@ -1262,7 +1262,7 @@ class GlitcherCLI:
 
             # Create test configuration
             config = TestConfig(
-                max_tokens=getattr(self.args, 'max_tokens', 512),
+                max_tokens=getattr(self.args, 'max_tokens', 8192),
                 temperature=getattr(self.args, 'temperature', 0.0),
                 enable_debug=getattr(self.args, 'debug_responses', False),
                 simple_template=False
@@ -1309,8 +1309,10 @@ class GlitcherCLI:
 
             elif getattr(self.args, 'encoded_char_plaintext', False):
                 print("Running plaintext-only encoded character confusion tests...")
-                summary = classifier.run_encoded_char_plaintext()
                 output_file = self.args.output
+                summary = classifier.run_encoded_char_plaintext(
+                    output_file=output_file,
+                )
 
             else:
                 # Run full classification
