@@ -714,7 +714,7 @@ class EncodedCharTester:
                 "token_id": token_id,
                 "token": token,
                 "error": str(e),
-                "has_confusion": True,
+                "has_confusion": False,
                 "issues": ["test_error"],
             }
 
@@ -812,6 +812,7 @@ class EncodedCharTester:
                 results.append(analysis)
 
             except Exception as e:
+                err_str = str(e)
                 self.logger.error(
                     f"Error in standalone test "
                     f"{target_name}/{fmt_name}/{reinf_name}/"
@@ -823,10 +824,13 @@ class EncodedCharTester:
                     "encoded_string": encoded_str,
                     "reinforcer_name": reinf_name,
                     "scenario": scenario["scenario"],
-                    "error": str(e),
-                    "has_confusion": True,
+                    "error": err_str,
+                    "has_confusion": False,
                     "issues": ["test_error"],
                 })
+                if "CUDA" in err_str:
+                    self.logger.error("CUDA error - aborting tests")
+                    break
 
         return results
 
@@ -944,6 +948,7 @@ class EncodedCharTester:
                 results.append(analysis)
 
             except Exception as e:
+                err_str = str(e)
                 self.logger.error(
                     f"Error in plaintext test "
                     f"{target_name}/{fmt_name}/{reinf_name}/"
@@ -955,10 +960,13 @@ class EncodedCharTester:
                     "encoded_string": encoded_str,
                     "reinforcer_name": reinf_name,
                     "scenario": scenario["scenario"],
-                    "error": str(e),
-                    "has_confusion": True,
+                    "error": err_str,
+                    "has_confusion": False,
                     "issues": ["test_error"],
                 })
+                if "CUDA" in err_str:
+                    self.logger.error("CUDA error - aborting tests")
+                    break
 
         return results
 
@@ -1345,8 +1353,14 @@ class EncodedCharTester:
     def analyze_results(
         self, results: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
+        # Filter out errored tests for confusion stats
+        valid_results = [r for r in results if "error" not in r]
+        error_count = len(results) - len(valid_results)
+
         summary: Dict[str, Any] = {
             "total_tests": len(results),
+            "valid_tests": len(valid_results),
+            "errored_tests": error_count,
             "tests_with_confusion": 0,
             "confusion_by_scenario": {},
             "confusion_by_target_char": {},
@@ -1356,7 +1370,7 @@ class EncodedCharTester:
             "results": results,
         }
 
-        for r in results:
+        for r in valid_results:
             if r.get("has_confusion", False):
                 summary["tests_with_confusion"] += 1
 
@@ -1389,6 +1403,10 @@ class EncodedCharTester:
                     summary["common_issues"].get(issue, 0) + 1
                 )
 
+        # Count errors separately
+        if error_count:
+            summary["common_issues"]["test_error"] = error_count
+
         standalone = [r for r in results if r.get("reinforcer_name")]
         if standalone:
             summary["reinforcer_influence"] = (
@@ -1408,10 +1426,17 @@ class EncodedCharTester:
         self.logger.info("=" * 80)
 
         confused_count = analysis["tests_with_confusion"]
-        total = analysis["total_tests"]
-        self.logger.info(
-            f"Summary: {confused_count}/{total} tests show confusion"
-        )
+        valid = analysis["valid_tests"]
+        errored = analysis["errored_tests"]
+        if errored:
+            self.logger.info(
+                f"Summary: {confused_count}/{valid} tests show confusion"
+                f" ({errored} errored, excluded from stats)"
+            )
+        else:
+            self.logger.info(
+                f"Summary: {confused_count}/{valid} tests show confusion"
+            )
 
         # Per-scenario breakdown
         self.logger.info("\nBy scenario:")
