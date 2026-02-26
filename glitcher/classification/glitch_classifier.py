@@ -16,6 +16,7 @@ from .types import (
     TestConfig
 )
 from ..tests.email_tests import EmailTester
+from ..tests.control_char_tests import ControlCharTester
 from ..utils import (
     is_valid_email_token,
     is_valid_domain_token
@@ -34,6 +35,7 @@ class GlitchClassifier(BaseClassifier):
     - Filter/guardrail bypass
     - Email extraction functionality
     - Domain extraction functionality
+    - Control character confusion
     """
 
     def __init__(
@@ -56,6 +58,7 @@ class GlitchClassifier(BaseClassifier):
 
         # Initialize test modules
         self.email_tester = EmailTester(config)
+        self.control_char_tester = ControlCharTester(config)
 
         # Cache for special test results
         self._last_email_test_result = None
@@ -64,6 +67,7 @@ class GlitchClassifier(BaseClassifier):
         # Store detailed extraction test results
         self._detailed_email_results = {}
         self._detailed_domain_results = {}
+        self._detailed_control_char_results = {}
 
     def create_tests(self) -> List[ClassificationTest]:
         """Create the comprehensive test suite for glitch classification"""
@@ -228,7 +232,10 @@ class GlitchClassifier(BaseClassifier):
                     "creates_valid_domain_name": lambda response: False
                 },
                 description="Identifies tokens that create valid domain names"
-            )
+            ),
+
+            # Control character confusion test
+            self.control_char_tester.create_control_char_test()
         ]
 
     def _post_process_classification(self, result: ClassificationResult):
@@ -251,6 +258,12 @@ class GlitchClassifier(BaseClassifier):
                 if GlitchCategory.VALID_DOMAIN_NAME not in result.categories:
                     result.categories.append(GlitchCategory.VALID_DOMAIN_NAME)
                     self.logger.debug("Added ValidDomainName category - token creates valid domain")
+
+        # Add detailed control char results to test metadata
+        if token_id in self._detailed_control_char_results:
+            for test_result in result.test_results:
+                if test_result.test_name == "control_char_confusion_test":
+                    test_result.metadata["detailed_analysis"] = self._detailed_control_char_results[token_id]
 
         # Add detailed extraction results to test metadata
         if token_id in self._detailed_email_results:
@@ -345,6 +358,94 @@ class GlitchClassifier(BaseClassifier):
 
         return summary
 
+    def run_control_char_tests_only(self, token_ids: List[int]) -> Dict[str, Any]:
+        """
+        Run only control character confusion tests
+
+        Args:
+            token_ids: List of token IDs to test
+
+        Returns:
+            Control char test results summary
+        """
+        # Ensure model is loaded
+        self.load_model()
+
+        self.logger.info(
+            f"Running control char confusion tests on "
+            f"{len(token_ids)} tokens..."
+        )
+
+        results = self.control_char_tester.run_control_char_tests(
+            token_ids,
+            self.model,
+            self.tokenizer,
+            self.chat_template,
+            self.format_prompt,
+        )
+
+        # Print summary
+        self.control_char_tester.print_results_summary(results)
+
+        # Create summary
+        analysis = self.control_char_tester.analyze_results(results)
+        summary = {
+            "model_path": self.model_path,
+            "test_type": "control_char_confusion",
+            "tokens_tested": len(results),
+            "tests_with_confusion": analysis["tests_with_confusion"],
+            "confusion_by_scenario": analysis.get("confusion_by_scenario", {}),
+            "results": results,
+            "timestamp": time.time(),
+        }
+
+        return summary
+
+    def run_control_char_standalone(self) -> Dict[str, Any]:
+        """
+        Run standalone control character confusion tests (no glitch
+        tokens required).  Tests all control-char x scenario x companion
+        combinations.
+
+        Returns:
+            Standalone test results summary
+        """
+        self.load_model()
+
+        self.logger.info(
+            "Running standalone control char confusion tests..."
+        )
+
+        results = self.control_char_tester.run_standalone_tests(
+            self.model,
+            self.tokenizer,
+            self.chat_template,
+            self.format_prompt,
+        )
+
+        self.control_char_tester.print_results_summary(results)
+
+        analysis = self.control_char_tester.analyze_results(results)
+        summary = {
+            "model_path": self.model_path,
+            "test_type": "control_char_standalone",
+            "total_tests": analysis["total_tests"],
+            "tests_with_confusion": analysis["tests_with_confusion"],
+            "confusion_by_scenario": analysis.get(
+                "confusion_by_scenario", {}
+            ),
+            "confusion_by_ctrl_char": analysis.get(
+                "confusion_by_ctrl_char", {}
+            ),
+            "companion_influence": analysis.get(
+                "companion_influence", {}
+            ),
+            "results": results,
+            "timestamp": time.time(),
+        }
+
+        return summary
+
     def _test_domain_extraction(self, token_id: int, token: str) -> Dict[str, Any]:
         """Test domain extraction functionality (simplified version)"""
         # This is a simplified version - full implementation would be in a DomainTester class
@@ -402,8 +503,62 @@ class GlitchClassifier(BaseClassifier):
             GlitchCategory.VALID_EMAIL_ADDRESS: "Creates valid email addresses when inserted",
             GlitchCategory.DOMAIN_EXTRACTION: "Breaks domain extraction from log files",
             GlitchCategory.VALID_DOMAIN_NAME: "Creates valid domain names when inserted",
+            GlitchCategory.CONTROL_CHAR_CONFUSION: "Triggers control character semantic interpretation",
             GlitchCategory.UNKNOWN: "Unable to categorize the token's effects"
         }
+
+    def _analyze_control_char_detailed(self, response: str) -> bool:
+        """
+        Perform detailed control char confusion analysis and store results
+
+        Args:
+            response: Model response to analyze
+
+        Returns:
+            True if control char confusion detected
+        """
+        current_token_id = getattr(self, '_current_token_id', None)
+        if current_token_id is None:
+            return False
+
+        if self.tokenizer is None:
+            return False
+        token = self.tokenizer.decode([current_token_id])
+
+        try:
+            issues = []
+            # Check if the model interpreted backspaces semantically
+            if "admin" in response.lower() and "adminnn" not in response.lower():
+                issues.append("backspace_applied")
+            if '"username"' not in response.lower() or '"password"' not in response.lower():
+                issues.append("field_confusion")
+            if len(response.strip()) < 5:
+                issues.append("truncation")
+
+            has_confusion = len(issues) > 0
+            self._detailed_control_char_results[current_token_id] = {
+                "token": token,
+                "issues": issues,
+                "has_confusion": has_confusion,
+                "response_preview": response[:200] + "..." if len(response) > 200 else response,
+                "glitch_induced_error": False,
+            }
+            return has_confusion
+
+        except Exception as e:
+            error_str = str(e)
+            self.logger.debug(
+                f"Glitch-induced error in control char analysis: {error_str}"
+            )
+            self._detailed_control_char_results[current_token_id] = {
+                "token": token,
+                "response_preview": response[:200] + "..." if len(response) > 200 else response,
+                "glitch_induced_error": True,
+                "error_type": error_str,
+                "has_confusion": True,
+                "issues": [f"glitch_induced_parsing_error: {error_str}"],
+            }
+            return True
 
     def _analyze_email_extraction_detailed(self, response: str) -> bool:
         """

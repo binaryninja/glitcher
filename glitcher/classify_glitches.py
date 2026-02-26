@@ -333,6 +333,14 @@ class GlitchClassifier:
             help="Only run domain extraction tests without full classification"
         )
         parser.add_argument(
+            "--control-char-only", action="store_true",
+            help="Only run control character confusion tests without full classification"
+        )
+        parser.add_argument(
+            "--control-char-standalone", action="store_true",
+            help="Run standalone control char confusion tests (no glitch tokens needed)"
+        )
+        parser.add_argument(
             "--debug-responses", action="store_true",
             help="Enable detailed response logging for debugging"
         )
@@ -1602,6 +1610,93 @@ class GlitchClassifier:
             with open(output_file, 'w') as f:
                 json.dump(domain_summary, f, indent=2)
             logger.info(f"Domain extraction results saved to {output_file}")
+
+            return
+
+        # If control-char-only flag is set, only run control char tests
+        if hasattr(self.args, 'control_char_only') and self.args.control_char_only:
+            token_ids = self.get_token_ids()
+            if not token_ids:
+                return
+
+            logger.info(f"Running control char confusion tests on {len(token_ids)} tokens...")
+
+            from glitcher.tests.control_char_tests import ControlCharTester
+            from glitcher.classification.types import TestConfig
+
+            config = TestConfig(
+                max_tokens=self.args.max_tokens,
+                temperature=self.args.temperature,
+                enable_debug=getattr(self.args, 'debug_responses', False),
+                simple_template=getattr(self.args, 'simple_template', False),
+            )
+            tester = ControlCharTester(config)
+
+            results = tester.run_control_char_tests(
+                token_ids,
+                self.model,
+                self.tokenizer,
+                self.chat_template,
+                self.format_prompt,
+            )
+
+            tester.print_results_summary(results)
+
+            analysis = tester.analyze_results(results)
+            summary = {
+                "model_path": self.args.model_path,
+                "test_type": "control_char_confusion",
+                "tokens_tested": len(results),
+                "tests_with_confusion": analysis["tests_with_confusion"],
+                "results": results,
+                "timestamp": time.time(),
+            }
+
+            output_file = self.args.output
+            with open(output_file, 'w') as f:
+                json.dump(summary, f, indent=2)
+            logger.info(f"Control char confusion results saved to {output_file}")
+
+            return
+
+        # If control-char-standalone flag is set, run without glitch tokens
+        if hasattr(self.args, 'control_char_standalone') and self.args.control_char_standalone:
+            logger.info("Running standalone control char confusion tests...")
+
+            from glitcher.tests.control_char_tests import ControlCharTester
+            from glitcher.classification.types import TestConfig
+
+            config = TestConfig(
+                max_tokens=self.args.max_tokens,
+                temperature=self.args.temperature,
+                enable_debug=getattr(self.args, 'debug_responses', False),
+                simple_template=getattr(self.args, 'simple_template', False),
+            )
+            tester = ControlCharTester(config)
+
+            results = tester.run_standalone_tests(
+                self.model,
+                self.tokenizer,
+                self.chat_template,
+                self.format_prompt,
+            )
+
+            tester.print_results_summary(results)
+
+            analysis = tester.analyze_results(results)
+            summary = {
+                "model_path": self.args.model_path,
+                "test_type": "control_char_standalone",
+                "total_tests": analysis["total_tests"],
+                "tests_with_confusion": analysis["tests_with_confusion"],
+                "results": results,
+                "timestamp": time.time(),
+            }
+
+            output_file = self.args.output
+            with open(output_file, 'w') as f:
+                json.dump(summary, f, indent=2)
+            logger.info(f"Standalone control char results saved to {output_file}")
 
             return
 

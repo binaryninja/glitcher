@@ -357,6 +357,14 @@ class GlitcherCLI:
             help="Only run domain extraction tests"
         )
         classify_parser.add_argument(
+            "--control-char-only", action="store_true",
+            help="Only run control character confusion tests (requires --token-ids or --token-file)"
+        )
+        classify_parser.add_argument(
+            "--control-char-standalone", action="store_true",
+            help="Run standalone control character confusion tests (no glitch tokens needed)"
+        )
+        classify_parser.add_argument(
             "--behavioral-only", action="store_true",
             help="Only run behavioral tests"
         )
@@ -1218,15 +1226,23 @@ class GlitcherCLI:
             print(f"🔍 Classifying glitch tokens with model: {self.args.model_path}")
             print("=" * 60)
 
+            # Standalone control-char mode doesn't need token IDs
+            is_standalone = getattr(
+                self.args, 'control_char_standalone', False
+            )
+
             # Validate arguments
-            if not any([getattr(self.args, 'token_ids', None),
-                       getattr(self.args, 'token_file', None)]):
-                print("❌ Error: Must specify either --token-ids or --token-file")
+            if not is_standalone and not any([
+                getattr(self.args, 'token_ids', None),
+                getattr(self.args, 'token_file', None),
+            ]):
+                print("Error: Must specify either --token-ids or --token-file")
                 return
 
-            # Load token IDs
-            token_ids = load_token_ids(self.args)
-            print(f"Loaded {len(token_ids)} token IDs to classify")
+            # Load token IDs (skip for standalone mode)
+            token_ids = [] if is_standalone else load_token_ids(self.args)
+            if not is_standalone:
+                print(f"Loaded {len(token_ids)} token IDs to classify")
 
             # Create test configuration
             config = TestConfig(
@@ -1253,6 +1269,16 @@ class GlitcherCLI:
             elif getattr(self.args, 'domain_extraction_only', False):
                 print("Running domain extraction tests only...")
                 summary = classifier.run_domain_extraction_only(token_ids)
+                output_file = self.args.output
+
+            elif getattr(self.args, 'control_char_only', False):
+                print("Running control character confusion tests only...")
+                summary = classifier.run_control_char_tests_only(token_ids)
+                output_file = self.args.output
+
+            elif getattr(self.args, 'control_char_standalone', False):
+                print("Running standalone control character confusion tests...")
+                summary = classifier.run_control_char_standalone()
                 output_file = self.args.output
 
             else:

@@ -20,6 +20,7 @@ class GlitchCategory:
     VALID_EMAIL_ADDRESS = "ValidEmailAddress"  # Token creates valid email address
     DOMAIN_EXTRACTION = "DomainExtraction"  # Domain extraction from logs issues
     VALID_DOMAIN_NAME = "ValidDomainName"  # Token creates valid domain name
+    CONTROL_CHAR_CONFUSION = "ControlCharConfusion"  # Control character semantic interpretation
     UNKNOWN = "Unknown"  # Unable to categorize
 
     @classmethod
@@ -35,6 +36,7 @@ class GlitchCategory:
             cls.VALID_EMAIL_ADDRESS,
             cls.DOMAIN_EXTRACTION,
             cls.VALID_DOMAIN_NAME,
+            cls.CONTROL_CHAR_CONFUSION,
             cls.UNKNOWN
         ]
 
@@ -54,7 +56,8 @@ class GlitchCategory:
         """Get categories that represent functional issues"""
         return [
             cls.EMAIL_EXTRACTION,
-            cls.DOMAIN_EXTRACTION
+            cls.DOMAIN_EXTRACTION,
+            cls.CONTROL_CHAR_CONFUSION
         ]
 
     @classmethod
