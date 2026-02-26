@@ -450,9 +450,6 @@ class GeneticProbabilityReducer:
             else:
                 raise ValueError(f"Could not tokenize wanted token: {self.wanted_token}")
 
-        # Generate baseline response for GUI display
-        self.baseline_response = self._generate_response(self.base_text)
-
         return target_id, target_prob, wanted_id, wanted_prob
 
     def _generate_cache_key(self, max_tokens: Optional[int] = None, batch_size: int = 16) -> str:
@@ -763,33 +760,24 @@ class GeneticProbabilityReducer:
                     continue
                 token_text = self.tokenizer.decode([token_id])
 
-                # Try multiple positioning strategies for better coverage
-                test_positions = [
-                    f"{token_text} {self.base_text}",  # Prefix
-                    f"{self.base_text} {token_text}",  # Suffix
-                    f"{token_text}: {self.base_text}",  # Colon separator
-                ]
+                # Use same format as evaluate_fitness for consistent results
+                if self.is_instruct_model:
+                    modified_text = f"{token_text} {self.base_text}".strip()
+                else:
+                    modified_text = f"({token_text}): {self.base_text}"
 
-                best_impact = -float('inf')
-                best_prob = self.baseline_wanted_probability
+                formatted_input = self._format_input_for_model(modified_text)
+                inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.device)
 
-                # Test different positions and keep the best result
-                for modified_text in test_positions:
-                    inputs = self.tokenizer(modified_text, return_tensors="pt").to(self.device)
+                with torch.no_grad():
+                    if self.model is None:
+                        continue
+                    outputs = self.model(**inputs)
+                    logits = outputs.logits[0, -1, :]
+                    probs = torch.softmax(logits, dim=-1)
 
-                    with torch.no_grad():
-                        if self.model is None:
-                            continue
-                        outputs = self.model(**inputs)
-                        logits = outputs.logits[0, -1, :]
-                        probs = torch.softmax(logits, dim=-1)
-
-                    wanted_modified_prob = probs[self.wanted_token_id].item()
-                    wanted_impact = wanted_modified_prob - self.baseline_wanted_probability
-
-                    if wanted_impact > best_impact:
-                        best_impact = wanted_impact
-                        best_prob = wanted_modified_prob
+                best_prob = probs[self.wanted_token_id].item()
+                best_impact = best_prob - self.baseline_wanted_probability
 
                 # Calculate normalized impact (how much closer to 1.0 we get)
                 if self.baseline_wanted_probability < 1.0:
@@ -839,9 +827,15 @@ class GeneticProbabilityReducer:
             try:
                 # Test individual token impact
                 token_text = self.tokenizer.decode([token_id])
-                modified_text = f"({token_text}): {self.base_text}"
 
-                inputs = self.tokenizer(modified_text, return_tensors="pt").to(self.device)
+                # Use same format as evaluate_fitness for consistent results
+                if self.is_instruct_model:
+                    modified_text = f"{token_text} {self.base_text}".strip()
+                else:
+                    modified_text = f"({token_text}): {self.base_text}"
+
+                formatted_input = self._format_input_for_model(modified_text)
+                inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.device)
 
                 with torch.no_grad():
                     outputs = self.model(**inputs)
@@ -1122,20 +1116,63 @@ class GeneticProbabilityReducer:
 
         return Individual(tokens=tokens)
 
+    def create_hybrid_individual(self) -> Individual:
+        """
+        Create a hybrid individual mixing top baseline tokens with glitch tokens.
+        Fills some slots with high-impact baseline tokens and the rest with glitch tokens.
+        """
+        if not self.token_impact_map or not self.glitch_tokens:
+            return self.create_random_individual()
+
+        num_tokens = self.max_tokens_per_individual if self.use_exact_token_count else random.randint(1, self.max_tokens_per_individual)
+        if num_tokens < 2:
+            # With only 1 slot, randomly pick glitch or baseline
+            if random.random() < 0.5:
+                return Individual(tokens=[random.choice(self.glitch_tokens)])
+            else:
+                top = list(self.token_impact_map.keys())[:20]
+                return Individual(tokens=[random.choice(top)])
+
+        # Split slots between baseline top tokens and glitch tokens
+        num_glitch = random.randint(1, max(1, num_tokens - 1))
+        num_baseline = num_tokens - num_glitch
+
+        top_baseline = list(self.token_impact_map.keys())[:50]
+        glitch_pool = [t for t in self.glitch_tokens if t in self.available_tokens]
+        if not glitch_pool:
+            glitch_pool = self.glitch_tokens
+
+        baseline_picks = random.sample(top_baseline, min(num_baseline, len(top_baseline)))
+        glitch_picks = random.sample(glitch_pool, min(num_glitch, len(glitch_pool)))
+
+        tokens = baseline_picks + glitch_picks
+        random.shuffle(tokens)
+        return Individual(tokens=tokens[:num_tokens])
+
     def create_initial_population(self) -> List[Individual]:
         """Create initial population with baseline-guided seeding."""
         population = []
         seeded_count = 0
+        hybrid_count = 0
 
         if self.use_baseline_seeding and self.token_impact_map:
             # Calculate seeded population size
             seeded_size = int(self.population_size * self.baseline_seeding_ratio)
 
+            # Reserve slots for hybrid individuals when glitch tokens are available
+            has_glitch = len(self.glitch_tokens) > 0
+            if has_glitch:
+                hybrid_size = max(2, seeded_size // 5)
+                seeded_size_remaining = seeded_size - hybrid_size
+            else:
+                hybrid_size = 0
+                seeded_size_remaining = seeded_size
+
             # Create seeded individuals using multiple strategies
-            elite_singles = max(1, seeded_size // 5)
-            elite_pairs = max(1, seeded_size // 5)
-            elite_combinations = max(1, seeded_size // 4)
-            baseline_guided = seeded_size - elite_singles - elite_pairs - elite_combinations
+            elite_singles = max(1, seeded_size_remaining // 5)
+            elite_pairs = max(1, seeded_size_remaining // 5)
+            elite_combinations = max(1, seeded_size_remaining // 4)
+            baseline_guided = seeded_size_remaining - elite_singles - elite_pairs - elite_combinations
 
             # Elite singles (best individual tokens)
             for _ in range(elite_singles):
@@ -1157,14 +1194,19 @@ class GeneticProbabilityReducer:
                 population.append(self.create_baseline_guided_individual())
                 seeded_count += 1
 
-            self.logger.info(f"✓ Population seeded with {seeded_count} individuals using baseline guidance")
+            # Hybrid individuals (glitch + top baseline tokens)
+            for _ in range(hybrid_size):
+                population.append(self.create_hybrid_individual())
+                hybrid_count += 1
+
+            self.logger.info(f"Population seeded with {seeded_count} baseline + {hybrid_count} hybrid individuals")
 
         # Fill remaining population with random individuals
         random_count = self.population_size - len(population)
         for _ in range(random_count):
             population.append(self.create_random_individual())
 
-        self.logger.info(f"✓ Created initial population: {seeded_count} seeded + {random_count} random = {len(population)} total")
+        self.logger.info(f"Created initial population: {seeded_count} seeded + {hybrid_count} hybrid + {random_count} random = {len(population)} total")
 
         return population
 
@@ -1327,18 +1369,24 @@ class GeneticProbabilityReducer:
         # Keep the best individuals, replace the worst
         new_individuals = []
 
-        # Strategy 1: Random individuals (30%)
-        random_count = max(1, int(num_to_replace * 0.3))
+        # Strategy 1: Random individuals (20%)
+        random_count = max(1, int(num_to_replace * 0.2))
         for _ in range(random_count):
             new_individuals.append(self.create_random_individual())
 
-        # Strategy 2: Baseline-guided individuals (40%)
+        # Strategy 2: Baseline-guided individuals (30%)
         if self.token_impact_map:
-            guided_count = max(1, int(num_to_replace * 0.4))
+            guided_count = max(1, int(num_to_replace * 0.3))
             for _ in range(guided_count):
                 new_individuals.append(self.create_baseline_guided_individual())
 
-        # Strategy 3: Mutated versions of best individuals (30%)
+        # Strategy 3: Hybrid glitch+baseline individuals (20%)
+        if self.glitch_tokens and self.token_impact_map:
+            hybrid_count = max(1, int(num_to_replace * 0.2))
+            for _ in range(hybrid_count):
+                new_individuals.append(self.create_hybrid_individual())
+
+        # Strategy 4: Mutated versions of best individuals (30%)
         remaining = num_to_replace - len(new_individuals)
         for i in range(remaining):
             # Take one of the top individuals and heavily mutate it
@@ -1608,19 +1656,19 @@ class GeneticProbabilityReducer:
                     f"Diversity = {diversity:.3f}, Stagnation = {self.stagnation_counter}"
                 )
 
-            # Check for early stopping
-            best_fitness = max(ind.fitness for ind in population)
-            if best_fitness >= self.early_stopping_threshold:
-                self.logger.info(f"Early stopping at generation {generation}")
-                break
-
-            # Check for early stopping when only wanted token is specified and reaches near 100%
+            # Check for early stopping - wanted-only mode first (check actual probability)
             if self.target_token_id is None and self.wanted_token_id is not None:
                 best_individual = max(population, key=lambda x: x.fitness)
                 if best_individual.wanted_modified_prob >= 0.99:
                     wanted_token_text = self.tokenizer.decode([self.wanted_token_id]) if self.tokenizer and self.wanted_token_id is not None else "unknown"
                     self.logger.info(f"Early stopping at generation {generation}: wanted token '{wanted_token_text}' reached {best_individual.wanted_modified_prob:.4f} probability (99%+)")
                     break
+
+            # Generic early stopping by fitness threshold
+            best_fitness = max(ind.fitness for ind in population)
+            if best_fitness >= self.early_stopping_threshold:
+                self.logger.info(f"Early stopping at generation {generation}")
+                break
 
         # Final evaluation and sorting
         for individual in population:
