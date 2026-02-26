@@ -365,6 +365,18 @@ class GlitcherCLI:
             help="Run standalone control character confusion tests (no glitch tokens needed)"
         )
         classify_parser.add_argument(
+            "--encoded-char-only", action="store_true",
+            help="Only run encoded character confusion tests (requires --token-ids or --token-file)"
+        )
+        classify_parser.add_argument(
+            "--encoded-char-standalone", action="store_true",
+            help="Run standalone encoded character confusion tests (no glitch tokens needed)"
+        )
+        classify_parser.add_argument(
+            "--encoded-char-plaintext", action="store_true",
+            help="Run plaintext-only encoded char tests: URL, bare hex, caret, ASCII name, CTRL-dash (no glitch tokens needed)"
+        )
+        classify_parser.add_argument(
             "--behavioral-only", action="store_true",
             help="Only run behavioral tests"
         )
@@ -1226,9 +1238,13 @@ class GlitcherCLI:
             print(f"🔍 Classifying glitch tokens with model: {self.args.model_path}")
             print("=" * 60)
 
-            # Standalone control-char mode doesn't need token IDs
+            # Standalone modes don't need token IDs
             is_standalone = getattr(
                 self.args, 'control_char_standalone', False
+            ) or getattr(
+                self.args, 'encoded_char_standalone', False
+            ) or getattr(
+                self.args, 'encoded_char_plaintext', False
             )
 
             # Validate arguments
@@ -1279,6 +1295,21 @@ class GlitcherCLI:
             elif getattr(self.args, 'control_char_standalone', False):
                 print("Running standalone control character confusion tests...")
                 summary = classifier.run_control_char_standalone()
+                output_file = self.args.output
+
+            elif getattr(self.args, 'encoded_char_only', False):
+                print("Running encoded character confusion tests only...")
+                summary = classifier.run_encoded_char_tests_only(token_ids)
+                output_file = self.args.output
+
+            elif getattr(self.args, 'encoded_char_standalone', False):
+                print("Running standalone encoded character confusion tests...")
+                summary = classifier.run_encoded_char_standalone()
+                output_file = self.args.output
+
+            elif getattr(self.args, 'encoded_char_plaintext', False):
+                print("Running plaintext-only encoded character confusion tests...")
+                summary = classifier.run_encoded_char_plaintext()
                 output_file = self.args.output
 
             else:

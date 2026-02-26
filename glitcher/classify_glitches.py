@@ -341,6 +341,18 @@ class GlitchClassifier:
             help="Run standalone control char confusion tests (no glitch tokens needed)"
         )
         parser.add_argument(
+            "--encoded-char-only", action="store_true",
+            help="Only run encoded character confusion tests without full classification"
+        )
+        parser.add_argument(
+            "--encoded-char-standalone", action="store_true",
+            help="Run standalone encoded char confusion tests (no glitch tokens needed)"
+        )
+        parser.add_argument(
+            "--encoded-char-plaintext", action="store_true",
+            help="Run plaintext-only encoded char tests: URL, bare hex, caret, ASCII name, CTRL-dash (no glitch tokens needed)"
+        )
+        parser.add_argument(
             "--debug-responses", action="store_true",
             help="Enable detailed response logging for debugging"
         )
@@ -1697,6 +1709,134 @@ class GlitchClassifier:
             with open(output_file, 'w') as f:
                 json.dump(summary, f, indent=2)
             logger.info(f"Standalone control char results saved to {output_file}")
+
+            return
+
+        # If encoded-char-only flag is set, only run encoded char tests
+        if hasattr(self.args, 'encoded_char_only') and self.args.encoded_char_only:
+            token_ids = self.get_token_ids()
+            if not token_ids:
+                return
+
+            logger.info(f"Running encoded char confusion tests on {len(token_ids)} tokens...")
+
+            from glitcher.tests.encoded_char_tests import EncodedCharTester
+            from glitcher.classification.types import TestConfig
+
+            config = TestConfig(
+                max_tokens=self.args.max_tokens,
+                temperature=self.args.temperature,
+                enable_debug=getattr(self.args, 'debug_responses', False),
+                simple_template=getattr(self.args, 'simple_template', False),
+            )
+            tester = EncodedCharTester(config)
+
+            results = tester.run_encoded_char_tests(
+                token_ids,
+                self.model,
+                self.tokenizer,
+                self.chat_template,
+                self.format_prompt,
+            )
+
+            tester.print_results_summary(results)
+
+            analysis = tester.analyze_results(results)
+            summary = {
+                "model_path": self.args.model_path,
+                "test_type": "encoded_char_confusion",
+                "tokens_tested": len(results),
+                "tests_with_confusion": analysis["tests_with_confusion"],
+                "results": results,
+                "timestamp": time.time(),
+            }
+
+            output_file = self.args.output
+            with open(output_file, 'w') as f:
+                json.dump(summary, f, indent=2)
+            logger.info(f"Encoded char confusion results saved to {output_file}")
+
+            return
+
+        # If encoded-char-standalone flag is set, run without glitch tokens
+        if hasattr(self.args, 'encoded_char_standalone') and self.args.encoded_char_standalone:
+            logger.info("Running standalone encoded char confusion tests...")
+
+            from glitcher.tests.encoded_char_tests import EncodedCharTester
+            from glitcher.classification.types import TestConfig
+
+            config = TestConfig(
+                max_tokens=self.args.max_tokens,
+                temperature=self.args.temperature,
+                enable_debug=getattr(self.args, 'debug_responses', False),
+                simple_template=getattr(self.args, 'simple_template', False),
+            )
+            tester = EncodedCharTester(config)
+
+            results = tester.run_standalone_tests(
+                self.model,
+                self.tokenizer,
+                self.chat_template,
+                self.format_prompt,
+            )
+
+            tester.print_results_summary(results)
+
+            analysis = tester.analyze_results(results)
+            summary = {
+                "model_path": self.args.model_path,
+                "test_type": "encoded_char_standalone",
+                "total_tests": analysis["total_tests"],
+                "tests_with_confusion": analysis["tests_with_confusion"],
+                "results": results,
+                "timestamp": time.time(),
+            }
+
+            output_file = self.args.output
+            with open(output_file, 'w') as f:
+                json.dump(summary, f, indent=2)
+            logger.info(f"Standalone encoded char results saved to {output_file}")
+
+            return
+
+        # If encoded-char-plaintext flag is set, run plaintext-only tests
+        if hasattr(self.args, 'encoded_char_plaintext') and self.args.encoded_char_plaintext:
+            logger.info("Running plaintext-only encoded char confusion tests...")
+
+            from glitcher.tests.encoded_char_tests import EncodedCharTester
+            from glitcher.classification.types import TestConfig
+
+            config = TestConfig(
+                max_tokens=self.args.max_tokens,
+                temperature=self.args.temperature,
+                enable_debug=getattr(self.args, 'debug_responses', False),
+                simple_template=getattr(self.args, 'simple_template', False),
+            )
+            tester = EncodedCharTester(config)
+
+            results = tester.run_plaintext_standalone_tests(
+                self.model,
+                self.tokenizer,
+                self.chat_template,
+                self.format_prompt,
+            )
+
+            tester.print_results_summary(results)
+
+            analysis = tester.analyze_results(results)
+            summary = {
+                "model_path": self.args.model_path,
+                "test_type": "encoded_char_plaintext",
+                "total_tests": analysis["total_tests"],
+                "tests_with_confusion": analysis["tests_with_confusion"],
+                "results": results,
+                "timestamp": time.time(),
+            }
+
+            output_file = self.args.output
+            with open(output_file, 'w') as f:
+                json.dump(summary, f, indent=2)
+            logger.info(f"Plaintext encoded char results saved to {output_file}")
 
             return
 

@@ -21,6 +21,7 @@ class GlitchCategory:
     DOMAIN_EXTRACTION = "DomainExtraction"  # Domain extraction from logs issues
     VALID_DOMAIN_NAME = "ValidDomainName"  # Token creates valid domain name
     CONTROL_CHAR_CONFUSION = "ControlCharConfusion"  # Control character semantic interpretation
+    ENCODED_CHAR_CONFUSION = "EncodedCharConfusion"  # Encoded character text decoding
     UNKNOWN = "Unknown"  # Unable to categorize
 
     @classmethod
@@ -37,6 +38,7 @@ class GlitchCategory:
             cls.DOMAIN_EXTRACTION,
             cls.VALID_DOMAIN_NAME,
             cls.CONTROL_CHAR_CONFUSION,
+            cls.ENCODED_CHAR_CONFUSION,
             cls.UNKNOWN
         ]
 
@@ -57,7 +59,8 @@ class GlitchCategory:
         return [
             cls.EMAIL_EXTRACTION,
             cls.DOMAIN_EXTRACTION,
-            cls.CONTROL_CHAR_CONFUSION
+            cls.CONTROL_CHAR_CONFUSION,
+            cls.ENCODED_CHAR_CONFUSION
         ]
 
     @classmethod
