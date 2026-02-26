@@ -477,8 +477,8 @@ class ControlCharTester:
         if analysis["is_corrupted_output"]:
             analysis["issues"].append("corrupted_model_output")
 
-        # Try to extract JSON from the response
-        extracted = self.json_extractor.extract(response)
+        # Try to extract and parse JSON from the response
+        extracted = self.json_extractor.extract_and_parse(response)
 
         if extracted is None:
             analysis["issues"].append("json_parse_failure")
