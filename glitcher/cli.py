@@ -6,6 +6,7 @@ Glitcher CLI - A command-line tool for mining and testing glitch tokens in langu
 import argparse
 import json
 import os
+import random
 import signal
 import sys
 import time
@@ -60,6 +61,59 @@ class GlitcherCLI:
         # Register signal handlers for graceful shutdown
         signal.signal(signal.SIGINT, self.handle_interrupt)
         signal.signal(signal.SIGTERM, self.handle_interrupt)
+
+    def _fix_seeds(self):
+        """Fix random seeds for reproducibility if --seed was provided."""
+        seed = getattr(self.args, "seed", None)
+        if seed is None:
+            return
+        import torch
+        import numpy as np
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+        print(f"Random seeds fixed to {seed}")
+
+    def _collect_snapshot(self) -> dict:
+        """Collect an environment snapshot for embedding in result files."""
+        import platform
+        from datetime import datetime, timezone
+        snapshot = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "python": platform.python_version(),
+        }
+        for lib in ["torch", "transformers", "accelerate", "bitsandbytes"]:
+            try:
+                mod = __import__(lib)
+                snapshot[lib] = getattr(mod, "__version__", "unknown")
+            except ImportError:
+                snapshot[lib] = "not installed"
+        try:
+            import torch
+            if torch.cuda.is_available():
+                snapshot["gpu"] = torch.cuda.get_device_name(0)
+                snapshot["cuda"] = torch.version.cuda or "unknown"
+        except ImportError:
+            pass
+        snapshot["device"] = getattr(self.args, "device", "cuda")
+        snapshot["quantization"] = getattr(self.args, "quant_type", "bfloat16")
+        seed = getattr(self.args, "seed", None)
+        snapshot["seed"] = seed
+        return snapshot
+
+    def _inject_snapshot(self, filepath: str):
+        """Inject environment snapshot into an existing JSON file."""
+        try:
+            with open(filepath) as f:
+                data = json.load(f)
+            if isinstance(data, dict) and "_environment" not in data:
+                data["_environment"] = self._collect_snapshot()
+                with open(filepath, "w") as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass  # non-critical, don't break the run
 
     def setup_parser(self):
         """Setup command line argument parser."""
@@ -133,6 +187,10 @@ class GlitcherCLI:
             "--reasoning-level", type=str, default="medium",
             choices=["none", "medium", "deep"],
             help="Reasoning level for Harmony-enabled models (default: medium)"
+        )
+        mine_parser.add_argument(
+            "--seed", type=int, default=None,
+            help="Random seed for reproducibility (fixes torch, numpy, and python random)"
         )
 
         # Range mining options
@@ -446,6 +504,10 @@ class GlitcherCLI:
             help="Quantization type (default: bfloat16)"
         )
         genetic_parser.add_argument(
+            "--seed", type=int, default=None,
+            help="Random seed for reproducibility (fixes torch, numpy, and python random)"
+        )
+        genetic_parser.add_argument(
             "--batch", action="store_true",
             help="Run batch experiments across multiple scenarios"
         )
@@ -595,8 +657,10 @@ class GlitcherCLI:
             print(f"Error saving progress: {e}")
 
     def save_results(self, filename, data):
-        """Save results to a file."""
+        """Save results to a file, auto-injecting an environment snapshot."""
         try:
+            if isinstance(data, dict) and "_environment" not in data:
+                data["_environment"] = self._collect_snapshot()
             with open(filename, "w") as f:
                 json.dump(data, f, indent=2)
             print(f"Results saved to {filename}")
@@ -1519,8 +1583,9 @@ class GlitcherCLI:
                     ga.baseline_token_impacts()
                     ga.display_token_impact_results(top_n=self.args.baseline_top_n)
                     ga.save_token_impact_results(self.args.output)
+                    self._inject_snapshot(self.args.output)
 
-                    print(f"\n✅ Token impact baseline results saved to {self.args.output}")
+                    print(f"\nToken impact baseline results saved to {self.args.output}")
                 else:
                     # Run genetic algorithm evolution
                     print("Running genetic algorithm evolution...")
@@ -1540,7 +1605,8 @@ class GlitcherCLI:
                         print("Including token impact baseline analysis...")
                         final_population = ga.run_evolution()
                         ga.save_token_impact_results(self.args.baseline_output)
-                        print(f"✅ Token impact baseline results saved to {self.args.baseline_output}")
+                        self._inject_snapshot(self.args.baseline_output)
+                        print(f"Token impact baseline results saved to {self.args.baseline_output}")
 
                     # Prepare results
                     results = {
@@ -1580,11 +1646,14 @@ class GlitcherCLI:
                             'reduction_percentage': ((individual.baseline_prob - individual.modified_prob) / individual.baseline_prob * 100) if individual.baseline_prob > 0 else 0
                         })
 
+                    # Inject environment snapshot
+                    results["_environment"] = self._collect_snapshot()
+
                     # Save results
                     with open(self.args.output, 'w', encoding='utf-8') as f:
                         json.dump(results, f, indent=2, ensure_ascii=False)
 
-                    print(f"\n✅ Genetic algorithm results saved to {self.args.output}")
+                    print(f"\nGenetic algorithm results saved to {self.args.output}")
 
                     # Display top results
                     print("\nTop Results:")
@@ -1712,6 +1781,9 @@ class GlitcherCLI:
         """Run the CLI tool."""
         parser = self.setup_parser()
         self.args = parser.parse_args()
+
+        # Fix random seeds early, before model loading or any randomized logic
+        self._fix_seeds()
 
         if not self.args.command:
             parser.print_help()

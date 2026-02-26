@@ -1,0 +1,111 @@
+{
+  "_description": "Reproducibility configuration template for glitcher experiments. Fill in before each experiment run, or use collect_environment.py to auto-populate.",
+
+  "model": {
+    "model_path": "",
+    "tokenizer_path": "",
+    "model_class": "AutoModelForCausalLM",
+    "tokenizer_class": "AutoTokenizer",
+    "chat_template": "",
+    "is_harmony": false,
+    "reasoning_level": "medium"
+  },
+
+  "library_versions": {
+    "glitcher": "1.0.0",
+    "torch": "",
+    "transformers": "",
+    "accelerate": "",
+    "bitsandbytes": "",
+    "numpy": "",
+    "python": ""
+  },
+
+  "hardware": {
+    "device": "cuda",
+    "gpu_name": "",
+    "gpu_count": 0,
+    "gpu_memory_mb": 0,
+    "cuda_version": "",
+    "driver_version": "",
+    "device_map": "auto",
+    "quantization": "bfloat16",
+    "bnb_4bit_quant_type": "nf4",
+    "bnb_4bit_use_double_quant": true,
+    "bnb_4bit_compute_dtype": "bfloat16"
+  },
+
+  "decoding": {
+    "do_sample": true,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "max_tokens": 50,
+    "stop_sequences": [],
+    "repetition_penalty": null
+  },
+
+  "seeds": {
+    "torch_manual_seed": null,
+    "torch_cuda_manual_seed_all": null,
+    "python_random_seed": null,
+    "numpy_random_seed": null,
+    "torch_backends_cudnn_deterministic": false,
+    "torch_backends_cudnn_benchmark": true,
+    "non_deterministic_components": [
+      "CUDA kernel scheduling",
+      "cuBLAS workspace selection",
+      "random.sample() in population initialization",
+      "random.randint() in mutation operators"
+    ]
+  },
+
+  "mining": {
+    "mode": "entropy",
+    "num_iterations": 50,
+    "batch_size": 8,
+    "k": 32,
+    "save_interval": 5,
+    "output_file": "glitch_tokens.json"
+  },
+
+  "validation": {
+    "enhanced_validation": true,
+    "validation_tokens": 50,
+    "num_attempts": 1,
+    "asr_threshold": 0.5,
+    "probe_template_count": 3,
+    "probe_template_version": "1.0"
+  },
+
+  "genetic_algorithm": {
+    "population_size": 50,
+    "generations": 100,
+    "mutation_rate": 0.1,
+    "crossover_rate": 0.7,
+    "elite_size": 5,
+    "max_tokens_per_individual": 3,
+    "early_stopping_threshold": 0.999,
+    "adaptive_mutation": {
+      "enabled": false,
+      "initial_mutation_rate": 0.8,
+      "final_mutation_rate": 0.1
+    },
+    "baseline_seeding": {
+      "enabled": true,
+      "ratio": 0.7
+    },
+    "sequence_aware_diversity": {
+      "enabled": true,
+      "ratio": 0.3,
+      "shuffle_mutation": false
+    },
+    "exact_token_count": true,
+    "output_file": "genetic_results.json",
+    "baseline_output": "token_impact_baseline.json"
+  },
+
+  "control_sample": {
+    "tokens": ["the", "computer", "science", "model"],
+    "source": "control_tokens.json"
+  }
+}

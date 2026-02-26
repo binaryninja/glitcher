@@ -1,0 +1,22 @@
+{
+  "_description": "Standard non-glitch control tokens used for baseline testing. These common English words should never be classified as glitch tokens. If any baseline test flags these, classification thresholds need adjustment.",
+  "control_tokens": [
+    {
+      "text": "the",
+      "rationale": "Most common English word; high-frequency, well-trained"
+    },
+    {
+      "text": "computer",
+      "rationale": "Common noun; well-represented in training data"
+    },
+    {
+      "text": "science",
+      "rationale": "Common noun; well-represented in training data"
+    },
+    {
+      "text": "model",
+      "rationale": "Common noun; frequent in ML-adjacent text"
+    }
+  ],
+  "usage": "Pass --skip-baseline to glitch-classify to skip control token validation. These tokens are tested against all classification categories (email extraction, domain extraction, behavioral tests) to confirm zero false positives."
+}
