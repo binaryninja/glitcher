@@ -225,7 +225,7 @@ class TestConfig:
     def from_args(cls, args) -> 'TestConfig':
         """Create config from command line arguments"""
         return cls(
-            max_tokens=getattr(args, 'max_tokens', 200),
+            max_tokens=getattr(args, 'max_tokens', 512),
             temperature=getattr(args, 'temperature', 0.0),
             timeout=getattr(args, 'timeout', 30.0),
             enable_debug=getattr(args, 'debug_responses', False),

@@ -1262,7 +1262,7 @@ class GlitcherCLI:
 
             # Create test configuration
             config = TestConfig(
-                max_tokens=getattr(self.args, 'max_tokens', 200),
+                max_tokens=getattr(self.args, 'max_tokens', 512),
                 temperature=getattr(self.args, 'temperature', 0.0),
                 enable_debug=getattr(self.args, 'debug_responses', False),
                 simple_template=False
