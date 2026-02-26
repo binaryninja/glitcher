@@ -35,10 +35,7 @@ TEXT_FIELDS = {
     "token",
     "decoded_text",
     "text",
-    "base_text",
     "best_combination_text",
-    "target_token_text",
-    "wanted_token_text",
 }
 
 # List-of-strings fields that should have each element redacted

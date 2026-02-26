@@ -65,7 +65,15 @@ def get_hardware_info(device: str = "cuda") -> dict:
             )
             info["cuda_version"] = torch.version.cuda or "unknown"
             info["cudnn_version"] = str(torch.backends.cudnn.version()) if torch.backends.cudnn.is_available() else "N/A"
-            info["driver_version"] = "see nvidia-smi"
+            try:
+                import subprocess
+                result = subprocess.run(
+                    ["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader"],
+                    capture_output=True, text=True, timeout=5,
+                )
+                info["driver_version"] = result.stdout.strip() or "unknown"
+            except Exception:
+                info["driver_version"] = "unknown"
             info["cudnn_deterministic"] = torch.backends.cudnn.deterministic
             info["cudnn_benchmark"] = torch.backends.cudnn.benchmark
         else:
