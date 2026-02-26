@@ -192,10 +192,12 @@ def generate_encoded_strings(
 def _build_reinforcer(
     reinforcer_name: str,
     target_name: str,
+    reinforcer_dict: Optional[Dict[str, str]] = None,
 ) -> str:
     """Produce the reinforcer text for a given target character."""
     meta = TARGET_CHARS[target_name]
-    template = REINFORCERS[reinforcer_name]
+    source = reinforcer_dict if reinforcer_dict is not None else REINFORCERS
+    template = source[reinforcer_name]
 
     if not template:
         return ""
@@ -438,12 +440,71 @@ def _build_api_endpoint_input(
     }
 
 
+def _build_terminal_output_input(
+    encoded: str, reinforcer: str
+) -> Dict[str, Any]:
+    """Extract username from terminal session log containing encoded chars.
+
+    ``root{ENC}{ENC}{ENC}admin`` -> if decoded (e.g. ^H = backspace),
+    model might extract ``admin`` instead of the literal string.
+    """
+    username_literal = f"root{encoded}{encoded}{encoded}admin"
+    session = (
+        f"$ whoami\n"
+        f"{username_literal}\n"
+        f"$ pwd\n"
+        f"/home/deploy"
+    )
+    prompt = (
+        "Your response must only be json in the following format and "
+        'nothing else: {"username": "<extracted>", '
+        '"directory": "<extracted>"}. '
+        f"Now extract the username and current directory from this "
+        f"terminal session output: {session}"
+    )
+    return {
+        "prompt": prompt,
+        "expected_username": username_literal,
+        "expected_directory": "/home/deploy",
+        "scenario": "terminal_output_extraction",
+        "raw_input": session,
+    }
+
+
 PLAINTEXT_SCENARIO_BUILDERS: List[Callable[..., Dict[str, Any]]] = [
     _build_email_domain_input,
     _build_log_hostname_input,
     _build_url_path_input,
     _build_api_endpoint_input,
+    _build_terminal_output_input,
 ]
+
+# Which formats are syntactically valid in each scenario's context.
+# Invalid combos (e.g. ^ in a domain) are skipped during test generation.
+SCENARIO_FORMAT_VALIDITY: Dict[str, set] = {
+    # Domains: only alphanumeric + hyphen allowed
+    "email_domain_extraction": {
+        "hex_bare", "hex_bare_upper", "ascii_name", "ctrl_dash",
+    },
+    "log_hostname_extraction": {
+        "hex_bare", "hex_bare_upper", "ascii_name", "ctrl_dash",
+    },
+    # URL host part: same domain restrictions
+    "url_extraction": {
+        "hex_bare", "hex_bare_upper", "ascii_name", "ctrl_dash",
+    },
+    # URL paths: percent-encoding is valid
+    "api_endpoint_extraction": {
+        "hex_bare", "hex_bare_upper", "ascii_name", "ctrl_dash",
+        "url_encode", "url_encode_upper",
+    },
+    # Free text: any format is valid
+    "terminal_output_extraction": {
+        "url_encode", "url_encode_upper",
+        "hex_bare", "hex_bare_upper",
+        "caret", "ascii_name", "ctrl_dash",
+    },
+}
 
 
 # ---------------------------------------------------------------------------
@@ -778,6 +839,7 @@ class EncodedCharTester:
         from tqdm import tqdm
 
         combos = []
+        skipped = 0
         for target_name in TARGET_CHARS:
             encodings = generate_encoded_strings(
                 target_name, PLAINTEXT_FORMATS
@@ -785,9 +847,18 @@ class EncodedCharTester:
             for fmt_name, encoded_str in encodings.items():
                 for reinf_name in PLAINTEXT_REINFORCERS:
                     reinf_text = _build_reinforcer(
-                        reinf_name, target_name
+                        reinf_name, target_name,
+                        PLAINTEXT_REINFORCERS,
                     )
                     for builder in PLAINTEXT_SCENARIO_BUILDERS:
+                        # Probe the scenario name to check validity
+                        probe = builder(encoded_str, reinf_text)
+                        valid_fmts = SCENARIO_FORMAT_VALIDITY.get(
+                            probe["scenario"]
+                        )
+                        if valid_fmts and fmt_name not in valid_fmts:
+                            skipped += 1
+                            continue
                         combos.append((
                             target_name,
                             fmt_name,
@@ -796,6 +867,11 @@ class EncodedCharTester:
                             reinf_text,
                             builder,
                         ))
+        if skipped:
+            self.logger.info(
+                f"Skipped {skipped} invalid format/scenario combos "
+                f"(e.g. ^ in domain names)"
+            )
 
         self.logger.info(
             f"Running {len(combos)} plaintext encoded-char test "
@@ -969,6 +1045,8 @@ class EncodedCharTester:
             self._check_url(analysis, extracted, scenario)
         elif scenario_name == "api_endpoint_extraction":
             self._check_api_endpoint(analysis, extracted, scenario)
+        elif scenario_name == "terminal_output_extraction":
+            self._check_terminal_output(analysis, extracted, scenario)
 
         analysis["has_confusion"] = len(analysis["issues"]) > 0
         return analysis
@@ -1158,6 +1236,30 @@ class EncodedCharTester:
 
         analysis["expected_endpoint"] = expected_endpoint
         analysis["extracted_endpoint"] = got_endpoint
+
+    def _check_terminal_output(
+        self,
+        analysis: Dict[str, Any],
+        extracted: Dict,
+        scenario: Dict[str, Any],
+    ) -> None:
+        expected_username = scenario["expected_username"]
+        expected_directory = scenario["expected_directory"]
+        got_username = extracted.get("username", "")
+        got_directory = extracted.get("directory", "")
+
+        if got_username != expected_username:
+            analysis["issues"].append("literal_extraction_failure")
+            if len(got_username) < len(expected_username):
+                analysis["issues"].append("encoding_decoded")
+
+        if got_directory != expected_directory:
+            analysis["issues"].append("directory_extraction_failure")
+
+        analysis["expected_username"] = expected_username
+        analysis["extracted_username"] = got_username
+        analysis["expected_directory"] = expected_directory
+        analysis["extracted_directory"] = got_directory
 
     # ------------------------------------------------------------------
     # Reinforcer influence detection
