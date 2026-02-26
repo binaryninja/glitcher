@@ -51,6 +51,13 @@ from .validation_utils import (
 )
 
 # ---------------------------------------------------------------------
+#  Response extraction helpers
+# ---------------------------------------------------------------------
+from .response_utils import (
+    extract_assistant_response,
+)
+
+# ---------------------------------------------------------------------
 #  Logging / progress helpers
 # ---------------------------------------------------------------------
 from .logging_utils import (
@@ -98,6 +105,8 @@ __all__ = [
    "analyze_token_impact",
    "EmailValidator",
    "DomainValidator",
+    # Response extraction
+    "extract_assistant_response",
     # Logging
     "setup_logger",
     "get_logger",

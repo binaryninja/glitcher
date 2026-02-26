@@ -31,6 +31,7 @@ from glitcher.model import (
     get_template_for_model,
     BuiltInTemplate
 )
+from glitcher.utils.response_utils import extract_assistant_response
 
 # Configure logging with tqdm compatibility
 class TqdmLoggingHandler(logging.Handler):
@@ -1079,32 +1080,10 @@ class GlitchClassifier:
             # Decode response
             full_output = self.tokenizer.decode(outputs[0], skip_special_tokens=False)
 
-            # Extract assistant response properly from chat format
-            # Look for the assistant's response after <|start_header_id|>assistant<|end_header_id|>
-            assistant_marker = "<|start_header_id|>assistant<|end_header_id|>\n\n"
-            assistant_start = full_output.rfind(assistant_marker)
-
-            if assistant_start != -1:
-                # Extract everything after the assistant marker
-                response_start = assistant_start + len(assistant_marker)
-                response = full_output[response_start:]
-
-                # Remove trailing <|eot_id|> token if present
-                if response.endswith("<|eot_id|>"):
-                    response = response[:-len("<|eot_id|>")].strip()
-                else:
-                    response = response.strip()
-
-                logger.debug(f"Token '{token}' - Extracted assistant response using marker")
-            else:
-                # Fallback: Handle corrupted/truncated output where full_output is shorter than input
-                if len(full_output) < len(formatted_input):
-                    logger.warning(f"Token '{token}' - Corrupted output detected! Full output ({len(full_output)} chars) shorter than input ({len(formatted_input)} chars)")
-                    response = full_output  # Use the entire corrupted output as response
-                else:
-                    response = full_output[len(formatted_input):].strip()
-
-                logger.warning(f"Token '{token}' - Could not find assistant marker, using fallback extraction")
+            # Extract assistant response (model-agnostic)
+            response = extract_assistant_response(
+                full_output, formatted_input, token
+            )
 
             # Debug logging for response analysis
             if hasattr(self.args, 'debug_responses') and self.args.debug_responses:
@@ -1320,32 +1299,10 @@ class GlitchClassifier:
             # Decode response
             full_output = self.tokenizer.decode(outputs[0], skip_special_tokens=False)
 
-            # Extract assistant response properly from chat format
-            # Look for the assistant's response after <|start_header_id|>assistant<|end_header_id|>
-            assistant_marker = "<|start_header_id|>assistant<|end_header_id|>\n\n"
-            assistant_start = full_output.rfind(assistant_marker)
-
-            if assistant_start != -1:
-                # Extract everything after the assistant marker
-                response_start = assistant_start + len(assistant_marker)
-                response = full_output[response_start:]
-
-                # Remove trailing <|eot_id|> token if present
-                if response.endswith("<|eot_id|>"):
-                    response = response[:-len("<|eot_id|>")].strip()
-                else:
-                    response = response.strip()
-
-                logger.debug(f"Token '{token}' - Extracted assistant response using marker")
-            else:
-                # Fallback: Handle corrupted/truncated output where full_output is shorter than input
-                if len(full_output) < len(formatted_input):
-                    logger.warning(f"Token '{token}' - Corrupted output detected! Full output ({len(full_output)} chars) shorter than input ({len(formatted_input)} chars)")
-                    response = full_output  # Use the entire corrupted output as response
-                else:
-                    response = full_output[len(formatted_input):].strip()
-
-                logger.warning(f"Token '{token}' - Could not find assistant marker, using fallback extraction")
+            # Extract assistant response (model-agnostic)
+            response = extract_assistant_response(
+                full_output, formatted_input, token
+            )
 
             # Debug logging for response analysis
             if hasattr(self.args, 'debug_responses') and self.args.debug_responses:

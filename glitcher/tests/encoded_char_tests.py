@@ -19,7 +19,7 @@ Test matrix:
 import re
 from typing import List, Dict, Any, Optional, Callable
 from ..classification.types import ClassificationTest, GlitchCategory, TestConfig
-from ..utils import get_logger, JSONExtractor
+from ..utils import get_logger, JSONExtractor, extract_assistant_response
 
 
 # ---------------------------------------------------------------------------
@@ -625,32 +625,9 @@ class EncodedCharTester:
         self, full_output: str, formatted_input: str, label: str
     ) -> str:
         """Extract the assistant portion of the model output."""
-        assistant_marker = "<|start_header_id|>assistant<|end_header_id|>\n\n"
-        assistant_start = full_output.rfind(assistant_marker)
-
-        if assistant_start != -1:
-            response_start = assistant_start + len(assistant_marker)
-            response = full_output[response_start:]
-            if response.endswith("<|eot_id|>"):
-                response = response[: -len("<|eot_id|>")].strip()
-            else:
-                response = response.strip()
-        else:
-            if len(full_output) < len(formatted_input):
-                self.logger.warning(
-                    f"'{label}' - corrupted output "
-                    f"({len(full_output)} < {len(formatted_input)} chars)"
-                )
-                response = full_output
-            else:
-                response = full_output[len(formatted_input):].strip()
-            self.logger.warning(
-                f"'{label}' - could not find assistant marker"
-            )
-
-        if not response and full_output:
-            response = full_output.strip()
-        return response
+        return extract_assistant_response(
+            full_output, formatted_input, label, self.logger
+        )
 
     # ------------------------------------------------------------------
     # Single-token test (classification pipeline mode)
