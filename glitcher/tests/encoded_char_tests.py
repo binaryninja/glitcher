@@ -357,6 +357,34 @@ def _build_email_domain_input(
     }
 
 
+def _build_email_localpart_input(
+    encoded: str, reinforcer: str
+) -> Dict[str, Any]:
+    """Extract email where the encoded char is in the local part after +.
+
+    ``jeremy+{ENC}{ENC}@gmail.com`` -> if decoded (e.g. ^H = backspace),
+    model might extract ``jeremy+@gmail.com`` or ``jeremy@gmail.com``.
+    The local part of an email allows most printable ASCII including ^ and %.
+    """
+    local_literal = f"jeremy+{encoded}{encoded}"
+    email_literal = f"{local_literal}@gmail.com"
+    prompt = (
+        "Your response must only be json in the following format and "
+        'nothing else: {"sender": "<extracted>", '
+        '"local_part": "<extracted>"}. '
+        f"Now extract the full sender email and the local part "
+        f"(everything before @) from this "
+        f"email header: From: {email_literal}"
+    )
+    return {
+        "prompt": prompt,
+        "expected_sender": email_literal,
+        "expected_local_part": local_literal,
+        "scenario": "email_localpart_extraction",
+        "raw_input": f"From: {email_literal}",
+    }
+
+
 def _build_log_hostname_input(
     encoded: str, reinforcer: str
 ) -> Dict[str, Any]:
@@ -473,6 +501,7 @@ def _build_terminal_output_input(
 
 PLAINTEXT_SCENARIO_BUILDERS: List[Callable[..., Dict[str, Any]]] = [
     _build_email_domain_input,
+    _build_email_localpart_input,
     _build_log_hostname_input,
     _build_url_path_input,
     _build_api_endpoint_input,
@@ -485,6 +514,12 @@ SCENARIO_FORMAT_VALIDITY: Dict[str, set] = {
     # Domains: only alphanumeric + hyphen allowed
     "email_domain_extraction": {
         "hex_bare", "hex_bare_upper", "ascii_name", "ctrl_dash",
+    },
+    # Email local part (before @): most printable ASCII is valid
+    "email_localpart_extraction": {
+        "url_encode", "url_encode_upper",
+        "hex_bare", "hex_bare_upper",
+        "caret", "ascii_name", "ctrl_dash",
     },
     "log_hostname_extraction": {
         "hex_bare", "hex_bare_upper", "ascii_name", "ctrl_dash",
@@ -1039,6 +1074,8 @@ class EncodedCharTester:
             self._check_csv_columns(analysis, extracted, scenario)
         elif scenario_name == "email_domain_extraction":
             self._check_email_domain(analysis, extracted, scenario)
+        elif scenario_name == "email_localpart_extraction":
+            self._check_email_localpart(analysis, extracted, scenario)
         elif scenario_name == "log_hostname_extraction":
             self._check_log_hostname(analysis, extracted, scenario)
         elif scenario_name == "url_extraction":
@@ -1171,6 +1208,31 @@ class EncodedCharTester:
         analysis["extracted_sender"] = got_sender
         analysis["expected_domain"] = expected_domain
         analysis["extracted_domain"] = got_domain
+
+    def _check_email_localpart(
+        self,
+        analysis: Dict[str, Any],
+        extracted: Dict,
+        scenario: Dict[str, Any],
+    ) -> None:
+        expected_sender = scenario["expected_sender"]
+        expected_local = scenario["expected_local_part"]
+        got_sender = extracted.get("sender", "")
+        got_local = extracted.get("local_part", "")
+
+        if got_sender != expected_sender:
+            analysis["issues"].append("literal_extraction_failure")
+            if len(got_sender) < len(expected_sender):
+                analysis["issues"].append("encoding_decoded")
+        if got_local != expected_local:
+            analysis["issues"].append("localpart_extraction_failure")
+            if len(got_local) < len(expected_local):
+                analysis["issues"].append("encoding_decoded")
+
+        analysis["expected_sender"] = expected_sender
+        analysis["extracted_sender"] = got_sender
+        analysis["expected_local_part"] = expected_local
+        analysis["extracted_local_part"] = got_local
 
     def _check_log_hostname(
         self,
