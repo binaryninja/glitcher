@@ -100,6 +100,18 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
     is_llama32 = "llama3.2" in model.config._name_or_path.lower() or "llama32" in model.config._name_or_path.lower()
     is_gpt_oss = "gpt-oss" in model.config._name_or_path.lower()
 
+    # When running multiple attempts, use sampling so each attempt can diverge.
+    # With do_sample=False (greedy), every attempt produces identical output,
+    # making multi-attempt ASR meaningless (always 0% or 100%).
+    use_sampling = num_attempts > 1
+    sampling_kwargs = {
+        "do_sample": True,
+        "temperature": 0.7,
+        "top_p": 0.9,
+    } if use_sampling else {
+        "do_sample": False,
+    }
+
     # Run multiple attempts to account for non-deterministic nature of LLMs
     all_attempts_results = []
     attempt_glitch_counts = []
@@ -162,7 +174,7 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                                 input_ids=prefill_tensor,
                                 attention_mask=attention_mask_h,
                                 max_new_tokens=max_tokens,
-                                do_sample=False,  # greedy for consistency
+                                **sampling_kwargs,
                                 pad_token_id=tokenizer.eos_token_id,
                                 eos_token_id=stop_harmony_ids,
                                 use_cache=True,
@@ -173,7 +185,7 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                             input_ids=prefill_tensor,
                             attention_mask=attention_mask_h,
                             max_new_tokens=max_tokens,
-                            do_sample=False,  # greedy for consistency
+                            **sampling_kwargs,
                             pad_token_id=tokenizer.eos_token_id,
                             eos_token_id=stop_harmony_ids,
                             use_cache=True,
@@ -267,12 +279,12 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                         with warnings.catch_warnings():
                             warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
 
-                            # Generate a sequence of tokens - use minimal parameters to avoid warnings
+                            # Generate a sequence of tokens
                             generated_ids = model.generate(
                                 input_ids=input_ids,
                                 attention_mask=attention_mask,
                                 max_new_tokens=max_tokens,
-                                do_sample=False,  # Use greedy decoding for consistency
+                                **sampling_kwargs,
                                 pad_token_id=tokenizer.eos_token_id,
                                 eos_token_id=stop_token_ids,
                                 use_cache=True
@@ -286,7 +298,7 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                             input_ids=input_ids,
                             attention_mask=attention_mask,
                             max_new_tokens=max_tokens,
-                            do_sample=False,  # Use greedy decoding for consistency
+                            **sampling_kwargs,
                             pad_token_id=tokenizer.eos_token_id,
                             eos_token_id=stop_token_ids,
                             use_cache=True
