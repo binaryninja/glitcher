@@ -1,5 +1,7 @@
 """Enhanced glitch token validation with sequence generation"""
 
+import logging
+import time as _time
 import torch
 import torch.nn.functional as F
 import json
@@ -8,6 +10,10 @@ import os
 from .model import get_template_for_model, glitch_verify_message1, glitch_verify_message2, glitch_verify_message3
 
 from typing import Any
+
+# Diagnostic logger for ASR audit -- enable via GLITCHER_ASR_DIAGNOSTICS=1
+_diag_logger = logging.getLogger("glitcher.asr_diagnostics")
+ASR_DIAGNOSTICS_ENABLED = os.environ.get("GLITCHER_ASR_DIAGNOSTICS", "0") == "1"
 
 # Harmony (gpt-oss) support
 
@@ -115,6 +121,7 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
     # Run multiple attempts to account for non-deterministic nature of LLMs
     all_attempts_results = []
     attempt_glitch_counts = []
+    _diag_raw_outputs = []  # collects per-attempt diagnostics when enabled
 
     for attempt in range(num_attempts):
         tests_failed = 0
@@ -123,6 +130,13 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
 
         for i, (input_ids, formatted_input) in enumerate(zip(inputs, formatted_inputs)):
             with torch.no_grad():
+                # Reseed RNG each attempt so outputs are independent yet reproducible
+                if use_sampling:
+                    _seed = int(_time.time() * 1000) + attempt * 100 + i
+                    torch.manual_seed(_seed)
+                    if torch.cuda.is_available():
+                        torch.cuda.manual_seed_all(_seed)
+
                 # Create attention mask
                 attention_mask = torch.ones_like(input_ids)
 
@@ -331,6 +345,23 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                     top5_tokens = [tokenizer.decode([idx.item()]) for idx in top5_indices]
                     top5_probs = top5_values.tolist()
 
+                # Diagnostic logging for ASR audit (enable via GLITCHER_ASR_DIAGNOSTICS=1)
+                if ASR_DIAGNOSTICS_ENABLED:
+                    _diag_raw_outputs.append({
+                        "attempt": attempt, "test": i,
+                        "generated_text": generated_text[:500],
+                        "generated_token_ids": new_tokens.tolist()[:50],
+                        "token_found_in_sequence": token_found_in_sequence,
+                        "token_text_found": token_text_found,
+                        "use_sampling": use_sampling,
+                    })
+                    _diag_logger.debug(
+                        "token_id=%d attempt=%d test=%d use_sampling=%s "
+                        "output_hash=%s output_len=%d",
+                        token_id, attempt, i, use_sampling,
+                        hex(hash(generated_text)), len(generated_text),
+                    )
+
                 # Determine if this test indicates a glitch token
                 # The token is NOT a glitch if:
                 # 1. It appears in the generated sequence, OR
@@ -404,10 +435,13 @@ def enhanced_glitch_verify(model, tokenizer, token_id, chat_template=None, log_f
                 "asr_threshold": asr_threshold,
                 "is_glitch": is_glitch,
                 "max_tokens": max_tokens,
+                "use_sampling": use_sampling,
                 "all_attempts_results": all_attempts_results,
                 "final_decision_reason": f"ASR {asr:.2%} >= threshold {asr_threshold:.2%}" if is_glitch else
                                         f"ASR {asr:.2%} < threshold {asr_threshold:.2%}"
             }
+            if ASR_DIAGNOSTICS_ENABLED:
+                verification_details["_diagnostics"] = _diag_raw_outputs
             f.write(json.dumps(verification_details) + "\n")
 
     return is_glitch, asr

@@ -1,0 +1,1114 @@
+{
+  "model": "meta-llama/Llama-3.2-1B-Instruct",
+  "patched": true,
+  "num_attempts": 10,
+  "timestamp": 1772214716.575126,
+  "summary": {
+    "total_tokens": 18,
+    "all_identical_count": 0,
+    "all_identical_fraction": 0.0,
+    "asr_0_count": 18,
+    "asr_100_count": 0,
+    "asr_intermediate_count": 0
+  },
+  "tokens": [
+    {
+      "token_id": 23424,
+      "token_text": "835",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 7
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 8673,
+      "token_text": "MT",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 10
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 11873,
+      "token_text": "Extra",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 10
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 28253,
+      "token_text": " Murray",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 3
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 14980,
+      "token_text": " stood",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 8
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 23334,
+      "token_text": " Entertainment",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 8
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 28935,
+      "token_text": "-sized",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 5,
+        "1": 10,
+        "2": 5
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            false,
+            true,
+            true,
+            false,
+            true,
+            false,
+            false,
+            true
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 20678,
+      "token_text": "Classes",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 2,
+        "1": 10,
+        "2": 8
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": false,
+          "values": [
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            true,
+            false,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 20624,
+      "token_text": "-app",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 8,
+        "1": 10,
+        "2": 6
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": false,
+          "values": [
+            false,
+            true,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            true,
+            true,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 27615,
+      "token_text": " i\u00e7",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 6,
+        "1": 10,
+        "2": 10
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": false,
+          "values": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 17375,
+      "token_text": " Fac",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 6,
+        "1": 10,
+        "2": 7
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": false,
+          "values": [
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            false,
+            true,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 28638,
+      "token_text": "\ufffd",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 10
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            false,
+            true,
+            true,
+            false,
+            false,
+            true,
+            true,
+            true
+          ]
+        },
+        "2": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 19130,
+      "token_text": " pandas",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 5
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 10939,
+      "token_text": "lications",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 2,
+        "1": 10,
+        "2": 10
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 21308,
+      "token_text": " oral",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 2,
+        "1": 10,
+        "2": 1
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            false,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            true,
+            false,
+            false,
+            true,
+            true,
+            false,
+            true,
+            false,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 27386,
+      "token_text": "_mult",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 5,
+        "1": 10,
+        "2": 10
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": false,
+          "values": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 26718,
+      "token_text": " McK",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 10
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            true,
+            false,
+            true,
+            true,
+            false,
+            true,
+            false,
+            true,
+            true
+          ]
+        },
+        "2": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false
+          ]
+        }
+      }
+    },
+    {
+      "token_id": 22783,
+      "token_text": "\ufffd",
+      "patched": true,
+      "num_attempts": 10,
+      "asr": 0.0,
+      "glitch_count": 0,
+      "unique_outputs_per_test": {
+        "0": 1,
+        "1": 10,
+        "2": 10
+      },
+      "all_outputs_identical": false,
+      "indicator_consistency_per_test": {
+        "0": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "1": {
+          "all_same": false,
+          "values": [
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            true,
+            true,
+            false,
+            false
+          ]
+        },
+        "2": {
+          "all_same": true,
+          "values": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    }
+  ]
+}
