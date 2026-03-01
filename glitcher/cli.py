@@ -399,8 +399,12 @@ class GlitcherCLI:
             help="Quantization type (default: bfloat16)"
         )
         classify_parser.add_argument(
-            "--temperature", type=float, default=0.0,
-            help="Temperature for model inference (default: 0.0)"
+            "--temperature", type=float, default=0.7,
+            help="Temperature for model inference (default: 0.7)"
+        )
+        classify_parser.add_argument(
+            "--top-p", type=float, default=0.95,
+            help="Top-p (nucleus) sampling threshold (default: 0.95)"
         )
         classify_parser.add_argument(
             "--max-tokens", type=int, default=8192,
@@ -1331,7 +1335,8 @@ class GlitcherCLI:
             # Create test configuration
             config = TestConfig(
                 max_tokens=getattr(self.args, 'max_tokens', 8192),
-                temperature=getattr(self.args, 'temperature', 0.0),
+                temperature=getattr(self.args, 'temperature', 0.7),
+                top_p=getattr(self.args, 'top_p', 0.95),
                 enable_debug=getattr(self.args, 'debug_responses', False),
                 simple_template=False
             )

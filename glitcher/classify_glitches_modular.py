@@ -56,8 +56,12 @@ class ClassificationWrapper:
             help="Quantization type (default: bfloat16)"
         )
         parser.add_argument(
-            "--temperature", type=float, default=0.0,
-            help="Temperature for model inference (default: 0.0)"
+            "--temperature", type=float, default=0.7,
+            help="Temperature for model inference (default: 0.7)"
+        )
+        parser.add_argument(
+            "--top-p", type=float, default=0.95,
+            help="Top-p (nucleus) sampling threshold (default: 0.95)"
         )
         parser.add_argument(
             "--max-tokens", type=int, default=200,

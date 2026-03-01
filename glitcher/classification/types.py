@@ -210,13 +210,15 @@ class TestConfig:
     def __init__(
         self,
         max_tokens: int = 8192,
-        temperature: float = 0.0,
+        temperature: float = 0.7,
+        top_p: float = 0.95,
         timeout: float = 30.0,
         enable_debug: bool = False,
         simple_template: bool = False
     ):
         self.max_tokens = max_tokens
         self.temperature = temperature
+        self.top_p = top_p
         self.timeout = timeout
         self.enable_debug = enable_debug
         self.simple_template = simple_template
@@ -226,7 +228,8 @@ class TestConfig:
         """Create config from command line arguments"""
         return cls(
             max_tokens=getattr(args, 'max_tokens', 8192),
-            temperature=getattr(args, 'temperature', 0.0),
+            temperature=getattr(args, 'temperature', 0.7),
+            top_p=getattr(args, 'top_p', 0.95),
             timeout=getattr(args, 'timeout', 30.0),
             enable_debug=getattr(args, 'debug_responses', False),
             simple_template=getattr(args, 'simple_template', False)
