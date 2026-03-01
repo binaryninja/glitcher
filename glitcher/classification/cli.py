@@ -86,8 +86,14 @@ Examples:
     model_group.add_argument(
         "--temperature",
         type=float,
-        default=0.0,
-        help="Temperature for model inference (default: 0.0)"
+        default=0.7,
+        help="Temperature for model inference (default: 0.7)"
+    )
+    model_group.add_argument(
+        "--top-p",
+        type=float,
+        default=0.95,
+        help="Top-p (nucleus) sampling threshold (default: 0.95)"
     )
     model_group.add_argument(
         "--max-tokens",

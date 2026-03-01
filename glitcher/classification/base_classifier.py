@@ -187,14 +187,18 @@ class BaseClassifier(ABC):
             inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.model.device)
 
             # Generate response
+            use_sampling = self.config.temperature > 0
+            gen_kwargs = dict(
+                **inputs,
+                max_new_tokens=self.config.max_tokens,
+                do_sample=use_sampling,
+                pad_token_id=self.tokenizer.eos_token_id,
+            )
+            if use_sampling:
+                gen_kwargs["temperature"] = self.config.temperature
+                gen_kwargs["top_p"] = self.config.top_p
             with torch.no_grad():
-                outputs = self.model.generate(
-                    **inputs,
-                    max_new_tokens=self.config.max_tokens,
-                    do_sample=(self.config.temperature > 0),
-                    temperature=self.config.temperature,
-                    pad_token_id=self.tokenizer.eos_token_id
-                )
+                outputs = self.model.generate(**gen_kwargs)
 
             # Decode response
             full_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)

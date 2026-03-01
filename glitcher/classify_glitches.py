@@ -310,8 +310,12 @@ class GlitchClassifier:
             help="Quantization type (default: bfloat16)"
         )
         parser.add_argument(
-            "--temperature", type=float, default=0.0,
-            help="Temperature for model inference (default: 0.0)"
+            "--temperature", type=float, default=0.7,
+            help="Temperature for model inference (default: 0.7)"
+        )
+        parser.add_argument(
+            "--top-p", type=float, default=0.95,
+            help="Top-p (nucleus) sampling threshold (default: 0.95)"
         )
         parser.add_argument(
             "--max-tokens", type=int, default=8192,
@@ -523,13 +527,17 @@ class GlitchClassifier:
             inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.model.device)
 
             # Generate response with enough tokens to see repetition patterns
+            _use_sampling = self.args.temperature > 0
+            _gen_kwargs = dict(
+                **inputs,
+                max_new_tokens=80,
+                do_sample=_use_sampling,
+            )
+            if _use_sampling:
+                _gen_kwargs["temperature"] = self.args.temperature
+                _gen_kwargs["top_p"] = getattr(self.args, 'top_p', 0.95)
             with torch.no_grad():
-                outputs = self.model.generate(
-                    **inputs,
-                    max_new_tokens=80,  # Need more tokens to see patterns
-                    do_sample=(self.args.temperature > 0),
-                    temperature=self.args.temperature
-                )
+                outputs = self.model.generate(**_gen_kwargs)
 
             # Decode response
             full_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
@@ -757,13 +765,17 @@ class GlitchClassifier:
             inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.model.device)
 
             # Generate response
+            _use_sampling = self.args.temperature > 0
+            _gen_kwargs = dict(
+                **inputs,
+                max_new_tokens=self.args.max_tokens,
+                do_sample=_use_sampling,
+            )
+            if _use_sampling:
+                _gen_kwargs["temperature"] = self.args.temperature
+                _gen_kwargs["top_p"] = getattr(self.args, 'top_p', 0.95)
             with torch.no_grad():
-                outputs = self.model.generate(
-                    **inputs,
-                    max_new_tokens=self.args.max_tokens,
-                    do_sample=(self.args.temperature > 0),
-                    temperature=self.args.temperature
-                )
+                outputs = self.model.generate(**_gen_kwargs)
 
             # Decode response
             full_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
@@ -1038,13 +1050,17 @@ class GlitchClassifier:
             inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.model.device)
 
             # Generate response
+            _use_sampling = self.args.temperature > 0
+            _gen_kwargs = dict(
+                **inputs,
+                max_new_tokens=self.args.max_tokens,
+                do_sample=_use_sampling,
+            )
+            if _use_sampling:
+                _gen_kwargs["temperature"] = self.args.temperature
+                _gen_kwargs["top_p"] = getattr(self.args, 'top_p', 0.95)
             with torch.no_grad():
-                outputs = self.model.generate(
-                    **inputs,
-                    max_new_tokens=self.args.max_tokens,
-                    do_sample=(self.args.temperature > 0),
-                    temperature=self.args.temperature
-                )
+                outputs = self.model.generate(**_gen_kwargs)
 
             # Debug: Check generated tokens
             input_length = inputs['input_ids'].shape[1]
@@ -1257,13 +1273,17 @@ class GlitchClassifier:
             inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.model.device)
 
             # Generate response
+            _use_sampling = self.args.temperature > 0
+            _gen_kwargs = dict(
+                **inputs,
+                max_new_tokens=self.args.max_tokens,
+                do_sample=_use_sampling,
+            )
+            if _use_sampling:
+                _gen_kwargs["temperature"] = self.args.temperature
+                _gen_kwargs["top_p"] = getattr(self.args, 'top_p', 0.95)
             with torch.no_grad():
-                outputs = self.model.generate(
-                    **inputs,
-                    max_new_tokens=self.args.max_tokens,
-                    do_sample=(self.args.temperature > 0),
-                    temperature=self.args.temperature
-                )
+                outputs = self.model.generate(**_gen_kwargs)
 
             # Debug: Check generated tokens
             input_length = inputs['input_ids'].shape[1]
@@ -1596,6 +1616,7 @@ class GlitchClassifier:
             config = TestConfig(
                 max_tokens=self.args.max_tokens,
                 temperature=self.args.temperature,
+                top_p=getattr(self.args, 'top_p', 0.95),
                 enable_debug=getattr(self.args, 'debug_responses', False),
                 simple_template=getattr(self.args, 'simple_template', False),
             )
@@ -1638,6 +1659,7 @@ class GlitchClassifier:
             config = TestConfig(
                 max_tokens=self.args.max_tokens,
                 temperature=self.args.temperature,
+                top_p=getattr(self.args, 'top_p', 0.95),
                 enable_debug=getattr(self.args, 'debug_responses', False),
                 simple_template=getattr(self.args, 'simple_template', False),
             )
@@ -1683,6 +1705,7 @@ class GlitchClassifier:
             config = TestConfig(
                 max_tokens=self.args.max_tokens,
                 temperature=self.args.temperature,
+                top_p=getattr(self.args, 'top_p', 0.95),
                 enable_debug=getattr(self.args, 'debug_responses', False),
                 simple_template=getattr(self.args, 'simple_template', False),
             )
@@ -1725,6 +1748,7 @@ class GlitchClassifier:
             config = TestConfig(
                 max_tokens=self.args.max_tokens,
                 temperature=self.args.temperature,
+                top_p=getattr(self.args, 'top_p', 0.95),
                 enable_debug=getattr(self.args, 'debug_responses', False),
                 simple_template=getattr(self.args, 'simple_template', False),
             )
@@ -1766,6 +1790,7 @@ class GlitchClassifier:
             config = TestConfig(
                 max_tokens=self.args.max_tokens,
                 temperature=self.args.temperature,
+                top_p=getattr(self.args, 'top_p', 0.95),
                 enable_debug=getattr(self.args, 'debug_responses', False),
                 simple_template=getattr(self.args, 'simple_template', False),
             )
