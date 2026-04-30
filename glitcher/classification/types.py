@@ -213,13 +213,23 @@ class TestConfig:
         temperature: float = 0.0,
         timeout: float = 30.0,
         enable_debug: bool = False,
-        simple_template: bool = False
+        simple_template: bool = False,
+        stochastic: bool = False,
+        top_p: float = 0.95,
     ):
         self.max_tokens = max_tokens
         self.temperature = temperature
         self.timeout = timeout
         self.enable_debug = enable_debug
         self.simple_template = simple_template
+        # Stochastic decoding for behavioural tests. When enabled, classifier
+        # samples (do_sample=True, top_p=top_p) using the configured
+        # temperature (clamped to a 0.7 floor when temperature==0). Defaults
+        # off to preserve single-attempt reproducibility; flip on for variance
+        # analysis or multi-attempt aggregation. Paper §3.1 — without this,
+        # do_sample=(temperature>0) collapses to greedy when temperature is 0.
+        self.stochastic = stochastic
+        self.top_p = top_p
 
     @classmethod
     def from_args(cls, args) -> 'TestConfig':
@@ -229,5 +239,7 @@ class TestConfig:
             temperature=getattr(args, 'temperature', 0.0),
             timeout=getattr(args, 'timeout', 30.0),
             enable_debug=getattr(args, 'debug_responses', False),
-            simple_template=getattr(args, 'simple_template', False)
+            simple_template=getattr(args, 'simple_template', False),
+            stochastic=getattr(args, 'stochastic', False),
+            top_p=getattr(args, 'top_p', 0.95),
         )

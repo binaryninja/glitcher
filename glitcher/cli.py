@@ -196,8 +196,11 @@ class GlitcherCLI:
         # Range mining options
         mine_parser.add_argument(
             "--mode", type=str, default="entropy",
-            choices=["entropy", "range", "unicode", "special"],
-            help="Mining mode: entropy (default), range, unicode, or special"
+            choices=["entropy", "range", "unicode", "special", "stratified", "category"],
+            help="Mining mode: entropy (default), range, unicode, special, "
+                 "stratified (paper §8.2 — sample across L2-norm quintile × "
+                 "Unicode category × length-bucket strata), or category "
+                 "(targeted scan of cjk/arabic/cyrillic/punctuation/whitespace)."
         )
         mine_parser.add_argument(
             "--range-start", type=int,
@@ -214,6 +217,23 @@ class GlitcherCLI:
         mine_parser.add_argument(
             "--max-tokens-per-range", type=int, default=100,
             help="Maximum tokens to test per range in range mining (default: 100)"
+        )
+        mine_parser.add_argument(
+            "--stratified-sample-size", type=int, default=2000,
+            help="Number of tokens to validate in stratified mode (default: 2000, paper §2.4)"
+        )
+        mine_parser.add_argument(
+            "--stratified-seed", type=int, default=0,
+            help="Seed for the stratified sampler (default: 0). Distinct from --seed."
+        )
+        mine_parser.add_argument(
+            "--category-group", type=str, default="cjk",
+            choices=["cjk", "arabic", "cyrillic", "punctuation", "whitespace"],
+            help="Unicode group for category-targeted scan (default: cjk)"
+        )
+        mine_parser.add_argument(
+            "--category-sample-size", type=int, default=None,
+            help="Optional sample cap for category-targeted scan; default: every token in group"
         )
 
         # Test command
@@ -401,6 +421,16 @@ class GlitcherCLI:
         classify_parser.add_argument(
             "--temperature", type=float, default=0.0,
             help="Temperature for model inference (default: 0.0)"
+        )
+        classify_parser.add_argument(
+            "--stochastic", dest="stochastic", action="store_true",
+            help="Sample with top-p (do_sample=True, top_p=0.95, temp floor 0.7) "
+                 "instead of greedy decoding. Without this, behavioural tests run "
+                 "deterministically. (paper §3.1)"
+        )
+        classify_parser.add_argument(
+            "--top-p", dest="top_p", type=float, default=0.95,
+            help="Top-p for stochastic mode (default: 0.95)"
         )
         classify_parser.add_argument(
             "--max-tokens", type=int, default=8192,
@@ -682,6 +712,9 @@ class GlitcherCLI:
         if self.args.mode in ["range", "unicode", "special"]:
             self.run_range_mining()
             return
+        if self.args.mode in ["stratified", "category"]:
+            self.run_stratified_mining()
+            return
         # Initialize progress
         if self.args.resume and self.load_progress():
             # Verify the model path is the same
@@ -856,6 +889,78 @@ class GlitcherCLI:
 
         except Exception as e:
             print(f"Error during range mining: {e}")
+            raise
+
+    def run_stratified_mining(self):
+        """Run stratified or Unicode-category-targeted vocabulary scan (paper §8.2)."""
+        from .stratified_mining import stratified_scan, category_targeted_scan
+
+        log_file = f"stratified_mining_log_{int(time.time())}.jsonl"
+        print(f"Detailed scan logs will be saved to: {log_file}")
+
+        default_outputs = {
+            "stratified": "stratified_scan.json",
+            "category": f"category_scan_{getattr(self.args, 'category_group', 'cjk')}.json",
+        }
+        if self.args.output == "glitch_tokens.json":
+            output_file = default_outputs[self.args.mode]
+        else:
+            output_file = self.args.output
+
+        num_attempts = max(2, self.args.num_attempts)
+        if num_attempts != self.args.num_attempts:
+            print(f"Note: bumping num_attempts from {self.args.num_attempts} to {num_attempts} "
+                  "so the §8.1 stochastic ASR loop has something to vary across.")
+
+        progress = {"last_print": 0.0}
+
+        def _on_progress(i, total, record):
+            now = time.time()
+            if now - progress["last_print"] >= 1.0 or i == total:
+                progress["last_print"] = now
+                marker = "GLITCH" if record["is_glitch"] else "ok    "
+                print(f"[{i}/{total}] {marker} id={record['token_id']} asr={record['asr']:.2f} token={record['token']!r}")
+
+        try:
+            if self.args.mode == "stratified":
+                results = stratified_scan(
+                    model=self.model,
+                    tokenizer=self.tokenizer,
+                    sample_size=self.args.stratified_sample_size,
+                    seed=self.args.stratified_seed,
+                    output_file=output_file,
+                    log_file=log_file,
+                    max_tokens=self.args.validation_tokens,
+                    num_attempts=num_attempts,
+                    asr_threshold=self.args.asr_threshold,
+                    progress_callback=_on_progress,
+                )
+            else:
+                results = category_targeted_scan(
+                    model=self.model,
+                    tokenizer=self.tokenizer,
+                    group=self.args.category_group,
+                    sample_size=self.args.category_sample_size,
+                    seed=self.args.stratified_seed,
+                    output_file=output_file,
+                    log_file=log_file,
+                    max_tokens=self.args.validation_tokens,
+                    num_attempts=num_attempts,
+                    asr_threshold=self.args.asr_threshold,
+                    progress_callback=_on_progress,
+                )
+
+            confirmed = len(results["confirmed_glitches"])
+            examined = len(results["examined"])
+            rate = (confirmed / examined) if examined else 0.0
+            print()
+            print(f"=== {self.args.mode.upper()} SCAN COMPLETED ===")
+            print(f"Tokens examined : {examined}")
+            print(f"Confirmed glitches: {confirmed}")
+            print(f"Glitch rate     : {rate:.1%}")
+            print(f"Results saved to: {output_file}")
+        except Exception as e:
+            print(f"Error during {self.args.mode} mining: {e}")
             raise
 
     def run_token_test(self):

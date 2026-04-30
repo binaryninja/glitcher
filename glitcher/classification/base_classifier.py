@@ -7,6 +7,7 @@ extended to create specialized classifiers. It handles model loading, prompt for
 test execution, and result management.
 """
 
+import os
 import time
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional, Tuple
@@ -186,14 +187,40 @@ class BaseClassifier(ABC):
             # Tokenize prompt
             inputs = self.tokenizer(formatted_input, return_tensors="pt").to(self.model.device)
 
-            # Generate response
+            # Generate response. Paper §3.1: deriving do_sample from
+            # temperature alone makes the classifier deterministic whenever
+            # temperature==0. When `stochastic` (or env override) is on, we
+            # sample with top_p and a 0.7 temperature floor so multi-attempt
+            # or variance-analysis runs produce genuine draws. The
+            # GLITCHER_STOCHASTIC_ASR env var is shared with
+            # enhanced_validation for cross-tool consistency.
+            env_force = os.environ.get("GLITCHER_STOCHASTIC_ASR", "").strip().lower()
+            stochastic_mode = (
+                getattr(self.config, "stochastic", False)
+                or env_force in ("1", "true", "yes", "on")
+            )
+            if env_force in ("0", "false", "no", "off"):
+                stochastic_mode = False
+            if stochastic_mode:
+                temp = self.config.temperature if self.config.temperature > 0 else 0.7
+                gen_kwargs = {
+                    "do_sample": True,
+                    "temperature": temp,
+                    "top_p": getattr(self.config, "top_p", 0.95),
+                }
+            elif self.config.temperature > 0:
+                gen_kwargs = {
+                    "do_sample": True,
+                    "temperature": self.config.temperature,
+                }
+            else:
+                gen_kwargs = {"do_sample": False}
             with torch.no_grad():
                 outputs = self.model.generate(
                     **inputs,
                     max_new_tokens=self.config.max_tokens,
-                    do_sample=(self.config.temperature > 0),
-                    temperature=self.config.temperature,
-                    pad_token_id=self.tokenizer.eos_token_id
+                    pad_token_id=self.tokenizer.eos_token_id,
+                    **gen_kwargs,
                 )
 
             # Decode response
@@ -202,10 +229,16 @@ class BaseClassifier(ABC):
             # Extract just the assistant's response
             response = full_output[len(formatted_input):].strip()
 
-            # Check each indicator
+            # Check each indicator. New-style indicators accept (response,
+            # prompt) so they can use the prompt for topic-drift / overlap
+            # checks; legacy indicators only take `response`. We dispatch on
+            # arity so both work (paper §8.3).
             triggered_indicators = {}
             for indicator_name, check_fn in test.indicators.items():
-                is_triggered = check_fn(response)
+                try:
+                    is_triggered = check_fn(response, original_prompt)
+                except TypeError:
+                    is_triggered = check_fn(response)
                 triggered_indicators[indicator_name] = is_triggered
 
                 if is_triggered and self.config.enable_debug:
